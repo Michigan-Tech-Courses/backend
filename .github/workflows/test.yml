@@ -24,8 +24,13 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Test & get coverage
+      - name: Unit tests
         run: yarn test:coverage
+        
+      - name: E2E tests
+        run: yarn test:e2e --coverage
 
       - name: Upload coverage
         uses: codecov/codecov-action@v1
+        with:
+          files: ./test/coverage/lcov.info,./coverage/lcov.info
