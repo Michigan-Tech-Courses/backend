@@ -33,9 +33,6 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
         
       - name: Deploy app
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v2
-          - uses: superfly/flyctl-actions@1.1
-            with:
-              args: "deploy -i mtucourses/backend:latest"
+        uses: superfly/flyctl-actions@1.1
+        with:
+          args: "deploy -i mtucourses/backend:latest"
