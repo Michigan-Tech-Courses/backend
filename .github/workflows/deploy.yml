@@ -52,6 +52,9 @@ jobs:
           tags: mtucourses/backend:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+
+      - name: List images
+        run: docker images
         
       - name: Deploy app
         uses: superfly/flyctl-actions@1.1
