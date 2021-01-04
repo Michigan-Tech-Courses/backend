@@ -8,15 +8,14 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "start": "node dist/main",
+    "dev": "nest start --watch",
+    "dev:debug": "nest start --debug --watch",
+    "lint": "xo",
+    "lint:fix": "xo --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test:coverage": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
@@ -39,16 +38,17 @@
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
     "eslint": "^7.12.1",
-    "eslint-config-prettier": "7.1.0",
-    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-unused-imports": "^1.0.1",
+    "husky": "^4.3.6",
     "jest": "^26.6.3",
-    "prettier": "^2.1.2",
+    "lint-staged": "^10.5.3",
     "supertest": "^6.0.0",
     "ts-jest": "^26.4.3",
     "ts-loader": "^8.0.8",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.0.5"
+    "typescript": "^4.0.5",
+    "xo": "^0.37.1"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -66,5 +66,40 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "xo --fix"
+    ]
+  },
+  "xo": {
+    "plugins": [
+      "unused-imports"
+    ],
+    "rules": {
+      "new-cap": [
+        "error",
+        {
+          "capIsNewExceptionPattern": "@*"
+        }
+      ],
+      "import/extensions": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "unused-imports/no-unused-imports-ts": "error",
+      "unused-imports/no-unused-vars-ts": [
+        "warn",
+        {
+          "vars": "all",
+          "varsIgnorePattern": "^_",
+          "args": "after-used",
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    }
   }
 }
