@@ -1,10 +1,15 @@
 import {Module} from '@nestjs/common';
-import {AppController} from './app.controller';
-import {AppService} from './app.service';
+import {BullModule} from '@nestjs/bull';
+import {ScrapperModule} from './scrapper/scrapper.module';
 
 @Module({
-	imports: [],
-	controllers: [AppController],
-	providers: [AppService]
+	imports: [
+		BullModule.forRoot({
+			redis: process.env.REDIS_URL!
+		}),
+		ScrapperModule
+	],
+	controllers: [],
+	providers: []
 })
 export class AppModule {}

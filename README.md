@@ -4,6 +4,8 @@
 
 ## 🧰 Development
 
+Copy `.env.example` to `.env` and update as necessary. Then:
+
 ```bash
 # First:
 # install dependencies
@@ -23,4 +25,10 @@ yarn test:watch
 
 # run e2e tests
 yarn test:e2e
+
+# generate migrations for schema changes
+yarn migrations:generate
+
+# apply migrations
+yarn migrations:run
 ```
