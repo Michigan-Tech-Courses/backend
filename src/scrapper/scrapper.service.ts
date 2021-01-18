@@ -8,19 +8,17 @@ export class ScrapperService implements OnModuleInit {
 
 	async onModuleInit() {
 		// Add jobs
-		const jobsInQueue = await this.scrapeInstructorQueue.count();
 
 		// Run immediately if job doesn't exist
-		if (jobsInQueue === 0) {
-			await this.scrapeInstructorQueue.add(null, {
-				jobId: 'scrape-instructors', // Prevents adding multiple of the same job
-				repeat: false
-			});
-		}
+		await this.scrapeInstructorQueue.add(null, {
+			// Because we pass a job ID, this will only run if it hasn't run before
+			jobId: 1,
+			repeat: false
+		});
 
 		// Add recurring job
 		await this.scrapeInstructorQueue.add(null, {
-			jobId: 'scrape-instructors', // Prevents adding multiple of the same job
+			jobId: 2, // Prevents adding multiple of the same job
 			repeat: {
 				every: 10 * 60 * 1000 // 10 minutes
 			}
