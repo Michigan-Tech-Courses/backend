@@ -8,9 +8,9 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "collectCoverageFrom": ["<rootDir>/src/**/*.ts"],
-  "coveragePathIgnorePatterns": ["/node_modules/", "/test/"],
+  "coveragePathIgnorePatterns": ["/node_modules/", "/test/", ".*\\.spec\\.ts$"],
   "coverageDirectory": "test/coverage",
   "moduleNameMapper": {
-    "src/(.*)": "<rootDir>/src/$1"
+    "src/(.*)": "<rootDir>/src/$1" 
   }
 }
