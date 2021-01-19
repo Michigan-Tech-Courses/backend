@@ -1,4 +1,3 @@
-// @ts-nochecka
 import {mocked} from 'ts-jest/utils';
 import {getAllFaculty, IFaculty} from '@mtucourses/scrapper';
 
