@@ -6,12 +6,14 @@ jest.mock('@mtucourses/scrapper');
 const mockedFacultyScrapper = mocked(getAllFaculty, true);
 
 const mockInstructorUpsert = jest.fn();
+const mockInstructorFindUnique = jest.fn();
 
 const mockedPrisma = jest.fn().mockImplementation(() => ({
 	$connect: jest.fn(),
 	$disconnect: jest.fn(),
 	instructor: {
-		upsert: mockInstructorUpsert
+		upsert: mockInstructorUpsert,
+		findUnique: mockInstructorFindUnique
 	}
 }));
 
@@ -19,6 +21,7 @@ jest.mock('@prisma/client', () => ({
 	PrismaClient: mockedPrisma
 }));
 
+import {Instructor} from '@prisma/client';
 import processJob from './scrape-instructors';
 
 describe('Instructor scrape processor', () => {
@@ -31,7 +34,7 @@ describe('Instructor scrape processor', () => {
 	it('inserts results into the database', async () => {
 		const instructor: IFaculty = {
 			name: 'Gorkem Asilioglu',
-			department: 'Computer Science',
+			departments: ['Computer Science'],
 			email: 'galolu@mtu.edu',
 			phone: '906-487-1643',
 			office: 'Rekhi Hall 308',
@@ -42,6 +45,8 @@ describe('Instructor scrape processor', () => {
 		};
 
 		mockedFacultyScrapper.mockResolvedValue([instructor]);
+
+		mockInstructorFindUnique.mockResolvedValue(null);
 
 		await processJob(null, () => { /* empty callback */ });
 
@@ -58,9 +63,44 @@ describe('Instructor scrape processor', () => {
 		});
 	});
 
+	it('does not update instructor if equal', async () => {
+		const instructor: IFaculty = {
+			name: 'Gorkem Asilioglu',
+			departments: ['Computer Science'],
+			email: 'galolu@mtu.edu',
+			phone: '906-487-1643',
+			office: 'Rekhi Hall 308',
+			websiteURL: 'http://pages.mtu.edu/~galolu',
+			interests: [],
+			occupations: [],
+			photoURL: null
+		};
+
+		// eslint-disable-next-line unused-imports/no-unused-vars-ts
+		const {photoURL, ...storedAttributes} = instructor;
+
+		const storedInstructor: Instructor = {
+			fullName: instructor.name,
+			...storedAttributes,
+			id: 0,
+			updatedAt: new Date(),
+			deletedAt: new Date(),
+			lastPhotoHash: null
+		};
+
+		mockedFacultyScrapper.mockResolvedValue([instructor]);
+
+		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
+
+		await processJob(null, () => { /* empty callback */ });
+
+		expect(mockInstructorUpsert).toHaveBeenCalledTimes(0);
+	});
+
 	afterEach(() => {
 		mockedFacultyScrapper.mockClear();
 		mockedPrisma.mockClear();
 		mockInstructorUpsert.mockClear();
+		mockInstructorFindUnique.mockClear();
 	});
 });

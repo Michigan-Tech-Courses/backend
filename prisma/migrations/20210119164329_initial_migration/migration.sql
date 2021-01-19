@@ -2,7 +2,7 @@
 CREATE TABLE "Instructor" (
 "id" SERIAL,
     "fullName" TEXT NOT NULL,
-    "department" TEXT NOT NULL,
+    "departments" TEXT[],
     "email" TEXT,
     "phone" TEXT,
     "office" TEXT,
