@@ -93,6 +93,37 @@ describe('Instructor scrape processor', () => {
 		expect(mockInstructorUpsert).toHaveBeenCalledTimes(0);
 	});
 
+	it('updates instructor if not equal', async () => {
+		const instructor: IFaculty = {
+			name: 'Gorkem Asilioglu',
+			departments: ['Computer Science'],
+			email: 'galolu@mtu.edu',
+			phone: '906-487-1643',
+			office: 'Rekhi Hall 308',
+			websiteURL: 'http://pages.mtu.edu/~galolu',
+			interests: [],
+			occupations: [],
+			photoURL: 'http://url-to-new-photo'
+		};
+
+		const storedInstructor: Instructor = {
+			fullName: instructor.name,
+			...instructor,
+			id: 0,
+			updatedAt: new Date(),
+			deletedAt: new Date(),
+			photoURL: null
+		};
+
+		mockedFacultyScrapper.mockResolvedValue([instructor]);
+
+		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
+
+		await processJob(null, () => { /* empty callback */ });
+
+		expect(mockInstructorUpsert).toHaveBeenCalledTimes(1);
+	});
+
 	afterEach(() => {
 		mockedFacultyScrapper.mockClear();
 		mockedPrisma.mockClear();
