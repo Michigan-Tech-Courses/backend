@@ -1,10 +1,20 @@
 import {Module} from '@nestjs/common';
-import {AppController} from './app.controller';
-import {AppService} from './app.service';
+import {ConfigModule} from '@nestjs/config';
+import {BullModule} from '@nestjs/bull';
+import {ScrapperModule} from './scrapper/scrapper.module';
 
 @Module({
-	imports: [],
-	controllers: [AppController],
-	providers: [AppService]
+	imports: [
+		ConfigModule.forRoot(),
+		BullModule.forRoot({
+			redis: {
+				port: Number.parseInt(process.env.REDIS_PORT!, 10),
+				host: process.env.REDIS_HOST
+			}
+		}),
+		ScrapperModule
+	],
+	controllers: [],
+	providers: []
 })
 export class AppModule {}

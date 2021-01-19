@@ -7,6 +7,10 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "coveragePathIgnorePatterns": ["/node_modules/", "/test/"],
-  "coverageDirectory": "test/coverage"
+  "collectCoverageFrom": ["<rootDir>/src/**/*.ts"],
+  "coveragePathIgnorePatterns": ["/node_modules/", "/test/", ".*\\.spec\\.ts$"],
+  "coverageDirectory": "test/coverage",
+  "moduleNameMapper": {
+    "src/(.*)": "<rootDir>/src/$1" 
+  }
 }
