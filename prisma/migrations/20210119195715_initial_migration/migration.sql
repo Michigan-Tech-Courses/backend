@@ -7,7 +7,7 @@ CREATE TABLE "Instructor" (
     "phone" TEXT,
     "office" TEXT,
     "websiteURL" TEXT,
-    "lastPhotoHash" TEXT,
+    "photoURL" TEXT,
     "interests" TEXT[],
     "occupations" TEXT[],
     "updatedAt" TIMESTAMP(3) NOT NULL,

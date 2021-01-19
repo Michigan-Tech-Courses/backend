@@ -51,7 +51,7 @@ describe('Instructor scrape processor', () => {
 		await processJob(null, () => { /* empty callback */ });
 
 		// eslint-disable-next-line unused-imports/no-unused-vars-ts
-		const {name, photoURL, ...namelessInstructor} = instructor;
+		const {name, ...namelessInstructor} = instructor;
 		const normalizedInstructor = {...namelessInstructor, fullName: instructor.name};
 
 		expect(mockInstructorUpsert).toHaveBeenCalledWith({
@@ -76,16 +76,13 @@ describe('Instructor scrape processor', () => {
 			photoURL: null
 		};
 
-		// eslint-disable-next-line unused-imports/no-unused-vars-ts
-		const {photoURL, ...storedAttributes} = instructor;
-
 		const storedInstructor: Instructor = {
 			fullName: instructor.name,
-			...storedAttributes,
+			...instructor,
 			id: 0,
 			updatedAt: new Date(),
 			deletedAt: new Date(),
-			lastPhotoHash: null
+			photoURL: null
 		};
 
 		mockedFacultyScrapper.mockResolvedValue([instructor]);

@@ -28,11 +28,9 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 			if (existingInstructor) {
 				// eslint-disable-next-line unused-imports/no-unused-vars-ts
-				const {id, fullName, lastPhotoHash, updatedAt, deletedAt, ...storedAttributesToCompare} = existingInstructor;
-				// eslint-disable-next-line unused-imports/no-unused-vars-ts
-				const {photoURL, ...newAttributesToCompare} = instructor;
+				const {id, fullName, updatedAt, deletedAt, ...storedAttributesToCompare} = existingInstructor;
 
-				if (!equal({name: instructor.name, ...storedAttributesToCompare}, newAttributesToCompare)) {
+				if (!equal({name: instructor.name, ...storedAttributesToCompare}, instructor)) {
 					shouldUpsert = true;
 				}
 			} else {
@@ -41,7 +39,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 			if (shouldUpsert) {
 				// eslint-disable-next-line unused-imports/no-unused-vars-ts
-				const {name, photoURL, ...preparedInstructor} = instructor;
+				const {name, ...preparedInstructor} = instructor;
 
 				await prisma.instructor.upsert({
 					where: {

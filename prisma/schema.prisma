@@ -74,7 +74,7 @@ model Instructor {
   phone String?
   office String?
   websiteURL String?
-  lastPhotoHash String?
+  photoURL String?
   interests String[]
   occupations String[]
   updatedAt DateTime @updatedAt
