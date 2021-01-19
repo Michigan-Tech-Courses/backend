@@ -21,7 +21,11 @@ describe('Scrapper (e2e)', () => {
 			imports: [
 				BullModule.registerQueue({
 					name: 'scrape-instructors',
-					processors: [fakeProcessor]
+					processors: [fakeProcessor],
+					redis: {
+						port: Number.parseInt(process.env.REDIS_PORT!, 10),
+						host: process.env.REDIS_HOST
+					}
 				})
 			],
 			providers: [ScrapperService]
