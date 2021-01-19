@@ -7,7 +7,9 @@ import {promisify} from 'util';
 import * as redis from 'redis';
 import delay from 'delay';
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+	url: process.env.REDIS_URL
+});
 
 describe('Scrapper (e2e)', () => {
 	let app: INestApplication;
@@ -38,8 +40,6 @@ describe('Scrapper (e2e)', () => {
 	});
 
 	it('sets up jobs correctly', async () => {
-		await app.init();
-
 		let queue = app.get<Queue>(getQueueToken('scrape-instructors'));
 
 		const initialScrapeJob = await queue.getJob(1);
