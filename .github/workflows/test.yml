@@ -44,7 +44,8 @@ jobs:
       - name: E2E tests
         run: yarn test:e2e --coverage
         env:
-          REDIS_URL: 'redis://redis:6379'
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
 
       - name: Upload coverage
         uses: codecov/codecov-action@v1

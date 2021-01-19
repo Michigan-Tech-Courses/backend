@@ -5,7 +5,10 @@ import {ScrapperModule} from './scrapper/scrapper.module';
 @Module({
 	imports: [
 		BullModule.forRoot({
-			redis: process.env.REDIS_URL!
+			redis: {
+				port: Number.parseInt(process.env.REDIS_PORT!, 10),
+				host: process.env.REDIS_HOST
+			}
 		}),
 		ScrapperModule
 	],
