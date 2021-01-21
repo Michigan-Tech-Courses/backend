@@ -15,7 +15,6 @@ kind: Deployment
 metadata:
   name: thumbor
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: thumbor
