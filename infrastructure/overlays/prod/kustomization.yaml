@@ -16,6 +16,7 @@ patchesStrategicMerge:
 - postgres-env.yaml
 - redis-env.yaml
 - registry-env.yaml
+- application-env.yaml
 
 secretGenerator:
 - name: thumbor

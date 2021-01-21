@@ -34,5 +34,9 @@ spec:
             value: "redis"
           - name: REDIS_PORT
             value: "6379"
+      initContainers:
+        - name: migrate-application-database
+          image: registry.michigantechcourses.com/backend:latest
+          args: ["migrations:run"]
       imagePullSecrets:
       - name: regcred

@@ -1,12 +1,7 @@
 name: Deploy
 
-on:
-  push:
-    branches:
-      - main
+on: push
 
-env:
-  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -32,29 +27,46 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
 
+      - name: Wait on image
+        uses: lewagon/wait-on-check-action@v0.2
+        with:
+          ref: ${{ github.sha }}
+          check-name: build-image
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
       - name: Don't allow concurrent deploys
         uses: softprops/turnstyle@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
+      - name: Add Postgres values
+        uses: SpicyPizza/create-envfile@v1
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+          envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          envkey_POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          directory: "infrastructure/overlays/prod/values"
+          file_name: "postgres.env"
+      
+      - name: Add Thumbor values
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          envkey_SECURITY_KEY: ${{ secrets.SECURITY_KEY }}
+          directory: "infrastructure/overlays/prod/values"
+          file_name: "thumbor.env"
 
-      - name: Build image
-        uses: docker/build-push-action@v2
+      - name: Kustomize
+        run: kustomize build infrastructure/overlays/prod > kustomized.yaml
+
+      - name: Deploy
+        uses: Azure/k8s-deploy@v1.3
         with:
-          push: false
-          load: true
-          tags: mtucourses/backend:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
-        
-      - name: Deploy app
-        uses: superfly/flyctl-actions@1.1
-        with:
-          args: "deploy -i mtucourses/backend:latest"
+          namespace: 'backend'
+          manifests: |
+              kustomized.yaml
+          images: 'registry.michigantechcourses.com/backend:${{ github.sha }}'
+          imagepullsecrets: |
+            regcred
+          kubectl-version: 'latest'

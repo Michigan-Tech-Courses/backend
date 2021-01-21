@@ -3,7 +3,7 @@ name: Build & push image
 on: push
 
 jobs:
-  main:
+  build-image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
