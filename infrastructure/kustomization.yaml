@@ -1,4 +1,0 @@
-secretGenerator:
-  - name: thumbor
-    files:
-    - thumbor.env

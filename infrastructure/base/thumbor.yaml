@@ -24,9 +24,6 @@ spec:
       labels:
         app: thumbor
     spec:
-      volumes:
-      - name: cache-storage
-        emptyDir: {}
       containers:
       - name: thumbor
         image: minimalcompact/thumbor:latest
@@ -34,9 +31,6 @@ spec:
         - containerPort: 80
           name: http
           protocol: TCP
-        volumeMounts:
-          - name: cache-storage
-            mountPath: /data
         env:
         - name: HEALTHCHECK_ROUTE
           value: "/"
@@ -52,13 +46,6 @@ spec:
           value: "31536000"
         - name: AUTO_WEBP
           value: "True"
-        - name: FILE_STORAGE_ROOT_PATH
-          value: "/data"
-        - name: SECURITY_KEY
-          valueFrom:
-            secretKeyRef:
-              name: thumbor
-              key: SECURITY_KEY
         - name: ALLOW_UNSAFE_URL
           value: "False"
         - name: DETECTORS

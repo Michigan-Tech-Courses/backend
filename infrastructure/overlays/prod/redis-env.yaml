@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  template:
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: redis-pv-claim
+      containers:
+        - name: redis
+          volumeMounts:
+          - mountPath: /data
+            name: data

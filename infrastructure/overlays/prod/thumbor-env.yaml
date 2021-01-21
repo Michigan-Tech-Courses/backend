@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thumbor
+spec:
+  template:
+    spec:
+      volumes:
+      - name: thumbor
+        persistentVolumeClaim:
+          claimName: thumbor-pv-claim
+      containers:
+      - name: thumbor
+        volumeMounts:
+        - mountPath: /data
+          name: thumbor
+        env:
+        - name: FILE_STORAGE_ROOT_PATH
+          value: "/data"
+        - name: SECURITY_KEY
+          valueFrom:
+            secretKeyRef:
+              name: thumbor
+              key: SECURITY_KEY
