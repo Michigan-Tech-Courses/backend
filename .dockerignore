@@ -2,3 +2,7 @@ node_modules
 dist
 .env*
 .git
+.github
+infrastructure
+coverage
+test

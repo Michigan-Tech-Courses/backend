@@ -4,6 +4,7 @@ WORKDIR /usr/app
 
 COPY package.json ./
 COPY yarn.lock ./
+COPY prisma .
 
 # Install prod dependencies
 RUN yarn install --prod
@@ -24,6 +25,10 @@ RUN yarn build
 # Only copy essentials
 FROM base AS prod
 
+RUN yarn prisma generate
+
 COPY --from=builder /usr/app/dist dist
 
-CMD ["yarn", "start"]
+ENTRYPOINT ["yarn"]
+
+CMD ["start"]
