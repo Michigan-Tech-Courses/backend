@@ -9,11 +9,13 @@ resources:
 - postgres-resources.yaml
 - thumbor-resources.yaml
 - redis-resources.yaml
+- registry-resources.yaml
 
 patchesStrategicMerge:
 - thumbor-env.yaml
 - postgres-env.yaml
 - redis-env.yaml
+- registry-env.yaml
 
 secretGenerator:
 - name: thumbor

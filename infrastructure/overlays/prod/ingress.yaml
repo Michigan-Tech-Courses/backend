@@ -17,7 +17,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: echo-ingress
+  name: application-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: letsencrypt
@@ -43,6 +43,16 @@ spec:
             name: thumbor
             port:
               number: 80
+  - host: registry.michigantechcourses.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: registry
+            port:
+              number: 80
   tls:
   - hosts:
     - api.michigantechcourses.com
@@ -50,3 +60,6 @@ spec:
   - hosts:
     - thumbor.michigantechcourses.com
     secretName: thumbor-ingress-cert
+  - hosts:
+    - registry.michigantechcourses.com
+    secretName: registry-ingress-cert
