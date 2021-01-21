@@ -1,4 +1,4 @@
-FROM node:current-slim AS base
+FROM node:current-buster AS base
 
 WORKDIR /usr/app
 
