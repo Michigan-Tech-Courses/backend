@@ -44,16 +44,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add Postgres values
-        uses: SpicyPizza/create-envfile@v1
-        with:
-          directory: "infrastructure/overlays/prod/values"
-          file_name: "postgres.env"
-      
+        run: printenv | sed 's/\([^=]*=\)\(.*\)/\1"\2"/' > infrastructure/overlays/prod/values/postgres.env
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+
       - name: Add Thumbor values
-        uses: SpicyPizza/create-envfile@v1
-        with:
-          directory: "infrastructure/overlays/prod/values"
-          file_name: "thumbor.env"
+        run: printenv | sed 's/\([^=]*=\)\(.*\)/\1"\2"/' > infrastructure/overlays/prod/values/thumbor.env
+        env:
+          THUMBOR_SECURITY_KEY: ${{ secrets.THUMBOR_SECURITY_KEY }}
 
       - name: Debug
         run: ls infrastructure/overlays/prod/values
