@@ -21,4 +21,4 @@ spec:
           valueFrom:
             secretKeyRef:
               name: thumbor
-              key: SECURITY_KEY
+              key: THUMBOR_SECURITY_KEY
