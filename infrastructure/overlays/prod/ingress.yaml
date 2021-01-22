@@ -32,7 +32,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: echo1
+            name: application
             port:
               number: 80
   - host: thumbor.michigantechcourses.com

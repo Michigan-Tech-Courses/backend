@@ -6,7 +6,7 @@ metadata:
     type: local
     app: postgres
 spec:
-  storageClassName: manual
+  storageClassName: ""
   capacity:
     storage: 5Gi
   accessModes:
@@ -21,9 +21,12 @@ metadata:
   labels:
     app: postgres
 spec:
-  storageClassName: manual
+  storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 5Gi
+  selector:
+    matchLabels:
+      app: postgres

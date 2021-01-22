@@ -6,7 +6,7 @@ metadata:
     type: local
     app: redis
 spec:
-  storageClassName: manual
+  storageClassName: ""
   capacity:
     storage: 5Gi
   accessModes:
@@ -21,9 +21,12 @@ metadata:
   labels:
     app: redis
 spec:
-  storageClassName: manual
+  storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 5Gi
+  selector:
+    matchLabels:
+      app: redis

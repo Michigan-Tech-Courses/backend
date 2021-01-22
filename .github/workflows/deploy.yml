@@ -8,8 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      - name: Set context
+        uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
 
       - name: Wait on lint
         uses: lewagon/wait-on-check-action@v0.2
@@ -53,7 +56,7 @@ jobs:
       - name: Add Thumbor values
         uses: SpicyPizza/create-envfile@v1
         with:
-          envkey_SECURITY_KEY: ${{ secrets.SECURITY_KEY }}
+          envkey_SECURITY_KEY: ${{ secrets.THUMBOR_SECURITY_KEY }}
           directory: "infrastructure/overlays/prod/values"
           file_name: "thumbor.env"
 

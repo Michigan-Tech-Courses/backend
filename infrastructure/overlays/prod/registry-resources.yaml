@@ -3,10 +3,11 @@ apiVersion: v1
 metadata:
   name: registry-htpasswd-pv-volume
   labels:
+    name: registry-htpasswd-pv-volume
     type: local
     app: registry
 spec:
-  storageClassName: manual
+  storageClassName: ""
   capacity:
     storage: 5Gi
   accessModes:
@@ -21,22 +22,26 @@ metadata:
   labels:
     app: registry
 spec:
-  storageClassName: manual
+  storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 5Gi
+  selector:
+    matchLabels:
+      name: registry-htpasswd-pv-volume
 ---
 kind: PersistentVolume
 apiVersion: v1
 metadata:
   name: registry-data-pv-volume
   labels:
+    name: registry-data-pv-volume
     type: local
     app: registry
 spec:
-  storageClassName: manual
+  storageClassName: ""
   capacity:
     storage: 10Gi
   accessModes:
@@ -51,9 +56,12 @@ metadata:
   labels:
     app: registry
 spec:
-  storageClassName: manual
+  storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 10Gi
+  selector:
+    matchLabels:
+      name: registry-data-pv-volume
