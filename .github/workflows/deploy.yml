@@ -68,7 +68,6 @@ jobs:
       - name: Deploy
         uses: Azure/k8s-deploy@v1.3
         with:
-          namespace: 'backend'
           manifests: |
               kustomized.yaml
           # images: 'registry.michigantechcourses.com/backend:${{ github.sha }}'
