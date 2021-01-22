@@ -44,7 +44,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add Postgres values
-        run: printenv | sed 's/\([^=]*=\)\(.*\)/\1"\2"/' > infrastructure/overlays/prod/values/postgres.env
+        run: |
+          cat <<EOT >> infrastructure/overlays/prod/values/postgres.env
+          POSTGRES_DB=$POSTGRES_DB
+          POSTGRES_USER=$POSTGRES_USER
+          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          POSTGRES_URL=$POSTGRES_URL
+          EOT
         env:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
@@ -52,7 +58,10 @@ jobs:
           POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
 
       - name: Add Thumbor values
-        run: printenv | sed 's/\([^=]*=\)\(.*\)/\1"\2"/' > infrastructure/overlays/prod/values/thumbor.env
+        run: |
+          cat <<EOT >> infrastructure/overlays/prod/values/thumbor.env
+          THUMBOR_SECURITY_KEY=$THUMBOR_SECURITY_KEY
+          EOT
         env:
           THUMBOR_SECURITY_KEY: ${{ secrets.THUMBOR_SECURITY_KEY }}
 
