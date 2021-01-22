@@ -55,6 +55,12 @@ jobs:
           directory: "infrastructure/overlays/prod/values"
           file_name: "thumbor.env"
 
+      - name: Debug
+        run: ls infrastructure/overlays/prod/values
+
+      - name: Debug 2
+        run: cat infrastructure/overlays/prod/values/thumbor.env
+
       - name: Kustomize
         run: kustomize build infrastructure/overlays/prod > kustomized.yaml
 
