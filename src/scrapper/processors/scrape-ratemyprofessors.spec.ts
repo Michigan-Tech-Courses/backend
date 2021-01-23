@@ -1,5 +1,5 @@
 import {mocked} from 'ts-jest/utils';
-import ratings from '@mtucourses/rate-my-professors';
+import ratings, {ITeacherFromSearch, ITeacherPage} from '@mtucourses/rate-my-professors';
 
 jest.mock('@mtucourses/rate-my-professors');
 const mockedSearchTeacher = mocked(ratings.searchTeacher);
@@ -22,6 +22,7 @@ jest.mock('@prisma/client', () => ({
 }));
 
 import processJob from './scrape-ratemyprofessors';
+import {Instructor} from '@prisma/client';
 
 describe('Rate My Professor scrape processor', () => {
 	it('runs without errors', async () => {
@@ -30,99 +31,116 @@ describe('Rate My Professor scrape processor', () => {
 		await processJob(null, () => { /* empty callback */ });
 	});
 
-	// It('inserts results into the database', async () => {
-	// 	const instructor: IFaculty = {
-	// 		name: 'Gorkem Asilioglu',
-	// 		departments: ['Computer Science'],
-	// 		email: 'galolu@mtu.edu',
-	// 		phone: '906-487-1643',
-	// 		office: 'Rekhi Hall 308',
-	// 		websiteURL: 'http://pages.mtu.edu/~galolu',
-	// 		interests: [],
-	// 		occupations: [],
-	// 		photoURL: null
-	// 	};
+	it('does not update instructor if equal', async () => {
+		const searchResult: ITeacherFromSearch = {
+			id: 'test-id',
+			firstName: 'Hello',
+			lastName: 'World',
+			school: {
+				id: 'test-school',
+				name: 'A Test School'
+			}
+		};
 
-	// 	mockedFacultyScrapper.mockResolvedValue([instructor]);
+		const teacher: ITeacherPage = {
+			id: 'test-id',
+			firstName: 'Hello',
+			lastName: 'World',
+			numRatings: 10,
+			avgDifficulty: 5,
+			avgRating: 5,
+			department: 'CS',
+			school: {
+				id: 'test-school',
+				name: 'A Test School',
+				city: 'Houghton',
+				state: 'Michigan'
+			}
+		};
 
-	// 	mockInstructorFindUnique.mockResolvedValue(null);
+		const instructor: Instructor = {
+			id: 0,
+			fullName: 'Hello World',
+			departments: [],
+			interests: [],
+			email: 'test@example.com',
+			phone: '906-487-1643',
+			office: 'Rekhi Hall 308',
+			websiteURL: 'http://pages.mtu.edu/~galolu',
+			occupations: [],
+			photoURL: null,
+			averageDifficultyRating: 1,
+			averageRating: 1,
+			numRatings: 10,
+			rmpId: 'test-id',
+			updatedAt: new Date(),
+			deletedAt: new Date()
+		};
 
-	// 	await processJob(null, () => { /* empty callback */ });
+		mockedSearchTeacher.mockResolvedValue([searchResult]);
+		mockedGetTeacher.mockResolvedValue(teacher);
+		mockInstructorFindMany.mockResolvedValue([instructor]);
 
-	// 	// eslint-disable-next-line unused-imports/no-unused-vars-ts
-	// 	const {name, ...namelessInstructor} = instructor;
-	// 	const normalizedInstructor = {...namelessInstructor, fullName: instructor.name};
+		await processJob(null, () => { /* empty callback */ });
 
-	// 	expect(mockInstructorUpsert).toHaveBeenCalledWith({
-	// 		create: normalizedInstructor,
-	// 		update: normalizedInstructor,
-	// 		where: {
-	// 			fullName: instructor.name
-	// 		}
-	// 	});
-	// });
+		expect(mockInstructorUpdate).toHaveBeenCalledTimes(0);
+	});
 
-	// it('does not update instructor if equal', async () => {
-	// 	const instructor: IFaculty = {
-	// 		name: 'Gorkem Asilioglu',
-	// 		departments: ['Computer Science'],
-	// 		email: 'galolu@mtu.edu',
-	// 		phone: '906-487-1643',
-	// 		office: 'Rekhi Hall 308',
-	// 		websiteURL: 'http://pages.mtu.edu/~galolu',
-	// 		interests: [],
-	// 		occupations: [],
-	// 		photoURL: null
-	// 	};
+	it('updates instructor if not equal', async () => {
+		const searchResult: ITeacherFromSearch = {
+			id: 'test-id',
+			firstName: 'Hello',
+			lastName: 'World',
+			school: {
+				id: 'test-school',
+				name: 'A Test School'
+			}
+		};
 
-	// 	const storedInstructor: Instructor = {
-	// 		fullName: instructor.name,
-	// 		...instructor,
-	// 		id: 0,
-	// 		updatedAt: new Date(),
-	// 		deletedAt: new Date(),
-	// 		photoURL: null
-	// 	};
+		const teacher: ITeacherPage = {
+			id: 'test-id',
+			firstName: 'Hello',
+			lastName: 'World',
+			numRatings: 10,
+			avgDifficulty: 5,
+			avgRating: 5,
+			department: 'CS',
+			school: {
+				id: 'test-school',
+				name: 'A Test School',
+				city: 'Houghton',
+				state: 'Michigan'
+			}
+		};
 
-	// 	mockedFacultyScrapper.mockResolvedValue([instructor]);
+		const instructor: Instructor = {
+			id: 0,
+			fullName: 'Hello World',
+			departments: [],
+			interests: [],
+			email: 'test@example.com',
+			phone: '906-487-1643',
+			office: 'Rekhi Hall 308',
+			websiteURL: 'http://pages.mtu.edu/~galolu',
+			occupations: [],
+			photoURL: null,
+			averageDifficultyRating: 1,
+			averageRating: 1,
+			// Different from scrapped value
+			numRatings: 8,
+			rmpId: 'test-id',
+			updatedAt: new Date(),
+			deletedAt: new Date()
+		};
 
-	// 	mockInstructorFindUnique.mockResolvedValue(storedInstructor);
+		mockedSearchTeacher.mockResolvedValue([searchResult]);
+		mockedGetTeacher.mockResolvedValue(teacher);
+		mockInstructorFindMany.mockResolvedValue([instructor]);
 
-	// 	await processJob(null, () => { /* empty callback */ });
+		await processJob(null, () => { /* empty callback */ });
 
-	// 	expect(mockInstructorUpsert).toHaveBeenCalledTimes(0);
-	// });
-
-	// it('updates instructor if not equal', async () => {
-	// 	const instructor: IFaculty = {
-	// 		name: 'Gorkem Asilioglu',
-	// 		departments: ['Computer Science'],
-	// 		email: 'galolu@mtu.edu',
-	// 		phone: '906-487-1643',
-	// 		office: 'Rekhi Hall 308',
-	// 		websiteURL: 'http://pages.mtu.edu/~galolu',
-	// 		interests: [],
-	// 		occupations: [],
-	// 		photoURL: 'http://url-to-new-photo'
-	// 	};
-
-	// 	const storedInstructor: Instructor = {
-	// 		fullName: instructor.name,
-	// 		...instructor,
-	// 		id: 0,
-	// 		updatedAt: new Date(),
-	// 		deletedAt: new Date(),
-	// 		photoURL: null
-	// 	};
-
-	// 	mockedFacultyScrapper.mockResolvedValue([instructor]);
-
-	// 	mockInstructorFindUnique.mockResolvedValue(storedInstructor);
-
-	// 	await processJob(null, () => { /* empty callback */ });
-
-	// 	expect(mockInstructorUpsert).toHaveBeenCalledTimes(1);
-	// });
+		expect(mockInstructorUpdate).toHaveBeenCalledTimes(1);
+	});
 
 	afterEach(() => {
 		mockedSearchTeacher.mockClear();
