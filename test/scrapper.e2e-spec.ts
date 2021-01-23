@@ -14,18 +14,26 @@ const redisClient = redis.createClient({
 
 describe('Scrapper (e2e)', () => {
 	let app: INestApplication;
-	const fakeProcessor = jest.fn();
+	const fakeInstructorProcessor = jest.fn();
+	const fakeRMPProcessor = jest.fn();
 
 	const createApp = async () => {
+		const redis = {
+			port: Number.parseInt(process.env.REDIS_PORT ?? '6379', 10),
+			host: process.env.REDIS_HOST ?? 'localhost'
+		};
+
 		const moduleFixture = await Test.createTestingModule({
 			imports: [
 				BullModule.registerQueue({
 					name: 'scrape-instructors',
-					processors: [fakeProcessor],
-					redis: {
-						port: Number.parseInt(process.env.REDIS_PORT!, 10),
-						host: process.env.REDIS_HOST
-					}
+					processors: [fakeInstructorProcessor],
+					redis
+				}),
+				BullModule.registerQueue({
+					name: 'scrape-rmp',
+					processors: [fakeRMPProcessor],
+					redis
 				})
 			],
 			providers: [ScrapperService]
@@ -57,10 +65,10 @@ describe('Scrapper (e2e)', () => {
 		await delay(100); // Have some fudge
 		await queue.whenCurrentJobsFinished();
 
-		expect(fakeProcessor).toBeCalledTimes(1);
+		expect(fakeInstructorProcessor).toBeCalledTimes(1);
 
 		// Restart app
-		fakeProcessor.mockReset();
+		fakeInstructorProcessor.mockReset();
 		await app.close();
 		await createApp();
 
@@ -70,7 +78,7 @@ describe('Scrapper (e2e)', () => {
 		await delay(100); // Have some fudge
 		await queue.whenCurrentJobsFinished();
 
-		expect(fakeProcessor).toBeCalledTimes(0);
+		expect(fakeInstructorProcessor).toBeCalledTimes(0);
 	});
 
 	afterAll(async () => {

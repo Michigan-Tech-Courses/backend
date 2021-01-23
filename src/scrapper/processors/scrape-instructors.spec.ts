@@ -81,7 +81,11 @@ describe('Instructor scrape processor', () => {
 			id: 0,
 			updatedAt: new Date(),
 			deletedAt: new Date(),
-			photoURL: null
+			photoURL: null,
+			averageDifficultyRating: null,
+			averageRating: null,
+			numRatings: null,
+			rmpId: null
 		};
 
 		mockedFacultyScrapper.mockResolvedValue([instructor]);
@@ -112,7 +116,11 @@ describe('Instructor scrape processor', () => {
 			id: 0,
 			updatedAt: new Date(),
 			deletedAt: new Date(),
-			photoURL: null
+			photoURL: null,
+			averageDifficultyRating: null,
+			averageRating: null,
+			numRatings: null,
+			rmpId: null
 		};
 
 		mockedFacultyScrapper.mockResolvedValue([instructor]);
