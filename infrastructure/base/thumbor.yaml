@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: thumbor
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: thumbor
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thumbor
+spec:
+  selector:
+    matchLabels:
+      app: thumbor
+  template:
+    metadata:
+      labels:
+        app: thumbor
+    spec:
+      containers:
+      - name: thumbor
+        image: minimalcompact/thumbor:latest
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        env:
+        - name: HEALTHCHECK_ROUTE
+          value: "/"
+        - name: THUMBOR_PORT
+          value: "80"
+        - name: THUMBOR_NUM_PROCESSES
+          value: "1"
+        - name: MAX_AGE
+          value: "3600"
+        - name: MAX_AGE_TEMP_IMAGE
+          value: "300"
+        - name: RESULT_STORAGE_EXPIRATION_SECONDS
+          value: "31536000"
+        - name: AUTO_WEBP
+          value: "True"
+        - name: ALLOW_UNSAFE_URL
+          value: "False"
+        - name: DETECTORS
+          value: "['thumbor.detectors.face_detector']"

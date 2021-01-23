@@ -3,18 +3,20 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+    - main
 
-env:
-  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      - name: Set context
+        uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
 
       - name: Wait on lint
         uses: lewagon/wait-on-check-action@v0.2
@@ -32,29 +34,50 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
 
+      - name: Wait on image
+        uses: lewagon/wait-on-check-action@v0.2
+        with:
+          ref: ${{ github.sha }}
+          check-name: build-image
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
       - name: Don't allow concurrent deploys
         uses: softprops/turnstyle@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+      - name: Add Postgres values
+        run: |
+          cat <<EOT >> infrastructure/overlays/prod/values/postgres.env
+          POSTGRES_DB=$POSTGRES_DB
+          POSTGRES_USER=$POSTGRES_USER
+          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          POSTGRES_URL=$POSTGRES_URL
+          EOT
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
 
-      - name: Build image
-        uses: docker/build-push-action@v2
+      - name: Add Thumbor values
+        run: |
+          cat <<EOT >> infrastructure/overlays/prod/values/thumbor.env
+          THUMBOR_SECURITY_KEY=$THUMBOR_SECURITY_KEY
+          EOT
+        env:
+          THUMBOR_SECURITY_KEY: ${{ secrets.THUMBOR_SECURITY_KEY }}
+
+      - name: Kustomize
+        run: kustomize build infrastructure/overlays/prod > kustomized.yaml
+
+      - name: Deploy
+        uses: Azure/k8s-deploy@v1.3
         with:
-          push: false
-          load: true
-          tags: mtucourses/backend:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
-        
-      - name: Deploy app
-        uses: superfly/flyctl-actions@1.1
-        with:
-          args: "deploy -i mtucourses/backend:latest"
+          manifests: |
+              kustomized.yaml
+          images: 'registry.michigantechcourses.com/backend:${{ github.sha }}'
+          imagepullsecrets: |
+            regcred
+          kubectl-version: 'latest'

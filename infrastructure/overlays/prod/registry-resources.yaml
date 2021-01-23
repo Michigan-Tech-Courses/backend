@@ -1,0 +1,67 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: registry-htpasswd-pv-volume
+  labels:
+    name: registry-htpasswd-pv-volume
+    type: local
+    app: registry
+spec:
+  storageClassName: ""
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/registry/htpasswd"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: registry-htpasswd-pv-claim
+  labels:
+    app: registry
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      name: registry-htpasswd-pv-volume
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: registry-data-pv-volume
+  labels:
+    name: registry-data-pv-volume
+    type: local
+    app: registry
+spec:
+  storageClassName: ""
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/registry/data"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: registry-data-pv-claim
+  labels:
+    app: registry
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: registry-data-pv-volume

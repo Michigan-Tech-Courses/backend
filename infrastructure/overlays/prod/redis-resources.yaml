@@ -1,0 +1,32 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: redis-pv-volume
+  labels:
+    type: local
+    app: redis
+spec:
+  storageClassName: ""
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/redis"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: redis-pv-claim
+  labels:
+    app: redis
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      app: redis

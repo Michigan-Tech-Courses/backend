@@ -1,0 +1,32 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: thumbor-pv-volume
+  labels:
+    type: local
+    app: thumbor
+spec:
+  storageClassName: ""
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/thumbor"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: thumbor-pv-claim
+  labels:
+    app: thumbor
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      app: thumbor

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  template:
+    spec:
+      containers:
+        - name: postgres
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgredb
+          env:
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: POSTGRES_DB
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: POSTGRES_USER
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: POSTGRES_PASSWORD
+      volumes:
+        - name: postgredb
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
