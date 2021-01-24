@@ -2,6 +2,8 @@ import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {BullModule} from '@nestjs/bull';
 import {ScrapperModule} from './scrapper/scrapper.module';
+import {PrismaModule} from './prisma/prisma.module';
+import {InstructorsModule} from './instructors/instructors.module';
 
 @Module({
 	imports: [
@@ -12,7 +14,9 @@ import {ScrapperModule} from './scrapper/scrapper.module';
 				host: process.env.REDIS_HOST
 			}
 		}),
-		ScrapperModule
+		PrismaModule,
+		ScrapperModule,
+		InstructorsModule
 	],
 	controllers: [],
 	providers: []
