@@ -8,10 +8,10 @@ export class InstructorsController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
-	async getAllInstructors(@Query() parameters: GetInstructorsParameters) {
+	async getAllInstructors(@Query() parameters?: GetInstructorsParameters) {
 		let queryParameters = {};
 
-		if (parameters.updatedSince) {
+		if (parameters?.updatedSince) {
 			queryParameters = {
 				where: {
 					updatedAt: {
