@@ -29,6 +29,7 @@
     "@nestjs/config": "^0.6.1",
     "@nestjs/core": "^7.5.1",
     "@nestjs/platform-express": "^7.5.1",
+    "@nestjs/platform-fastify": "^7.6.5",
     "@prisma/client": "^2.14.0",
     "bull": "^3.20.0",
     "class-transformer": "^0.3.2",
@@ -90,10 +91,7 @@
       ".*\\.spec\\.ts$"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "src/(.*)": "<rootDir>/$1" 
-    }
+    "testEnvironment": "node"
   },
   "husky": {
     "hooks": {
