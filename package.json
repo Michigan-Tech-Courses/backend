@@ -29,11 +29,14 @@
     "@nestjs/config": "^0.6.1",
     "@nestjs/core": "^7.5.1",
     "@nestjs/platform-express": "^7.5.1",
+    "@nestjs/platform-fastify": "^7.6.5",
+    "@nestjs/swagger": "^4.7.12",
     "@prisma/client": "^2.14.0",
     "bull": "^3.20.0",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
     "deep-equal": "^2.0.5",
+    "fastify-swagger": "^3.5.0",
     "p-limit": "^3.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
@@ -90,10 +93,7 @@
       ".*\\.spec\\.ts$"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "src/(.*)": "<rootDir>/$1" 
-    }
+    "testEnvironment": "node"
   },
   "husky": {
     "hooks": {
