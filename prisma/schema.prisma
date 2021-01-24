@@ -67,16 +67,25 @@ generator client {
 // }
 
 model Instructor {
-  id Int @id @default(autoincrement())
-  fullName String @unique
-  departments String[]
-  email String?
-  phone String?
-  office String?
-  websiteURL String?
-  photoURL String?
-  interests String[]
-  occupations String[]
+  id                      Int    @id @default(autoincrement())
+
+  // Scrapped from Michigan Tech
+  fullName                String @unique
+  departments             String[]
+  email                   String?
+  phone                   String?
+  office                  String?
+  websiteURL              String?
+  photoURL                String?
+  interests               String[]
+  occupations             String[]
+
+  // Scrapped from RateMyProfessor
+  averageDifficultyRating Float?
+  averageRating           Float?
+  numRatings              Int?
+  rmpId                   String?
+
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
 }

@@ -1,7 +1,7 @@
 import {Job, DoneCallback} from 'bull';
 import {Logger} from '@nestjs/common';
 import {PrismaClient} from '@prisma/client';
-import {getAllFaculty} from '@mtucourses/scrapper';
+import {getAllFaculty, IFaculty} from '@mtucourses/scrapper';
 import pLimit from 'p-limit';
 import equal from 'deep-equal';
 
@@ -27,10 +27,19 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 			let shouldUpsert = false;
 
 			if (existingInstructor) {
-				// eslint-disable-next-line unused-imports/no-unused-vars-ts
-				const {id, fullName, updatedAt, deletedAt, ...storedAttributesToCompare} = existingInstructor;
+				const storedAttributesToCompare: IFaculty = {
+					name: existingInstructor.fullName,
+					departments: existingInstructor.departments,
+					email: existingInstructor.email,
+					phone: existingInstructor.phone,
+					office: existingInstructor.office,
+					websiteURL: existingInstructor.websiteURL,
+					interests: existingInstructor.interests,
+					occupations: existingInstructor.occupations,
+					photoURL: existingInstructor.photoURL
+				};
 
-				if (!equal({name: instructor.name, ...storedAttributesToCompare}, instructor)) {
+				if (!equal(storedAttributesToCompare, instructor)) {
 					shouldUpsert = true;
 				}
 			} else {
