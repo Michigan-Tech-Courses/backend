@@ -1,5 +1,6 @@
-import {Controller, Get, Injectable} from '@nestjs/common';
+import {Controller, Get, Injectable, Query} from '@nestjs/common';
 import {PrismaService} from 'src/prisma/prisma.service';
+import {GetInstructorsParameters} from './types';
 
 @Controller('instructors')
 @Injectable()
@@ -7,9 +8,19 @@ export class InstructorsController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
-	async getAllInstructors() {
-		const instructors = await this.prisma.instructor.findMany();
+	async getAllInstructors(@Query() parameters: GetInstructorsParameters) {
+		let queryParameters = {};
 
-		return instructors;
+		if (parameters.updatedSince) {
+			queryParameters = {
+				where: {
+					updatedAt: {
+						gt: parameters.updatedSince
+					}
+				}
+			};
+		}
+
+		return this.prisma.instructor.findMany(queryParameters);
 	}
 }
