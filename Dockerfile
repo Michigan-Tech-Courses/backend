@@ -1,4 +1,4 @@
-FROM node:current-buster AS base
+FROM node:15-alpine AS base
 
 WORKDIR /usr/app
 
@@ -7,13 +7,13 @@ COPY yarn.lock ./
 COPY prisma .
 
 # Install prod dependencies
-RUN yarn install --prod
+RUN yarn install --prod --frozen-lockfile
 
 # Dependencies
 FROM base AS dependencies
 
 # Install dev dependencies
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 # Build app
 FROM dependencies AS builder
