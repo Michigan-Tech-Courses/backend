@@ -4,9 +4,6 @@ metadata:
   name: application
 spec:
   template:
-    metadata:
-      labels:
-        admission.datadoghq.com/enabled: "true"
     spec:
       containers:
       - name: application
@@ -16,6 +13,10 @@ spec:
               secretKeyRef:
                 name: postgres
                 key: POSTGRES_URL
+          - name: DD_AGENT_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
       initContainers:
         - name: migrate-application-database
           env:
