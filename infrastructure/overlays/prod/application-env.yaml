@@ -4,6 +4,9 @@ metadata:
   name: application
 spec:
   template:
+    metadata:
+      labels:
+        admission.datadoghq.com/enabled: "true"
     spec:
       containers:
       - name: application
