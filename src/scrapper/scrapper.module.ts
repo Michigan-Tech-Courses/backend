@@ -12,6 +12,10 @@ import {ScrapperService} from './scrapper.service';
 		BullModule.registerQueue({
 			name: 'scrape-rmp',
 			processors: [join(__dirname, 'processors/scrape-ratemyprofessors.js')]
+		}),
+		BullModule.registerQueue({
+			name: 'scrape-sections',
+			processors: [join(__dirname, 'processors/scrape-sections.js')]
 		})
 	],
 	controllers: [],

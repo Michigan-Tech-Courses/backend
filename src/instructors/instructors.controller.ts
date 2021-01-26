@@ -7,7 +7,7 @@ import {GetInstructorsParameters} from './types';
 @Injectable()
 export class InstructorsController {
 	private readonly thumbor = new Thumbor({
-		url: process.env.THUMBOR_URL,
+		url: process.env.THUMBOR_URL!,
 		key: process.env.THUMBOR_SECURITY_KEY
 	});
 

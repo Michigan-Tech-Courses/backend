@@ -7,5 +7,5 @@ export class GetInstructorsParameters {
 	@Type(() => Date)
 	@IsOptional()
 	@ApiProperty({required: false, description: 'ISO DateTime string; only return instances that have been updated since this date.'})
-	updatedSince: Date;
+	updatedSince!: Date;
 }

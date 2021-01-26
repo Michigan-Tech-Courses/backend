@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@mtucourses/rate-my-professors": "^1.1.0",
-    "@mtucourses/scrapper": "^1.0.1",
+    "@mtucourses/scrapper": "^2.0.0",
     "@mtucourses/thumbor": "^1.0.1",
     "@nestjs/bull": "^0.3.1",
     "@nestjs/common": "^7.5.1",
@@ -127,7 +127,8 @@
           "vars": "all",
           "varsIgnorePattern": "^_",
           "args": "after-used",
-          "argsIgnorePattern": "^_"
+          "argsIgnorePattern": "^_",
+          "ignoreRestSiblings": true
         }
       ]
     }

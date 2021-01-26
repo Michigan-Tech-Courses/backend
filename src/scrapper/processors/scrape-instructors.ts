@@ -47,7 +47,6 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 			}
 
 			if (shouldUpsert) {
-				// eslint-disable-next-line unused-imports/no-unused-vars-ts
 				const {name, ...preparedInstructor} = instructor;
 
 				await prisma.instructor.upsert({

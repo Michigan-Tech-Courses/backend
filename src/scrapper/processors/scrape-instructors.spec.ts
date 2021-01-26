@@ -27,7 +27,7 @@ describe('Instructor scrape processor', () => {
 	it('runs without errors', async () => {
 		mockedFacultyScrapper.mockResolvedValue([]);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 	});
 
 	it('inserts results into the database', async () => {
@@ -47,9 +47,8 @@ describe('Instructor scrape processor', () => {
 
 		mockInstructorFindUnique.mockResolvedValue(null);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 
-		// eslint-disable-next-line unused-imports/no-unused-vars-ts
 		const {name, ...namelessInstructor} = instructor;
 		const normalizedInstructor = {...namelessInstructor, fullName: instructor.name};
 
@@ -92,7 +91,7 @@ describe('Instructor scrape processor', () => {
 
 		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 
 		expect(mockInstructorUpsert).toHaveBeenCalledTimes(0);
 	});
@@ -127,7 +126,7 @@ describe('Instructor scrape processor', () => {
 
 		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 
 		expect(mockInstructorUpsert).toHaveBeenCalledTimes(1);
 	});

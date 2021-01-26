@@ -10,61 +10,62 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// enum Semester {
-//   FALL
-//   SPRING
-//   SUMMER
-// }
+enum Semester {
+  FALL
+  SPRING
+  SUMMER
+}
 
-// model Course {
-//   @@id([year, semester, subject, crse])
+model Course {
+  @@id([year, semester, subject, crse])
 
-//   year Int
-//   semester Semester
-//   subject String
-//   crse String
-//   title String
-//   description String
-//   sections Section[]
+  year        Int
+  semester    Semester
+  subject     String
+  crse        String
+  title       String
+  description String?
+  sections    Section[]
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @default(now())
-//   deletedAt DateTime?
-// }
+  updatedAt   DateTime @default(now())
+  deletedAt   DateTime?
 
-// model Section {
-//   // CRN **is not** unique across semesters
-//   @@id([crn, year, semester])
+  @@index(updatedAt)
+  @@index(deletedAt)
+}
 
-//   // Duplicated, but necessary for primary key
-//   year Int
-//   semester Semester
+model Section {
+  id             String @id @default(cuid())
 
-//   course Course
+  course         Course
 
-//   crn String
-//   section String
-//   cmp String
+  // CRN *is not* unique across semesters
+  crn            String
+  section        String
+  cmp            String
   
-//   minCredits Int
-//   maxCredits Int
+  minCredits     Int
+  maxCredits     Int
 
-//   // Output of rschedule
-//   time Json
+  // Output of rschedule
+  time           Json
 
-//   totalSeats Int
-//   takenSeats Int
-//   availableSeats Int
+  totalSeats     Int
+  takenSeats     Int
+  availableSeats Int
 
-//   // Cents
-//   fee Int
+  // Cents
+  fee            Int
 
-//   instructors Instructor[]
+  instructors    Instructor[]
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @default(now())
-//   deletedAt DateTime?
-// }
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+  deletedAt      DateTime?
+
+  @@index(updatedAt)
+  @@index(deletedAt)
+}
 
 model Instructor {
   id                      Int    @id @default(autoincrement())
@@ -80,6 +81,8 @@ model Instructor {
   interests               String[]
   occupations             String[]
 
+  sections                Section[]
+
   // Scrapped from RateMyProfessor
   averageDifficultyRating Float?
   averageRating           Float?
@@ -88,4 +91,7 @@ model Instructor {
 
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
+
+  @@index(updatedAt)
+  @@index(deletedAt)
 }

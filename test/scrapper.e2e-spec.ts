@@ -8,7 +8,7 @@ import * as redis from 'redis';
 import delay from 'delay';
 
 const redisClient = redis.createClient({
-	port: Number.parseInt(process.env.REDIS_PORT, 10),
+	port: Number.parseInt(process.env.REDIS_PORT!, 10),
 	host: process.env.REDIS_HOST
 });
 
@@ -34,6 +34,11 @@ describe('Scrapper (e2e)', () => {
 					name: 'scrape-rmp',
 					processors: [fakeRMPProcessor],
 					redis
+				}),
+				BullModule.registerQueue({
+					name: 'scrape-sections',
+					processors: [fakeRMPProcessor],
+					redis
 				})
 			],
 			providers: [ScrapperService]
@@ -47,7 +52,7 @@ describe('Scrapper (e2e)', () => {
 
 	beforeEach(async () => {
 		// Clear Redis store
-		await (promisify(redisClient.flushall).bind(redisClient))('ASYNC');
+		await (promisify(redisClient.flushall).bind(redisClient))();
 
 		await createApp();
 	});
