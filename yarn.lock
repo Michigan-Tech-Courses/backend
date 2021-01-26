@@ -560,6 +560,11 @@
     nock "^13.0.5"
     p-limit "^3.1.0"
 
+"@mtucourses/thumbor@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@mtucourses/thumbor/-/thumbor-1.0.1.tgz#6e7b6f2688f5750023fdf23bab0df96ac2c4e416"
+  integrity sha512-mXc3FW0wdUki10vIEOsTlyREorZHPKwL7wDurFR07wc6piY2VHpM8kCOrfA8yrbNlNVA4jUSOhqgJyip9RgL4g==
+
 "@nestjs/bull@^0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@nestjs/bull/-/bull-0.3.1.tgz#a7f7dba6807fd18a2cfdfd93600857b310b3f8ca"

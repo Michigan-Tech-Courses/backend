@@ -50,7 +50,9 @@ describe('InstructorsController', () => {
 	it('should return all instructors', async () => {
 		prismaMock.instructor.findMany.mockResolvedValue([instructor]);
 
-		expect(await controller.getAllInstructors()).toStrictEqual([instructor]);
+		const {photoURL, ...instructorWithoutPhoto} = instructor;
+
+		expect(await controller.getAllInstructors()).toStrictEqual([{...instructorWithoutPhoto, thumbnailURL: null}]);
 	});
 
 	it('should only return updated instructors', async () => {

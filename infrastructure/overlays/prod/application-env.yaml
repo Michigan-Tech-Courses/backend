@@ -13,6 +13,13 @@ spec:
               secretKeyRef:
                 name: postgres
                 key: POSTGRES_URL
+          - name: THUMBOR_URL
+            value: https://thumbor.michigantechcourses.com
+          - name: THUMBOR_SECURITY_KEY
+            valueFrom:
+              secretKeyRef:
+                name: thumbor
+                key: THUMBOR_SECURITY_KEY
           - name: DD_AGENT_HOST
             valueFrom:
               fieldRef:

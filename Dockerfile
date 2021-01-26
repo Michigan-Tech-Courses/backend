@@ -29,6 +29,8 @@ RUN yarn prisma generate
 
 COPY --from=builder /usr/app/dist dist
 
+ENV NODE_ENV=production
+
 ENTRYPOINT ["yarn"]
 
 CMD ["start"]
