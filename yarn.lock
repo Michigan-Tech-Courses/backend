@@ -812,6 +812,11 @@
   resolved "https://registry.yarnpkg.com/@rschedule/core/-/core-1.2.3.tgz#d2b1c53d100e4421526934dddea26a734aae068f"
   integrity sha512-GvbUZM/9EjnqHUhldAHoUDSSKMhv/hLsHRiHtCil+Jav1yGw6+xZTZIcWJz4nRv3s4gO+AKBRDmwMwBnKL0Lrw==
 
+"@rschedule/json-tools@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@rschedule/json-tools/-/json-tools-1.2.3.tgz#efda73c821d5bd84db3b6219d4a29449dea853d2"
+  integrity sha512-YKFWUjMDPS1Eqltsedv5Ns9yXwysleNI2rdbFMobmrkPumJxIZJzwIykGp0QU615AyFD5dFdjP2qFx+GqI2XZQ==
+
 "@rschedule/standard-date-adapter@^1.2.3":
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@rschedule/standard-date-adapter/-/standard-date-adapter-1.2.3.tgz#37b7cf76a9d2a97cb2243df4e2bc7d3b19c173a9"

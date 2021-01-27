@@ -34,6 +34,7 @@
     "@nestjs/swagger": "^4.7.12",
     "@prisma/client": "^2.15.0",
     "@rschedule/core": "^1.2.3",
+    "@rschedule/json-tools": "^1.2.3",
     "@rschedule/standard-date-adapter": "^1.2.3",
     "arr-diff": "^4.0.0",
     "bull": "^3.20.0",

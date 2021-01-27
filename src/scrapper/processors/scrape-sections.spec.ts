@@ -545,7 +545,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {}
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null}
 			};
 
 			mockCourseFindMany.mockResolvedValueOnce([storedCourse]);

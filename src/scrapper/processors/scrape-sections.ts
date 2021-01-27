@@ -4,9 +4,11 @@ import equal from 'deep-equal';
 import {Except} from 'type-fest';
 import arrDiff from 'arr-diff';
 import pLimit from 'p-limit';
-import {Course, PrismaClient, Section, Semester} from '@prisma/client';
+import {Course, PrismaClient, Section} from '@prisma/client';
 import {getAllSections, ISection} from '@mtucourses/scrapper';
 import {CourseMap} from 'src/lib/course-map';
+import {IRuleOptions, Schedule} from 'src/lib/rschedule';
+import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src/lib/dates';
 
 const getTermsForYear = (year: number) => {
 	const spring = new Date();
@@ -39,18 +41,6 @@ const getTermsToProcess = () => {
 	return toProcess;
 };
 
-const dateToTerm = (date: Date) => {
-	let semester: Semester = Semester.SPRING;
-
-	if (date.getMonth() === 4) {
-		semester = Semester.SUMMER;
-	} else if (date.getMonth() === 7) {
-		semester = Semester.FALL;
-	}
-
-	return {semester, year: date.getFullYear()};
-};
-
 const getUniqueCompositeForCourse = (course: Course) => ({
 	year: course.year,
 	semester: course.semester,
@@ -60,18 +50,39 @@ const getUniqueCompositeForCourse = (course: Course) => ({
 
 type BasicSection = Except<Section, 'id' | 'updatedAt' | 'deletedAt' | 'courseYear' | 'courseSemester' | 'courseSubject' | 'courseCrse'>;
 
-const reshapeSectionFromScrapperToDatabase = (section: ISection): BasicSection => ({
-	crn: section.crn,
-	section: section.section,
-	cmp: section.cmp,
-	minCredits: Math.min(...section.creditRange),
-	maxCredits: Math.max(...section.creditRange),
-	time: {},
-	totalSeats: section.seats,
-	takenSeats: section.seatsTaken,
-	availableSeats: section.seatsAvailable,
-	fee: Math.round(section.fee)
-});
+const reshapeSectionFromScrapperToDatabase = (section: ISection, year: number): BasicSection => {
+	const scheduleRules: IRuleOptions[] = [];
+
+	if (section.timeRange?.length === 2 && section.dateRange.length === 2 && section.days !== '') {
+		const start = new Date(`${section.dateRange[0]}/${year} ${section.timeRange[0]}`);
+		const end = new Date(`${section.dateRange[1]}/${year} ${section.timeRange[1]}`);
+
+		scheduleRules.push({
+			frequency: 'WEEKLY',
+			duration: calculateDiffInTime(section.timeRange[0], section.timeRange[1]),
+			byDayOfWeek: section.days.split('').map(d => mapDayCharToRRScheduleString(d)),
+			start,
+			end
+		});
+	}
+
+	const schedule = new Schedule({
+		rrules: scheduleRules
+	});
+
+	return {
+		crn: section.crn,
+		section: section.section,
+		cmp: section.cmp,
+		minCredits: Math.min(...section.creditRange),
+		maxCredits: Math.max(...section.creditRange),
+		time: schedule.toJSON() as Record<string, unknown>,
+		totalSeats: section.seats,
+		takenSeats: section.seatsTaken,
+		availableSeats: section.seatsAvailable,
+		fee: Math.round(section.fee)
+	};
+};
 
 const processJob = async (_: Job, cb: DoneCallback) => {
 	const logger = new Logger('Job: course sections scrape');
@@ -149,7 +160,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 			await Promise.all(
 				scrapedCourse.sections
-					.map(section => reshapeSectionFromScrapperToDatabase(section))
+					.map(section => reshapeSectionFromScrapperToDatabase(section, year))
 					.map(async scrapedSection => sectionInsertLimit(async () => {
 						let storedSection = await prisma.section.findFirst({
 							where: {
