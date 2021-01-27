@@ -27,7 +27,7 @@ model Course {
   description String?
   sections    Section[]
 
-  updatedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
 
   @@index(updatedAt)
@@ -44,8 +44,8 @@ model Section {
   section        String
   cmp            String
   
-  minCredits     Int
-  maxCredits     Int
+  minCredits     Float
+  maxCredits     Float
 
   // Output of rschedule
   time           Json
@@ -59,8 +59,7 @@ model Section {
 
   instructors    Instructor[]
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   deletedAt      DateTime?
 
   @@index(updatedAt)

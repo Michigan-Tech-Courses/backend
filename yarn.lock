@@ -550,10 +550,10 @@
     graphql "^15.4.0"
     graphql-request "^3.4.0"
 
-"@mtucourses/scrapper@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@mtucourses/scrapper/-/scrapper-2.0.0.tgz#3c86f34075071ae2caa06877114fe748dba807c9"
-  integrity sha512-vWj87taCWEz9pDoch38XoPLKGfBBaXppmb3PrD0c/y6UBhwe6DgPQxHSXahIzDvtPGc2ynSyIL414AitnCNXBQ==
+"@mtucourses/scrapper@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@mtucourses/scrapper/-/scrapper-2.0.2.tgz#79a836a7c3485f4800432ded61fcedb247b07462"
+  integrity sha512-nQlvavticvIpktgnwLq0jpuagYDZ4uS8VdIJYMoyRylG9DtwScI4IA7Pp5R69intQCv4P+LPWJW/Fj/fP3UyDg==
   dependencies:
     cheerio "^1.0.0-rc.5"
     got "^11.8.1"
@@ -737,17 +737,17 @@
     "@prisma/bar" "^0.0.1"
     "@prisma/engines" "2.14.0-28.5d491261d382a2a5ffdc71de17072b0e409f1cc1"
 
-"@prisma/client@^2.14.0":
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.14.0.tgz#a57ef8f3c41127f84ebe5f69bd01a966b204cdc2"
-  integrity sha512-0PiiZ2maM9OP/G5mynzftvD4DFrtibeyvZf5U7Be360mtSvgLHQhZ/CHbChb0BVeWeyJuTmAqqni98LcdVgttw==
+"@prisma/client@^2.15.0":
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.15.0.tgz#41ee22c60778b54aec0f6d4832c2d35fbf9eb423"
+  integrity sha512-3j4OoLpAGF104KAenUFJM9sU2+4jRP+RlrlYssBHkwBf+/5+2ihSpcmFiWIw1vXNRdmZtivjwhjcVtmjZPJktw==
   dependencies:
-    "@prisma/engines-version" "2.14.0-28.5d491261d382a2a5ffdc71de17072b0e409f1cc1"
+    "@prisma/engines-version" "2.15.0-25.e51dc3b5a9ee790a07104bec1c9477d51740fe54"
 
-"@prisma/engines-version@2.14.0-28.5d491261d382a2a5ffdc71de17072b0e409f1cc1":
-  version "2.14.0-28.5d491261d382a2a5ffdc71de17072b0e409f1cc1"
-  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-2.14.0-28.5d491261d382a2a5ffdc71de17072b0e409f1cc1.tgz#ffd22601a18d74040653f6f8f518026cbc1bee3e"
-  integrity sha512-Oz3yNV//9UTJ+ral5tF6Ryb/MLfOE3+2F3/bH4waTbNRDd/zXKoS3jTI3ViU8yRQ1AsOQa9/pV/kXSlxgtAh8Q==
+"@prisma/engines-version@2.15.0-25.e51dc3b5a9ee790a07104bec1c9477d51740fe54":
+  version "2.15.0-25.e51dc3b5a9ee790a07104bec1c9477d51740fe54"
+  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-2.15.0-25.e51dc3b5a9ee790a07104bec1c9477d51740fe54.tgz#d9c887bc8f30d1f107c9021b2565a8672d62622d"
+  integrity sha512-KDxk7Zsc9tDoShCE7v+O1SnCUTUkMdfezjbuz9CBvdEBGMtYLgyHaZAO8M038uqy8KjgwV9PzyoLqvVfzfsngg==
 
 "@prisma/engines@2.14.0-28.5d491261d382a2a5ffdc71de17072b0e409f1cc1":
   version "2.14.0-28.5d491261d382a2a5ffdc71de17072b0e409f1cc1"
@@ -807,6 +807,16 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@rschedule/core@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@rschedule/core/-/core-1.2.3.tgz#d2b1c53d100e4421526934dddea26a734aae068f"
+  integrity sha512-GvbUZM/9EjnqHUhldAHoUDSSKMhv/hLsHRiHtCil+Jav1yGw6+xZTZIcWJz4nRv3s4gO+AKBRDmwMwBnKL0Lrw==
+
+"@rschedule/standard-date-adapter@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@rschedule/standard-date-adapter/-/standard-date-adapter-1.2.3.tgz#37b7cf76a9d2a97cb2243df4e2bc7d3b19c173a9"
+  integrity sha512-xE7cIAvIpI81ZDo8lMQJemEKaew70m/w/1htrPsGICyM9/9ri7F0Vvd9W/ltjW9aV4NLIozuSarIJyT8GaVKKA==
+
 "@schematics/schematics@0.1100.3":
   version "0.1100.3"
   resolved "https://registry.yarnpkg.com/@schematics/schematics/-/schematics-0.1100.3.tgz#bc929e78b1ad09386f7a849a3e08f91429d674d7"
@@ -857,6 +867,11 @@
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@types/anymatch/-/anymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
   integrity sha512-/+CRPXpBDpo2RK9C68N3b2cOvO0Cf5B9aPijHsoDQTHivnGSObdOF2BRQOYjojWTDy6nQvMjmqRXIxH55VjxxA==
+
+"@types/arr-diff@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/arr-diff/-/arr-diff-4.0.0.tgz#24bce21efc384fe9b4a5952eba3256dbd14f297a"
+  integrity sha512-rXnlEJI+QRG9wd+++oySF2HuckHXEG6xcLT1pX/u+NFZH/+ITpb2ocMU0W4LJaBnvkVOYMDZgegspxq3kd7Pyg==
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
