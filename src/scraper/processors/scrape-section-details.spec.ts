@@ -35,6 +35,7 @@ import processJob from './scrape-section-details';
 import {Course, Section, Semester} from '@prisma/client';
 
 const SAMPLE_COURSE: Course = {
+	id: 'test-id',
 	subject: 'CS',
 	crse: '1000',
 	title: 'Intro to Programming',
@@ -49,10 +50,6 @@ const SAMPLE_SECTION: Section & { course: Course; instructors: Array<{ id: numbe
 	id: 'test-section-id',
 	updatedAt: new Date(),
 	deletedAt: new Date(),
-	courseCrse: '1000',
-	courseSemester: Semester.FALL,
-	courseSubject: 'CS',
-	courseYear: 2020,
 	availableSeats: 10,
 	takenSeats: 5,
 	totalSeats: 15,
@@ -63,6 +60,7 @@ const SAMPLE_SECTION: Section & { course: Course; instructors: Array<{ id: numbe
 	minCredits: 3,
 	maxCredits: 3,
 	time: {},
+	courseId: SAMPLE_COURSE.id,
 	course: SAMPLE_COURSE,
 	instructors: []
 };
