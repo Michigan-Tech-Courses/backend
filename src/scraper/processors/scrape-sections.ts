@@ -226,7 +226,15 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 		});
 
 		// Mark sections that didn't show up
-		const storedSectionIds = await prisma.section.findMany({select: {id: true}});
+		const storedSectionIds = await prisma.section.findMany({
+			select: {id: true},
+			where: {
+				course: {
+					semester,
+					year
+				}
+			}
+		});
 
 		const unseenSectionIds = arrDiff(storedSectionIds.map(s => s.id), sawSectionIds);
 
