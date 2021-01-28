@@ -9,6 +9,7 @@ import {getAllSections, ISection} from '@mtucourses/scraper';
 import {CourseMap} from 'src/lib/course-map';
 import {IRuleOptions, Schedule} from 'src/lib/rschedule';
 import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src/lib/dates';
+import {deleteByKey} from 'src/cache/store';
 
 const getTermsForYear = (year: number) => {
 	const spring = new Date();
@@ -64,7 +65,6 @@ const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): B
 		});
 	}
 
-	// TODO: set timezone
 	const schedule = new Schedule({
 		rrules: scheduleRules
 	});
@@ -163,7 +163,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 			}
 
 			// Upsert course sections
-			const sectionInsertLimit = pLimit(2);
+			const sectionInsertLimit = pLimit(1);
 
 			await Promise.all(
 				scrapedCourse.sections
@@ -246,7 +246,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 	logger.log('Finished processing');
 
-	await prisma.$disconnect();
+	await Promise.all([prisma.$disconnect(), deleteByKey('/courses'), deleteByKey('/sections')]);
 
 	cb(null, null);
 };

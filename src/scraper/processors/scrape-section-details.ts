@@ -6,6 +6,7 @@ import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
 import {getSectionDetails} from '@mtucourses/scraper';
 import {termToDate} from 'src/lib/dates';
+import {deleteByKey} from 'src/cache/store';
 
 const CONCURRENCY_LIMIT = 15;
 
@@ -114,7 +115,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 	logger.log('Finished processing');
 
-	await prisma.$disconnect();
+	await Promise.all([prisma.$disconnect(), deleteByKey('/courses'), deleteByKey('/sections')]);
 
 	cb(null, null);
 };

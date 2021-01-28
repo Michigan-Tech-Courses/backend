@@ -3,6 +3,9 @@ import {ConfigModule} from '@nestjs/config';
 import {BullModule} from '@nestjs/bull';
 import {ScraperModule} from './scraper/scraper.module';
 import {InstructorsModule} from './instructors/instructors.module';
+import {CoursesModule} from './courses/courses.module';
+import {SectionsModule} from './sections/sections.module';
+import {InitHandler} from './init';
 
 @Module({
 	imports: [
@@ -14,9 +17,11 @@ import {InstructorsModule} from './instructors/instructors.module';
 			}
 		}),
 		ScraperModule,
-		InstructorsModule
+		CoursesModule,
+		InstructorsModule,
+		SectionsModule
 	],
 	controllers: [],
-	providers: []
+	providers: [InitHandler]
 })
 export class AppModule {}

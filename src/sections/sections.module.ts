@@ -1,14 +1,14 @@
 import {Module} from '@nestjs/common';
 import {CacheModule} from 'src/cache/cache.module';
 import {PrismaModule} from 'src/prisma/prisma.module';
-import {InstructorsController} from './instructors.controller';
+import {SectionsController} from './sections.controller';
 
 @Module({
 	imports: [
 		PrismaModule,
 		CacheModule
 	],
-	controllers: [InstructorsController],
+	controllers: [SectionsController],
 	providers: []
 })
-export class InstructorsModule {}
+export class SectionsModule {}
