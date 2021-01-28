@@ -1,37 +1,20 @@
-import {Course, Semester} from '@prisma/client';
-
-interface IUniqueSelector {
-	year: number;
-	semester: Semester;
-	subject: string;
-	crse: string;
-}
+import {Course} from '@prisma/client';
 
 export class CourseMap {
 	private readonly map = new Map<string, {saw: boolean; course: Course}>();
 
 	put({course, saw}: {course: Course; saw: boolean}) {
-		this.map.set(this.generateNaiveCourseId(course), {saw, course});
+		this.map.set(course.id, {saw, course});
 	}
 
-	get(selector: IUniqueSelector): Course | null {
-		const value = this.map.get(this.generateNaiveCourseId(selector));
-
-		if (value) {
-			return value.course;
-		}
-
-		return null;
-	}
-
-	markAsSeen(selector: IUniqueSelector) {
-		const value = this.map.get(this.generateNaiveCourseId(selector));
+	markAsSeen(course: Course) {
+		const value = this.map.get(course.id);
 
 		if (!value) {
 			return;
 		}
 
-		this.map.set(this.generateNaiveCourseId(selector), {course: value.course, saw: true});
+		this.map.set(course.id, {course: value.course, saw: true});
 	}
 
 	getUnseen() {
@@ -44,9 +27,5 @@ export class CourseMap {
 		}
 
 		return unseen;
-	}
-
-	private generateNaiveCourseId(course: IUniqueSelector) {
-		return `${course.year}-${course.semester}-${course.subject}-${course.crse}`;
 	}
 }

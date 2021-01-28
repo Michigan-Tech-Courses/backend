@@ -6,7 +6,6 @@ import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
 import {getSectionDetails} from '@mtucourses/scraper';
 import {termToDate} from 'src/lib/dates';
-import {getUniqueCompositeForCourse} from 'src/lib/courses';
 
 const CONCURRENCY_LIMIT = 15;
 
@@ -101,7 +100,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 			if (details.description !== section.course.description) {
 				await prisma.course.update({
 					where: {
-						year_semester_subject_crse: getUniqueCompositeForCourse(section.course)
+						id: section.courseId
 					},
 					data: {
 						description: details.description

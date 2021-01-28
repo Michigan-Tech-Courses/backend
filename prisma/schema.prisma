@@ -19,6 +19,8 @@ enum Semester {
 model Course {
   @@id([year, semester, subject, crse])
 
+  id          String @unique @default(cuid())
+
   year        Int
   semester    Semester
   subject     String
@@ -37,7 +39,8 @@ model Course {
 model Section {
   id             String @id @default(cuid())
 
-  course         Course
+  course         Course @relation(fields: [courseId], references: [id])
+  courseId       String
 
   // CRN *is not* unique across semesters
   crn            String

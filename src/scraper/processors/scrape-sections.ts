@@ -9,7 +9,6 @@ import {getAllSections, ISection} from '@mtucourses/scraper';
 import {CourseMap} from 'src/lib/course-map';
 import {IRuleOptions, Schedule} from 'src/lib/rschedule';
 import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src/lib/dates';
-import {getUniqueCompositeForCourse} from 'src/lib/courses';
 
 const getTermsForYear = (year: number) => {
 	const spring = new Date();
@@ -30,6 +29,11 @@ const getTermsToProcess = () => {
 
 	const terms = [...getTermsForYear(year - 1), ...getTermsForYear(year), ...getTermsForYear(year + 1)];
 
+	if (process.env.NODE_ENV === 'test') {
+		// Simplifies testing
+		return [terms[0]];
+	}
+
 	const toProcess = [];
 
 	for (let i = 0; i < terms.length; i++) {
@@ -42,7 +46,7 @@ const getTermsToProcess = () => {
 	return toProcess;
 };
 
-type BasicSection = Except<Section, 'id' | 'updatedAt' | 'deletedAt' | 'courseYear' | 'courseSemester' | 'courseSubject' | 'courseCrse'>;
+type BasicSection = Except<Section, 'id' | 'updatedAt' | 'deletedAt' | 'courseId'>;
 
 const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): BasicSection => {
 	const scheduleRules: IRuleOptions[] = [];
@@ -60,6 +64,7 @@ const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): B
 		});
 	}
 
+	// TODO: set timezone
 	const schedule = new Schedule({
 		rrules: scheduleRules
 	});
@@ -114,13 +119,21 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 		await Promise.all(courses.map(async scrapedCourse => courseInsertLimit(async () => {
 			const uniqueSelector = {year, semester, subject: scrapedCourse.subject, crse: scrapedCourse.crse};
 
-			let storedCourse = didSeeCourseInScrapedData.get(uniqueSelector);
-			didSeeCourseInScrapedData.markAsSeen(uniqueSelector);
+			let storedCourse = await prisma.course.findFirst({
+				where: {
+					year,
+					semester,
+					subject: scrapedCourse.subject,
+					crse: scrapedCourse.crse
+				}
+			});
 
 			let shouldUpsert = true;
 
 			if (storedCourse) {
 				shouldUpsert = false;
+
+				didSeeCourseInScrapedData.markAsSeen(storedCourse);
 
 				// The only attribute that can change without becoming a new row is the title
 				// (description field is scraped somewhere else)
@@ -158,14 +171,14 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 					.map(async scrapedSection => sectionInsertLimit(async () => {
 						let storedSection = await prisma.section.findFirst({
 							where: {
-								course: storedCourse!,
+								courseId: storedCourse!.id,
 								section: scrapedSection.section
 							}
 						});
 
 						if (storedSection) {
 							// Check if there's any difference
-							const {id, courseCrse, courseSemester, courseSubject, courseYear, updatedAt, deletedAt, ...storedSectionToCompare} = storedSection;
+							const {id, courseId, updatedAt, deletedAt, ...storedSectionToCompare} = storedSection;
 
 							if (!equal(storedSectionToCompare, scrapedSection) || storedSection.deletedAt) {
 								// Section needs to be updated
@@ -173,7 +186,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 								// can't be marked as unique in Prisma.)
 								await prisma.section.updateMany({
 									where: {
-										course: getUniqueCompositeForCourse(storedCourse!),
+										courseId: storedCourse!.id,
 										section: scrapedSection.section
 									},
 									data: {
@@ -187,11 +200,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 							storedSection = await prisma.section.create({
 								data: {
 									...scrapedSection,
-									course: {
-										connect: {
-											year_semester_subject_crse: getUniqueCompositeForCourse(storedCourse!)
-										}
-									}
+									courseId: storedCourse!.id
 								}
 							});
 						}
@@ -205,16 +214,16 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 		// Mark courses that didn't show up
 		const coursesToDelete = didSeeCourseInScrapedData.getUnseen();
 
-		await Promise.all(coursesToDelete.map(async courseToDelete => {
-			await prisma.course.update({
-				where: {
-					year_semester_subject_crse: getUniqueCompositeForCourse(courseToDelete)
-				},
-				data: {
-					deletedAt: new Date()
+		await prisma.course.updateMany({
+			where: {
+				id: {
+					in: coursesToDelete.map(c => c.id)
 				}
-			});
-		}));
+			},
+			data: {
+				deletedAt: new Date()
+			}
+		});
 
 		// Mark sections that didn't show up
 		const storedSectionIds = await prisma.section.findMany({select: {id: true}});
