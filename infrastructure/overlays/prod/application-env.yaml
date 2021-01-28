@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: application
 spec:
+  replicas: 4
   template:
     spec:
       containers:

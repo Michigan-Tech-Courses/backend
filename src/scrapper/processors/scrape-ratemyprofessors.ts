@@ -11,7 +11,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 	logger.log('Started processing...');
 
-	const limit = pLimit(10);
+	const limit = pLimit(5);
 
 	const prisma = new PrismaClient();
 	await prisma.$connect();

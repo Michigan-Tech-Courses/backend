@@ -13,6 +13,18 @@ export const dateToTerm = (date: Date) => {
 	return {semester, year: date.getFullYear()};
 };
 
+export const termToDate = ({semester, year}: {semester: Semester; year: number}) => {
+	let month = 0;
+
+	if (semester === Semester.SUMMER) {
+		month = 4;
+	} else if (semester === Semester.FALL) {
+		month = 7;
+	}
+
+	return new Date(year, month);
+};
+
 const DAY_CHAR_MAP: Record<string, RuleOption.ByDayOfWeek> = {
 	S: 'SU',
 	M: 'MO',

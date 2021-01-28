@@ -4,11 +4,12 @@ import equal from 'deep-equal';
 import {Except} from 'type-fest';
 import arrDiff from 'arr-diff';
 import pLimit from 'p-limit';
-import {Course, PrismaClient, Section} from '@prisma/client';
+import {PrismaClient, Section, Prisma} from '@prisma/client';
 import {getAllSections, ISection} from '@mtucourses/scrapper';
 import {CourseMap} from 'src/lib/course-map';
 import {IRuleOptions, Schedule} from 'src/lib/rschedule';
 import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src/lib/dates';
+import {getUniqueCompositeForCourse} from 'src/lib/courses';
 
 const getTermsForYear = (year: number) => {
 	const spring = new Date();
@@ -41,19 +42,12 @@ const getTermsToProcess = () => {
 	return toProcess;
 };
 
-const getUniqueCompositeForCourse = (course: Course) => ({
-	year: course.year,
-	semester: course.semester,
-	subject: course.subject,
-	crse: course.crse
-});
-
 type BasicSection = Except<Section, 'id' | 'updatedAt' | 'deletedAt' | 'courseYear' | 'courseSemester' | 'courseSubject' | 'courseCrse'>;
 
 const reshapeSectionFromScrapperToDatabase = (section: ISection, year: number): BasicSection => {
 	const scheduleRules: IRuleOptions[] = [];
 
-	if (section.timeRange?.length === 2 && section.dateRange.length === 2 && section.days !== '') {
+	if (section.timeRange?.length === 2 && section.dateRange.length === 2 && section.days !== '' && section.days !== 'TBA') {
 		const start = new Date(`${section.dateRange[0]}/${year} ${section.timeRange[0]}`);
 		const end = new Date(`${section.dateRange[1]}/${year} ${section.timeRange[1]}`);
 
@@ -76,7 +70,7 @@ const reshapeSectionFromScrapperToDatabase = (section: ISection, year: number): 
 		cmp: section.cmp,
 		minCredits: Math.min(...section.creditRange),
 		maxCredits: Math.max(...section.creditRange),
-		time: schedule.toJSON() as Record<string, unknown>,
+		time: (schedule as any).toJSON() as unknown as Prisma.JsonObject,
 		totalSeats: section.seats,
 		takenSeats: section.seatsTaken,
 		availableSeats: section.seatsAvailable,
@@ -156,7 +150,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 			}
 
 			// Upsert course sections
-			const sectionInsertLimit = pLimit(10);
+			const sectionInsertLimit = pLimit(2);
 
 			await Promise.all(
 				scrapedCourse.sections
