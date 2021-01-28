@@ -19,7 +19,7 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/setup-node@v2
-      
+
       - uses: actions/checkout@v1
 
       - name: Get yarn cache directory path
@@ -40,7 +40,10 @@ jobs:
 
       - name: Unit tests
         run: yarn test:coverage
-        
+        env:
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
+
       - name: E2E tests
         run: yarn test:e2e --coverage
         env:
