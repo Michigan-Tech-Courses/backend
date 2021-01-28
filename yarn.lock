@@ -550,10 +550,10 @@
     graphql "^15.4.0"
     graphql-request "^3.4.0"
 
-"@mtucourses/scrapper@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@mtucourses/scrapper/-/scrapper-2.0.2.tgz#79a836a7c3485f4800432ded61fcedb247b07462"
-  integrity sha512-nQlvavticvIpktgnwLq0jpuagYDZ4uS8VdIJYMoyRylG9DtwScI4IA7Pp5R69intQCv4P+LPWJW/Fj/fP3UyDg==
+"@mtucourses/scraper@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@mtucourses/scraper/-/scraper-2.0.3.tgz#d6d7a2e490e055576d199098f628ae79208b25b7"
+  integrity sha512-TrfvdfIyEjsiTKevo8eS1TbubbfU9b+OWXMQ3qt4cBcxi4oKsJRreaKPK1anJbq4ffMC+nwn35c1S1rO1ZLBCw==
   dependencies:
     cheerio "^1.0.0-rc.5"
     got "^11.8.1"
@@ -3270,7 +3270,12 @@ enquirer@^2.3.5, enquirer@^2.3.6:
   dependencies:
     ansi-colors "^4.1.1"
 
-entities@^2.0.0, entities@~2.1.0:
+entities@^2.0.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/entities/-/entities-2.2.0.tgz#098dc90ebb83d8dffa089d55256b351d34c4da55"
+  integrity sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==
+
+entities@~2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.1.0.tgz#992d3129cf7df6870b96c57858c249a120f8b8b5"
   integrity sha512-hCx1oky9PFrJ611mf0ifBLBRW8lUUVRlFolb5gWRfIELabBlbp9xZvrqZLZAs+NxFnbfQoeGd8wDkygjg7U85w==
@@ -6539,9 +6544,9 @@ nice-try@^1.0.4:
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
 nock@^13.0.5:
-  version "13.0.5"
-  resolved "https://registry.yarnpkg.com/nock/-/nock-13.0.5.tgz#a618c6f86372cb79fac04ca9a2d1e4baccdb2414"
-  integrity sha512-1ILZl0zfFm2G4TIeJFW0iHknxr2NyA+aGCMTjDVUsBY4CkMRispF1pfIYkTRdAR/3Bg+UzdEuK0B6HczMQZcCg==
+  version "13.0.6"
+  resolved "https://registry.yarnpkg.com/nock/-/nock-13.0.6.tgz#9f90573ea6e84883b94eeac374d1c73460afed56"
+  integrity sha512-W81UZ1Tv21SWDZcA8Lu9LXYVl2gO9ADY5GadC6gFV9690h4TXz0oCkEoMckN/sPMHkDA79Ka9dXga9Mt1+j+Sg==
   dependencies:
     debug "^4.1.0"
     json-stringify-safe "^5.0.1"

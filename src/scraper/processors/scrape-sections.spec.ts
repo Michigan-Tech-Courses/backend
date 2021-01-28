@@ -1,8 +1,8 @@
 import {mocked} from 'ts-jest/utils';
-import {getAllSections, ICourseOverview, ISection} from '@mtucourses/scrapper';
+import {getAllSections, ICourseOverview, ISection} from '@mtucourses/scraper';
 
-jest.mock('@mtucourses/scrapper');
-const mockedSectionsScrapper = mocked(getAllSections, true);
+jest.mock('@mtucourses/scraper');
+const mockedSectionsScraper = mocked(getAllSections, true);
 
 const mockCourseUpsert = jest.fn();
 const mockCourseFindMany = jest.fn();
@@ -76,7 +76,7 @@ const SCRAPED_COURSE_WITH_SECTION: ICourseOverview = {
 
 describe('Courses and sections scrape processor', () => {
 	it('runs without errors', async () => {
-		mockedSectionsScrapper.mockResolvedValue([]);
+		mockedSectionsScraper.mockResolvedValue([]);
 		mockCourseFindMany.mockResolvedValue([]);
 		mockSectionFindMany.mockResolvedValue([]);
 
@@ -92,7 +92,7 @@ describe('Courses and sections scrape processor', () => {
 				sections: []
 			};
 
-			mockedSectionsScrapper.mockResolvedValue([course]);
+			mockedSectionsScraper.mockResolvedValue([course]);
 			mockCourseFindMany.mockResolvedValue([]);
 			mockSectionFindMany.mockResolvedValue([]);
 
@@ -122,7 +122,7 @@ describe('Courses and sections scrape processor', () => {
 		});
 
 		it('updates the title of an existing course', async () => {
-			const scrappedCourse: ICourseOverview = {
+			const scrapedCourse: ICourseOverview = {
 				subject: 'CS',
 				crse: '1000',
 				title: 'Intro to Programming (new title)',
@@ -140,8 +140,8 @@ describe('Courses and sections scrape processor', () => {
 				updatedAt: new Date()
 			};
 
-			mockedSectionsScrapper.mockResolvedValueOnce([scrappedCourse]);
-			mockedSectionsScrapper.mockResolvedValue([]);
+			mockedSectionsScraper.mockResolvedValueOnce([scrapedCourse]);
+			mockedSectionsScraper.mockResolvedValue([]);
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
 
@@ -186,7 +186,7 @@ describe('Courses and sections scrape processor', () => {
 				updatedAt: now
 			};
 
-			mockedSectionsScrapper.mockResolvedValue([]);
+			mockedSectionsScraper.mockResolvedValue([]);
 			mockCourseFindMany.mockResolvedValueOnce([storedCourse]);
 			mockCourseFindMany.mockResolvedValue([]);
 
@@ -216,15 +216,15 @@ describe('Courses and sections scrape processor', () => {
 				updatedAt: now
 			};
 
-			const scrappedCourse: ICourseOverview = {
+			const scrapedCourse: ICourseOverview = {
 				subject: 'CS',
 				crse: '1000',
 				title: 'Intro to Programming',
 				sections: []
 			};
 
-			mockedSectionsScrapper.mockResolvedValueOnce([scrappedCourse]);
-			mockedSectionsScrapper.mockResolvedValue([]);
+			mockedSectionsScraper.mockResolvedValueOnce([scrapedCourse]);
+			mockedSectionsScraper.mockResolvedValue([]);
 			mockCourseFindMany.mockResolvedValueOnce([storedCourse]);
 			mockCourseFindMany.mockResolvedValue([]);
 
@@ -256,7 +256,7 @@ describe('Courses and sections scrape processor', () => {
 		});
 
 		it('doesn\'t modify a section if nothing\'s changed', async () => {
-			const scrappedCourse: ICourseOverview = {
+			const scrapedCourse: ICourseOverview = {
 				subject: 'CS',
 				crse: '1000',
 				title: 'Intro to Programming',
@@ -274,8 +274,8 @@ describe('Courses and sections scrape processor', () => {
 				updatedAt: new Date()
 			};
 
-			mockedSectionsScrapper.mockResolvedValueOnce([scrappedCourse]);
-			mockedSectionsScrapper.mockResolvedValue([]);
+			mockedSectionsScraper.mockResolvedValueOnce([scrapedCourse]);
+			mockedSectionsScraper.mockResolvedValue([]);
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
 
@@ -287,8 +287,8 @@ describe('Courses and sections scrape processor', () => {
 
 	describe('Sections', () => {
 		it('inserts a new section', async () => {
-			mockedSectionsScrapper.mockResolvedValueOnce([SCRAPED_COURSE_WITH_SECTION]);
-			mockedSectionsScrapper.mockResolvedValue([]);
+			mockedSectionsScraper.mockResolvedValueOnce([SCRAPED_COURSE_WITH_SECTION]);
+			mockedSectionsScraper.mockResolvedValue([]);
 
 			mockCourseFindMany.mockResolvedValue([]);
 			mockSectionFindMany.mockResolvedValue([]);
@@ -326,7 +326,7 @@ describe('Courses and sections scrape processor', () => {
 		});
 
 		it('updates an existing section', async () => {
-			mockedSectionsScrapper.mockResolvedValueOnce([{
+			mockedSectionsScraper.mockResolvedValueOnce([{
 				...SCRAPED_COURSE,
 				sections: [
 					{
@@ -335,7 +335,7 @@ describe('Courses and sections scrape processor', () => {
 					}
 				]
 			}]);
-			mockedSectionsScrapper.mockResolvedValue([]);
+			mockedSectionsScraper.mockResolvedValue([]);
 
 			const storedCourse: Course = {
 				subject: 'CS',
@@ -416,7 +416,7 @@ describe('Courses and sections scrape processor', () => {
 				updatedAt: new Date()
 			};
 
-			mockedSectionsScrapper.mockResolvedValue([]);
+			mockedSectionsScraper.mockResolvedValue([]);
 
 			mockCourseFindMany.mockResolvedValueOnce([storedCourse]);
 			mockCourseFindMany.mockResolvedValue([]);
@@ -439,11 +439,11 @@ describe('Courses and sections scrape processor', () => {
 		});
 
 		it('adds back a section that was previously deleted', async () => {
-			mockedSectionsScrapper.mockResolvedValueOnce([{
+			mockedSectionsScraper.mockResolvedValueOnce([{
 				...SCRAPED_COURSE,
 				sections: [SCRAPED_SECTION]
 			}]);
-			mockedSectionsScrapper.mockResolvedValue([]);
+			mockedSectionsScraper.mockResolvedValue([]);
 
 			const storedCourse: Course = {
 				subject: 'CS',
@@ -513,7 +513,7 @@ describe('Courses and sections scrape processor', () => {
 		});
 
 		it('doesn\'t modify a section if nothing\'s changed', async () => {
-			mockedSectionsScrapper.mockResolvedValue([{
+			mockedSectionsScraper.mockResolvedValue([{
 				...SCRAPED_COURSE,
 				sections: [SCRAPED_SECTION]
 			}]);

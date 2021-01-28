@@ -3,7 +3,7 @@ import {InjectQueue} from '@nestjs/bull';
 import {Queue} from 'bull';
 
 @Injectable()
-export class ScrapperService implements OnModuleInit {
+export class ScraperService implements OnModuleInit {
 	constructor(
 		@InjectQueue('scrape-instructors') private readonly scrapeInstructorQueue: Queue,
 		@InjectQueue('scrape-rmp') private readonly scrapeRMPQueue: Queue,

@@ -69,7 +69,7 @@ model Section {
 model Instructor {
   id                      Int    @id @default(autoincrement())
 
-  // Scrapped from Michigan Tech
+  // Scraped from Michigan Tech
   fullName                String @unique
   departments             String[]
   email                   String?
@@ -82,7 +82,7 @@ model Instructor {
 
   sections                Section[]
 
-  // Scrapped from RateMyProfessor
+  // Scraped from RateMyProfessor
   averageDifficultyRating Float?
   averageRating           Float?
   numRatings              Int?

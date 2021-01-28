@@ -4,13 +4,11 @@ import {Logger} from '@nestjs/common';
 import {PrismaClient} from '@prisma/client';
 import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
-import {getSectionDetails} from '@mtucourses/scrapper';
+import {getSectionDetails} from '@mtucourses/scraper';
 import {termToDate} from 'src/lib/dates';
 import {getUniqueCompositeForCourse} from 'src/lib/courses';
 
 const CONCURRENCY_LIMIT = 15;
-
-// TODO: rename scrapper -> scraper
 
 const processJob = async (_: Job, cb: DoneCallback) => {
 	const logger = new Logger('Job: course section details scrape');

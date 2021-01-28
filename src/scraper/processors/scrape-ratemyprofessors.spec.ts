@@ -126,7 +126,7 @@ describe('Rate My Professor scrape processor', () => {
 			photoURL: null,
 			averageDifficultyRating: 1,
 			averageRating: 1,
-			// Different from scrapped value
+			// Different from scraped value
 			numRatings: 8,
 			rmpId: 'test-id',
 			updatedAt: new Date(),

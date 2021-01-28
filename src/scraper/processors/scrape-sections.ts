@@ -5,7 +5,7 @@ import {Except} from 'type-fest';
 import arrDiff from 'arr-diff';
 import pLimit from 'p-limit';
 import {PrismaClient, Section, Prisma} from '@prisma/client';
-import {getAllSections, ISection} from '@mtucourses/scrapper';
+import {getAllSections, ISection} from '@mtucourses/scraper';
 import {CourseMap} from 'src/lib/course-map';
 import {IRuleOptions, Schedule} from 'src/lib/rschedule';
 import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src/lib/dates';
@@ -44,7 +44,7 @@ const getTermsToProcess = () => {
 
 type BasicSection = Except<Section, 'id' | 'updatedAt' | 'deletedAt' | 'courseYear' | 'courseSemester' | 'courseSubject' | 'courseCrse'>;
 
-const reshapeSectionFromScrapperToDatabase = (section: ISection, year: number): BasicSection => {
+const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): BasicSection => {
 	const scheduleRules: IRuleOptions[] = [];
 
 	if (section.timeRange?.length === 2 && section.dateRange.length === 2 && section.days !== '' && section.days !== 'TBA') {
@@ -103,9 +103,9 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 		const sawSectionIds: string[] = [];
 
 		// Map that keeps track of whether or not a course in the database appears in the scrape
-		const didSeeCourseInScrappedData = new CourseMap();
+		const didSeeCourseInScrapedData = new CourseMap();
 		storedCourses.forEach(storedCourse => {
-			didSeeCourseInScrappedData.put({saw: false, course: storedCourse});
+			didSeeCourseInScrapedData.put({saw: false, course: storedCourse});
 		});
 
 		const courseInsertLimit = pLimit(10);
@@ -114,8 +114,8 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 		await Promise.all(courses.map(async scrapedCourse => courseInsertLimit(async () => {
 			const uniqueSelector = {year, semester, subject: scrapedCourse.subject, crse: scrapedCourse.crse};
 
-			let storedCourse = didSeeCourseInScrappedData.get(uniqueSelector);
-			didSeeCourseInScrappedData.markAsSeen(uniqueSelector);
+			let storedCourse = didSeeCourseInScrapedData.get(uniqueSelector);
+			didSeeCourseInScrapedData.markAsSeen(uniqueSelector);
 
 			let shouldUpsert = true;
 
@@ -154,7 +154,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 			await Promise.all(
 				scrapedCourse.sections
-					.map(section => reshapeSectionFromScrapperToDatabase(section, year))
+					.map(section => reshapeSectionFromScraperToDatabase(section, year))
 					.map(async scrapedSection => sectionInsertLimit(async () => {
 						let storedSection = await prisma.section.findFirst({
 							where: {
@@ -203,7 +203,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 		})));
 
 		// Mark courses that didn't show up
-		const coursesToDelete = didSeeCourseInScrappedData.getUnseen();
+		const coursesToDelete = didSeeCourseInScrapedData.getUnseen();
 
 		await Promise.all(coursesToDelete.map(async courseToDelete => {
 			await prisma.course.update({

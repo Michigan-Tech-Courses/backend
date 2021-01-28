@@ -1,7 +1,7 @@
 import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {BullModule} from '@nestjs/bull';
-import {ScrapperModule} from './scrapper/scrapper.module';
+import {ScraperModule} from './scraper/scraper.module';
 import {InstructorsModule} from './instructors/instructors.module';
 
 @Module({
@@ -13,7 +13,7 @@ import {InstructorsModule} from './instructors/instructors.module';
 				host: process.env.REDIS_HOST
 			}
 		}),
-		ScrapperModule,
+		ScraperModule,
 		InstructorsModule
 	],
 	controllers: [],

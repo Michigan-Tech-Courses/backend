@@ -1,6 +1,6 @@
 import {Test} from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
-import {ScrapperService} from 'src/scrapper/scrapper.service';
+import {ScraperService} from 'src/scraper/scraper.service';
 import {BullModule, getQueueToken} from '@nestjs/bull';
 import {Queue} from 'bull';
 import {promisify} from 'util';
@@ -12,7 +12,7 @@ const redisClient = redis.createClient({
 	host: process.env.REDIS_HOST
 });
 
-describe('Scrapper (e2e)', () => {
+describe('Scraper (e2e)', () => {
 	let app: INestApplication;
 	const fakeInstructorProcessor = jest.fn();
 	const fakeRMPProcessor = jest.fn();
@@ -39,9 +39,14 @@ describe('Scrapper (e2e)', () => {
 					name: 'scrape-sections',
 					processors: [fakeRMPProcessor],
 					redis
+				}),
+				BullModule.registerQueue({
+					name: 'scrape-section-details',
+					processors: [fakeRMPProcessor],
+					redis
 				})
 			],
-			providers: [ScrapperService]
+			providers: [ScraperService]
 		})
 			.compile();
 

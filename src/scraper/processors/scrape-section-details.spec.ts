@@ -1,9 +1,9 @@
 import {mocked} from 'ts-jest/utils';
-import {getSectionDetails, ISectionDetails} from '@mtucourses/scrapper';
+import {getSectionDetails, ISectionDetails} from '@mtucourses/scraper';
 
 // Scraper mock
-jest.mock('@mtucourses/scrapper');
-const mockedSectionDetailScrapper = mocked(getSectionDetails, true);
+jest.mock('@mtucourses/scraper');
+const mockedSectionDetailScraper = mocked(getSectionDetails, true);
 
 // Prisma mocks
 const mockCourseUpdate = jest.fn();
@@ -85,7 +85,7 @@ describe('Section details scrape processor', () => {
 		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
 		mockSectionFindMany.mockResolvedValue([]);
 
-		mockedSectionDetailScrapper.mockResolvedValue({
+		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			instructors: ['Leo Ureel']
 		});
@@ -122,7 +122,7 @@ describe('Section details scrape processor', () => {
 		]);
 		mockSectionFindMany.mockResolvedValue([]);
 
-		mockedSectionDetailScrapper.mockResolvedValue({
+		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			instructors: ['Leo Ureel']
 		});
@@ -145,7 +145,7 @@ describe('Section details scrape processor', () => {
 		]);
 		mockSectionFindMany.mockResolvedValue([]);
 
-		mockedSectionDetailScrapper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
+		mockedSectionDetailScraper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
 
 		mockInstructorFindMany.mockResolvedValue([]);
 
@@ -172,7 +172,7 @@ describe('Section details scrape processor', () => {
 		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
 		mockSectionFindMany.mockResolvedValue([]);
 
-		mockedSectionDetailScrapper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
+		mockedSectionDetailScraper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
 
 		mockInstructorFindMany.mockResolvedValue([]);
 
@@ -190,7 +190,7 @@ describe('Section details scrape processor', () => {
 		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
 		mockSectionFindMany.mockResolvedValue([]);
 
-		mockedSectionDetailScrapper.mockResolvedValue({
+		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			description: ''
 		});

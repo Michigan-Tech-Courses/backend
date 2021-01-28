@@ -1,7 +1,7 @@
 import {Job, DoneCallback} from 'bull';
 import {Logger} from '@nestjs/common';
 import {PrismaClient} from '@prisma/client';
-import {getAllFaculty, IFaculty} from '@mtucourses/scrapper';
+import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
 import pLimit from 'p-limit';
 import equal from 'deep-equal';
 

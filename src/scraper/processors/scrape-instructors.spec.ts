@@ -1,8 +1,8 @@
 import {mocked} from 'ts-jest/utils';
-import {getAllFaculty, IFaculty} from '@mtucourses/scrapper';
+import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
 
-jest.mock('@mtucourses/scrapper');
-const mockedFacultyScrapper = mocked(getAllFaculty, true);
+jest.mock('@mtucourses/scraper');
+const mockedFacultyScraper = mocked(getAllFaculty, true);
 
 const mockInstructorUpsert = jest.fn();
 const mockInstructorFindUnique = jest.fn();
@@ -25,7 +25,7 @@ import processJob from './scrape-instructors';
 
 describe('Instructor scrape processor', () => {
 	it('runs without errors', async () => {
-		mockedFacultyScrapper.mockResolvedValue([]);
+		mockedFacultyScraper.mockResolvedValue([]);
 
 		await processJob(null as any, () => { /* empty callback */ });
 	});
@@ -43,7 +43,7 @@ describe('Instructor scrape processor', () => {
 			photoURL: null
 		};
 
-		mockedFacultyScrapper.mockResolvedValue([instructor]);
+		mockedFacultyScraper.mockResolvedValue([instructor]);
 
 		mockInstructorFindUnique.mockResolvedValue(null);
 
@@ -87,7 +87,7 @@ describe('Instructor scrape processor', () => {
 			rmpId: null
 		};
 
-		mockedFacultyScrapper.mockResolvedValue([instructor]);
+		mockedFacultyScraper.mockResolvedValue([instructor]);
 
 		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
 
@@ -122,7 +122,7 @@ describe('Instructor scrape processor', () => {
 			rmpId: null
 		};
 
-		mockedFacultyScrapper.mockResolvedValue([instructor]);
+		mockedFacultyScraper.mockResolvedValue([instructor]);
 
 		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
 
@@ -132,7 +132,7 @@ describe('Instructor scrape processor', () => {
 	});
 
 	afterEach(() => {
-		mockedFacultyScrapper.mockClear();
+		mockedFacultyScraper.mockClear();
 		mockedPrisma.mockClear();
 		mockInstructorUpsert.mockClear();
 		mockInstructorFindUnique.mockClear();
