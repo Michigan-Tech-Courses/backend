@@ -5,13 +5,14 @@ import pLimit from 'p-limit';
 import ratings from '@mtucourses/rate-my-professors';
 import equal from 'deep-equal';
 import remap from 'src/lib/remap';
+import {deleteByKey} from 'src/cache/store';
 
 const processJob = async (_: Job, cb: DoneCallback) => {
 	const logger = new Logger('Job: rate my professors scrape');
 
 	logger.log('Started processing...');
 
-	const limit = pLimit(10);
+	const limit = pLimit(5);
 
 	const prisma = new PrismaClient();
 	await prisma.$connect();
@@ -50,6 +51,8 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 	})));
 
 	logger.log('Finished processing');
+
+	await deleteByKey('/instructors');
 
 	cb(null, null);
 };

@@ -1,8 +1,8 @@
 import {mocked} from 'ts-jest/utils';
-import {getAllFaculty, IFaculty} from '@mtucourses/scrapper';
+import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
 
-jest.mock('@mtucourses/scrapper');
-const mockedFacultyScrapper = mocked(getAllFaculty, true);
+jest.mock('@mtucourses/scraper');
+const mockedFacultyScraper = mocked(getAllFaculty, true);
 
 const mockInstructorUpsert = jest.fn();
 const mockInstructorFindUnique = jest.fn();
@@ -25,9 +25,9 @@ import processJob from './scrape-instructors';
 
 describe('Instructor scrape processor', () => {
 	it('runs without errors', async () => {
-		mockedFacultyScrapper.mockResolvedValue([]);
+		mockedFacultyScraper.mockResolvedValue([]);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 	});
 
 	it('inserts results into the database', async () => {
@@ -43,13 +43,12 @@ describe('Instructor scrape processor', () => {
 			photoURL: null
 		};
 
-		mockedFacultyScrapper.mockResolvedValue([instructor]);
+		mockedFacultyScraper.mockResolvedValue([instructor]);
 
 		mockInstructorFindUnique.mockResolvedValue(null);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 
-		// eslint-disable-next-line unused-imports/no-unused-vars-ts
 		const {name, ...namelessInstructor} = instructor;
 		const normalizedInstructor = {...namelessInstructor, fullName: instructor.name};
 
@@ -88,11 +87,11 @@ describe('Instructor scrape processor', () => {
 			rmpId: null
 		};
 
-		mockedFacultyScrapper.mockResolvedValue([instructor]);
+		mockedFacultyScraper.mockResolvedValue([instructor]);
 
 		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 
 		expect(mockInstructorUpsert).toHaveBeenCalledTimes(0);
 	});
@@ -123,17 +122,17 @@ describe('Instructor scrape processor', () => {
 			rmpId: null
 		};
 
-		mockedFacultyScrapper.mockResolvedValue([instructor]);
+		mockedFacultyScraper.mockResolvedValue([instructor]);
 
 		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 
 		expect(mockInstructorUpsert).toHaveBeenCalledTimes(1);
 	});
 
 	afterEach(() => {
-		mockedFacultyScrapper.mockClear();
+		mockedFacultyScraper.mockClear();
 		mockedPrisma.mockClear();
 		mockInstructorUpsert.mockClear();
 		mockInstructorFindUnique.mockClear();

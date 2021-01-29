@@ -28,7 +28,7 @@ describe('Rate My Professor scrape processor', () => {
 	it('runs without errors', async () => {
 		mockInstructorFindMany.mockResolvedValue([]);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 	});
 
 	it('does not update instructor if equal', async () => {
@@ -81,7 +81,7 @@ describe('Rate My Professor scrape processor', () => {
 		mockedGetTeacher.mockResolvedValue(teacher);
 		mockInstructorFindMany.mockResolvedValue([instructor]);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 
 		expect(mockInstructorUpdate).toHaveBeenCalledTimes(0);
 	});
@@ -126,7 +126,7 @@ describe('Rate My Professor scrape processor', () => {
 			photoURL: null,
 			averageDifficultyRating: 1,
 			averageRating: 1,
-			// Different from scrapped value
+			// Different from scraped value
 			numRatings: 8,
 			rmpId: 'test-id',
 			updatedAt: new Date(),
@@ -137,7 +137,7 @@ describe('Rate My Professor scrape processor', () => {
 		mockedGetTeacher.mockResolvedValue(teacher);
 		mockInstructorFindMany.mockResolvedValue([instructor]);
 
-		await processJob(null, () => { /* empty callback */ });
+		await processJob(null as any, () => { /* empty callback */ });
 
 		expect(mockInstructorUpdate).toHaveBeenCalledTimes(1);
 	});

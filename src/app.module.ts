@@ -1,8 +1,11 @@
 import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {BullModule} from '@nestjs/bull';
-import {ScrapperModule} from './scrapper/scrapper.module';
+import {ScraperModule} from './scraper/scraper.module';
 import {InstructorsModule} from './instructors/instructors.module';
+import {CoursesModule} from './courses/courses.module';
+import {SectionsModule} from './sections/sections.module';
+import {InitHandler} from './init';
 
 @Module({
 	imports: [
@@ -13,10 +16,12 @@ import {InstructorsModule} from './instructors/instructors.module';
 				host: process.env.REDIS_HOST
 			}
 		}),
-		ScrapperModule,
-		InstructorsModule
+		ScraperModule,
+		CoursesModule,
+		InstructorsModule,
+		SectionsModule
 	],
 	controllers: [],
-	providers: []
+	providers: [InitHandler]
 })
 export class AppModule {}

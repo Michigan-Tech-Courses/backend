@@ -1,7 +1,7 @@
 import {Module} from '@nestjs/common';
 import {BullModule} from '@nestjs/bull';
 import {join} from 'path';
-import {ScrapperService} from './scrapper.service';
+import {ScraperService} from './scraper.service';
 
 @Module({
 	imports: [
@@ -12,10 +12,18 @@ import {ScrapperService} from './scrapper.service';
 		BullModule.registerQueue({
 			name: 'scrape-rmp',
 			processors: [join(__dirname, 'processors/scrape-ratemyprofessors.js')]
+		}),
+		BullModule.registerQueue({
+			name: 'scrape-sections',
+			processors: [join(__dirname, 'processors/scrape-sections.js')]
+		}),
+		BullModule.registerQueue({
+			name: 'scrape-section-details',
+			processors: [join(__dirname, 'processors/scrape-section-details.js')]
 		})
 	],
 	controllers: [],
-	providers: [ScrapperService],
+	providers: [ScraperService],
 	exports: []
 })
-export class ScrapperModule {}
+export class ScraperModule {}

@@ -1,13 +1,14 @@
-import {Controller, Get, Injectable, Query} from '@nestjs/common';
+import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors} from '@nestjs/common';
 import {Thumbor} from '@mtucourses/thumbor';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetInstructorsParameters} from './types';
 
 @Controller('instructors')
+@UseInterceptors(CacheInterceptor)
 @Injectable()
 export class InstructorsController {
 	private readonly thumbor = new Thumbor({
-		url: process.env.THUMBOR_URL,
+		url: process.env.THUMBOR_URL!,
 		key: process.env.THUMBOR_SECURITY_KEY
 	});
 

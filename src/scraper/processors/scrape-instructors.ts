@@ -1,9 +1,10 @@
 import {Job, DoneCallback} from 'bull';
 import {Logger} from '@nestjs/common';
 import {PrismaClient} from '@prisma/client';
-import {getAllFaculty, IFaculty} from '@mtucourses/scrapper';
+import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
 import pLimit from 'p-limit';
 import equal from 'deep-equal';
+import {deleteByKey} from 'src/cache/store';
 
 const processJob = async (_: Job, cb: DoneCallback) => {
 	const logger = new Logger('Job: instructor scrape');
@@ -47,7 +48,6 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 			}
 
 			if (shouldUpsert) {
-				// eslint-disable-next-line unused-imports/no-unused-vars-ts
 				const {name, ...preparedInstructor} = instructor;
 
 				await prisma.instructor.upsert({
@@ -63,7 +63,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 	logger.log('Finished processing');
 
-	await prisma.$disconnect();
+	await Promise.all([prisma.$disconnect(), deleteByKey('/instructors')]);
 
 	cb(null, null);
 };
