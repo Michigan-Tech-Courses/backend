@@ -1,7 +1,7 @@
 import {OnModuleInit} from '@nestjs/common';
 import {deleteByKey} from './cache/store';
 
-const CACHE_KEYS = ['/courses', '/sections', '/instructors'];
+const CACHE_KEYS = ['/courses', '/sections', '/instructors', '/passfaildrop'];
 
 export class InitHandler implements OnModuleInit {
 	async onModuleInit() {
