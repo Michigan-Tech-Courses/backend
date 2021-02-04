@@ -25,3 +25,6 @@ secretGenerator:
 - name: postgres
   envs:
   - values/postgres.env
+- name: application
+  envs:
+  - values/application.env

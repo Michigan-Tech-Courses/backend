@@ -8,6 +8,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["groupBy"]
 }
 
 enum Semester {
@@ -46,7 +47,7 @@ model Section {
   crn            String
   section        String
   cmp            String
-  
+
   minCredits     Float
   maxCredits     Float
 
@@ -96,4 +97,17 @@ model Instructor {
 
   @@index(updatedAt)
   @@index(deletedAt)
+}
+
+model PassFailDrop {
+  courseSubject String
+  courseCrse    String
+  year          Int
+  semester      Semester
+  section       String
+  failed        Int
+  dropped       Int
+  total         Int
+
+  @@id([courseSubject, courseCrse, year, semester, section])
 }

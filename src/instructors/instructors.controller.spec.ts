@@ -63,9 +63,18 @@ describe('InstructorsController', () => {
 		expect(await controller.getAllInstructors({updatedSince: now})).toStrictEqual([]);
 		expect(prismaMock.instructor.findMany).toHaveBeenCalledWith({
 			where: {
-				updatedAt: {
-					gt: now
-				}
+				OR: [
+					{
+						updatedAt: {
+							gt: now
+						}
+					},
+					{
+						deletedAt: {
+							gt: now
+						}
+					}
+				]
 			}
 		});
 	});
