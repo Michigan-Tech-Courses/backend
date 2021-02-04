@@ -69,6 +69,14 @@ jobs:
         env:
           THUMBOR_SECURITY_KEY: ${{ secrets.THUMBOR_SECURITY_KEY }}
 
+      - name: Add application values
+        run: |
+          cat <<EOT >> infrastructure/overlays/prod/values/application.env
+          AUTH_TOKEN=$AUTH_TOKEN
+          EOT
+        env:
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+
       - name: Kustomize
         run: kustomize build infrastructure/overlays/prod > kustomized.yaml
 

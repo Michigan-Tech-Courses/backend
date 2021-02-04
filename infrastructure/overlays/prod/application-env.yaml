@@ -21,6 +21,11 @@ spec:
               secretKeyRef:
                 name: thumbor
                 key: THUMBOR_SECURITY_KEY
+          - name: AUTH_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: application
+                key: AUTH_TOKEN
           - name: DD_AGENT_HOST
             valueFrom:
               fieldRef:
