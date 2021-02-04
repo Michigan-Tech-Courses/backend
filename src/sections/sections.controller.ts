@@ -23,9 +23,18 @@ export class SectionsController {
 
 		if (parameters?.updatedSince) {
 			queryParameters.where = {
-				updatedAt: {
-					gt: parameters.updatedSince
-				}
+				OR: [
+					{
+						updatedAt: {
+							gt: parameters.updatedSince
+						}
+					},
+					{
+						deletedAt: {
+							gt: parameters.updatedSince
+						}
+					}
+				]
 			};
 		}
 
