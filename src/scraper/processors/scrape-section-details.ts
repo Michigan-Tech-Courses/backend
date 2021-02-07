@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import {Job, DoneCallback} from 'bull';
 import {Logger} from '@nestjs/common';
-import {PrismaClient} from '@prisma/client';
+import prisma from 'src/lib/prisma-singleton';
 import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
 import {getSectionDetails} from '@mtucourses/scraper';
@@ -15,7 +15,6 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 	logger.log('Started processing...');
 
-	const prisma = new PrismaClient();
 	await prisma.$connect();
 
 	let sectionsToProcess = [];

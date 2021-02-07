@@ -4,7 +4,8 @@ import equal from 'deep-equal';
 import {Except} from 'type-fest';
 import arrDiff from 'arr-diff';
 import pLimit from 'p-limit';
-import {PrismaClient, Section, Prisma} from '@prisma/client';
+import prisma from 'src/lib/prisma-singleton';
+import {Section, Prisma} from '@prisma/client';
 import {getAllSections, ISection} from '@mtucourses/scraper';
 import {CourseMap} from 'src/lib/course-map';
 import {IRuleOptions, Schedule} from 'src/lib/rschedule';
@@ -88,7 +89,6 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 	logger.log('Started processing...');
 
-	const prisma = new PrismaClient();
 	await prisma.$connect();
 
 	// For all terms

@@ -1,6 +1,6 @@
 import {Job, DoneCallback} from 'bull';
 import {Logger} from '@nestjs/common';
-import {PrismaClient} from '@prisma/client';
+import prisma from 'src/lib/prisma-singleton';
 import pLimit from 'p-limit';
 import ratings from '@mtucourses/rate-my-professors';
 import equal from 'deep-equal';
@@ -14,7 +14,6 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 	const limit = pLimit(5);
 
-	const prisma = new PrismaClient();
 	await prisma.$connect();
 
 	const instructors = await prisma.instructor.findMany();

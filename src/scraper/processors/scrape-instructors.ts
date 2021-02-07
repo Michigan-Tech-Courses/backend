@@ -1,17 +1,16 @@
 import {Job, DoneCallback} from 'bull';
 import {Logger} from '@nestjs/common';
-import {PrismaClient} from '@prisma/client';
 import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
 import pLimit from 'p-limit';
 import equal from 'deep-equal';
 import {deleteByKey} from 'src/cache/store';
+import prisma from 'src/lib/prisma-singleton';
 
 const processJob = async (_: Job, cb: DoneCallback) => {
 	const logger = new Logger('Job: instructor scrape');
 
 	logger.log('Started processing...');
 
-	const prisma = new PrismaClient();
 	await prisma.$connect();
 
 	const faculty = await getAllFaculty();
