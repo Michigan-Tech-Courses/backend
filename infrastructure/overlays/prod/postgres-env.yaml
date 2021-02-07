@@ -10,6 +10,7 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgredb
+          args: ["postgres", "-c", "max_connections=200"]
           env:
           - name: POSTGRES_DB
             valueFrom:
