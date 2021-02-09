@@ -51,16 +51,20 @@ describe('CoursesController', () => {
 
 		const now = new Date();
 
-		expect(await controller.getAllCourses({updatedSince: now})).toStrictEqual([]);
+		expect(await controller.getAllCourses({updatedSince: now, year: 2020, semester: Semester.FALL})).toStrictEqual([]);
 		expect(prismaMock.course.findMany).toHaveBeenCalledWith({
 			where: {
 				OR: [
 					{
+						year: 2020,
+						semester: Semester.FALL,
 						updatedAt: {
 							gt: now
 						}
 					},
 					{
+						year: 2020,
+						semester: Semester.FALL,
 						deletedAt: {
 							gt: now
 						}
