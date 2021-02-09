@@ -65,7 +65,17 @@ describe('SectionsController', () => {
 					{semester: Semester.FALL, year: 2020, sections: {every: {OR: [{updatedAt: {gt: now}}, {deletedAt: {gt: now}}]}}, deletedAt: {gt: now}}
 				]
 			},
-			select: {sections: true}
+			select: {
+				sections: {
+					include: {
+						instructors: {
+							select: {
+								id: true
+							}
+						}
+					}
+				}
+			}
 		});
 	});
 

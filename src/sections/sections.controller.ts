@@ -14,7 +14,15 @@ export class SectionsController {
 		const courseParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
 			where: {},
 			select: {
-				sections: true
+				sections: {
+					include: {
+						instructors: {
+							select: {
+								id: true
+							}
+						}
+					}
+				}
 			}
 		};
 
