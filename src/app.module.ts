@@ -6,6 +6,7 @@ import {InstructorsModule} from './instructors/instructors.module';
 import {CoursesModule} from './courses/courses.module';
 import {SectionsModule} from './sections/sections.module';
 import {PassFailDropModule} from './passfaildrop/passfaildrop.module';
+import {SemestersModule} from './semesters/semesters.module';
 import {InitHandler} from './init';
 
 @Module({
@@ -21,7 +22,8 @@ import {InitHandler} from './init';
 		CoursesModule,
 		InstructorsModule,
 		PassFailDropModule,
-		SectionsModule
+		SectionsModule,
+		SemestersModule
 	],
 	controllers: [],
 	providers: [InitHandler]
