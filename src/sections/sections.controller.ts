@@ -1,5 +1,5 @@
 import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors} from '@nestjs/common';
-import {Prisma} from '@prisma/client';
+import {Prisma, Section} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetSectionsParameters} from './types';
 
@@ -11,25 +11,49 @@ export class SectionsController {
 
 	@Get()
 	async getAllSections(@Query() parameters?: GetSectionsParameters) {
-		const queryParameters: Prisma.SectionFindManyArgs = {
-			include: {
-				instructors: {
-					select: {
-						id: true
-					}
-				}
+		const courseParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
+			where: {},
+			select: {
+				sections: true
 			}
 		};
 
+		if (parameters?.semester) {
+			courseParameters.where.semester = parameters.semester;
+		}
+
+		if (parameters?.year) {
+			courseParameters.where.year = parameters.year;
+		}
+
 		if (parameters?.updatedSince) {
-			queryParameters.where = {
+			courseParameters.where.sections = {
+				every: {
+					OR: [
+						{
+							updatedAt: {
+								gt: parameters.updatedSince
+							}
+						},
+						{
+							deletedAt: {
+								gt: parameters.updatedSince
+							}
+						}
+					]
+				}
+			};
+
+			courseParameters.where = {
 				OR: [
 					{
+						...courseParameters.where,
 						updatedAt: {
 							gt: parameters.updatedSince
 						}
 					},
 					{
+						...courseParameters.where,
 						deletedAt: {
 							gt: parameters.updatedSince
 						}
@@ -38,8 +62,10 @@ export class SectionsController {
 			};
 		}
 
-		const sections = await this.prisma.section.findMany(queryParameters);
+		// C'mon TS
+		const filteredCoursesWithSections = await this.prisma.course.findMany(courseParameters) as unknown as Array<{sections: Section[]}>;
 
-		return sections;
+		// Hoist
+		return filteredCoursesWithSections.map(c => c.sections).flat();
 	}
 }

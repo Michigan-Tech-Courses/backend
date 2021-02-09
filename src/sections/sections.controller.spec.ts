@@ -1,5 +1,5 @@
 import {Test, TestingModule} from '@nestjs/testing';
-import {Section} from '@prisma/client';
+import {Section, Semester} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {SectionsController} from './sections.controller';
 import {SectionsModule} from './sections.module';
@@ -8,7 +8,7 @@ describe('SectionsController', () => {
 	let controller: SectionsController;
 
 	const prismaMock = {
-		section: {
+		course: {
 			findMany: jest.fn()
 		}
 	};
@@ -46,43 +46,30 @@ describe('SectionsController', () => {
 	});
 
 	it('should return all sections', async () => {
-		prismaMock.section.findMany.mockResolvedValue([section]);
+		prismaMock.course.findMany.mockResolvedValue([{sections: [section]}]);
 
 		expect(await controller.getAllSections()).toStrictEqual([section]);
 	});
 
 	it('should only return updated sections', async () => {
-		prismaMock.section.findMany.mockResolvedValue([]);
+		prismaMock.course.findMany.mockResolvedValue([]);
 
 		const now = new Date();
 
-		expect(await controller.getAllSections({updatedSince: now})).toStrictEqual([]);
-		expect(prismaMock.section.findMany).toHaveBeenCalledWith({
-			include: {
-				instructors: {
-					select: {
-						id: true
-					}
-				}
-			},
+		expect(await controller.getAllSections({updatedSince: now, year: 2020, semester: Semester.FALL})).toStrictEqual([]);
+
+		expect(prismaMock.course.findMany).toHaveBeenCalledWith({
 			where: {
 				OR: [
-					{
-						updatedAt: {
-							gt: now
-						}
-					},
-					{
-						deletedAt: {
-							gt: now
-						}
-					}
+					{semester: Semester.FALL, year: 2020, sections: {every: {OR: [{updatedAt: {gt: now}}, {deletedAt: {gt: now}}]}}, updatedAt: {gt: now}},
+					{semester: Semester.FALL, year: 2020, sections: {every: {OR: [{updatedAt: {gt: now}}, {deletedAt: {gt: now}}]}}, deletedAt: {gt: now}}
 				]
-			}
+			},
+			select: {sections: true}
 		});
 	});
 
 	afterEach(() => {
-		prismaMock.section.findMany.mockClear();
+		prismaMock.course.findMany.mockClear();
 	});
 });
