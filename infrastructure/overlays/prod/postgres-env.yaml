@@ -7,7 +7,7 @@ spec:
     metadata:
       annotations:
         ad.datadoghq.com/postgres.check_names: '["postgres"]'
-        ad.datadoghq.com/postgres.init_configs: '[{"host":"%%host%%", "port":5432,"username":"datadog","password":"%%env_POSTGRES_PASSWORD%%"}]'
+        ad.datadoghq.com/postgres.instances: '[{"host":"%%host%%", "port":5432,"username":"datadog","password":"%%env_POSTGRES_PASSWORD%%"}]'
     spec:
       containers:
         - name: postgres
