@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
+  annotations:
+    ad.datadoghq.com/redis.check_names: '["postgres"]'
+    ad.datadoghq.com/redis.init_configs: '[{"host":"%%host%%", "port":5432,"username":"datadog","password":"%%env_POSTGRES_PASSWORD%%"}]'
 spec:
   template:
     spec:
