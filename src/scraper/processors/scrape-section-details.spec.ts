@@ -9,11 +9,13 @@ const mockedSectionDetailScraper = mocked(getSectionDetails, true);
 const mockCourseUpdate = jest.fn();
 const mockSectionFindMany = jest.fn();
 const mockSectionUpdate = jest.fn();
-const mockInstructorFindMany = jest.fn();
+const mockQueryRaw = jest.fn();
+const mockInstructorCreate = jest.fn();
 
 const mockedPrisma = jest.fn().mockImplementation(() => ({
 	$connect: jest.fn(),
 	$disconnect: jest.fn(),
+	$queryRaw: mockQueryRaw,
 	course: {
 		update: mockCourseUpdate
 	},
@@ -22,7 +24,7 @@ const mockedPrisma = jest.fn().mockImplementation(() => ({
 		update: mockSectionUpdate
 	},
 	instructor: {
-		findMany: mockInstructorFindMany
+		create: mockInstructorCreate
 	}
 }));
 
@@ -90,7 +92,7 @@ describe('Section details scrape processor', () => {
 			instructors: ['Leo Ureel']
 		});
 
-		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
+		mockQueryRaw.mockResolvedValue([{id: 1}]);
 
 		await processJob(null as any, () => { /* empty callback */ });
 
@@ -127,7 +129,7 @@ describe('Section details scrape processor', () => {
 			instructors: ['Leo Ureel']
 		});
 
-		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
+		mockQueryRaw.mockResolvedValue([{id: 1}]);
 
 		await processJob(null as any, () => { /* empty callback */ });
 
@@ -147,7 +149,7 @@ describe('Section details scrape processor', () => {
 
 		mockedSectionDetailScraper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
 
-		mockInstructorFindMany.mockResolvedValue([]);
+		mockQueryRaw.mockResolvedValue([]);
 
 		await processJob(null as any, () => { /* empty callback */ });
 
@@ -174,8 +176,6 @@ describe('Section details scrape processor', () => {
 
 		mockedSectionDetailScraper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
 
-		mockInstructorFindMany.mockResolvedValue([]);
-
 		await processJob(null as any, () => { /* empty callback */ });
 
 		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
@@ -196,8 +196,6 @@ describe('Section details scrape processor', () => {
 			prereqs: SAMPLE_COURSE.prereqs
 		});
 
-		mockInstructorFindMany.mockResolvedValue([]);
-
 		await processJob(null as any, () => { /* empty callback */ });
 
 		expect(mockCourseUpdate).toHaveBeenCalledTimes(0);
@@ -211,8 +209,6 @@ describe('Section details scrape processor', () => {
 			...SAMPLE_SCRAPED_SECTION,
 			description: ''
 		});
-
-		mockInstructorFindMany.mockResolvedValue([]);
 
 		await processJob(null as any, () => { /* empty callback */ });
 
@@ -228,6 +224,7 @@ describe('Section details scrape processor', () => {
 		mockCourseUpdate.mockClear();
 		mockSectionFindMany.mockClear();
 		mockSectionUpdate.mockClear();
-		mockInstructorFindMany.mockClear();
+		mockQueryRaw.mockClear();
+		mockInstructorCreate.mockClear();
 	});
 });

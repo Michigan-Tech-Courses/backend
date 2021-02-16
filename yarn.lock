@@ -550,10 +550,10 @@
     graphql "^15.4.0"
     graphql-request "^3.4.0"
 
-"@mtucourses/scraper@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@mtucourses/scraper/-/scraper-2.1.0.tgz#080cc0148099900ded024b8a8ecb80d69200718a"
-  integrity sha512-t/cEF84NbWAjGXb23j+tjZQshKVnsHqp/VnNYCtvctKtICPtN5ytClTZiaowE/not8xWm7UD4CydT/5LVLnIFg==
+"@mtucourses/scraper@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@mtucourses/scraper/-/scraper-2.1.1.tgz#8e0e2778785c248e5ce066e6d0da8d377138ca6c"
+  integrity sha512-3ciPiguP/FTiL43250N/D8cz04XypUmkwujGTzEHm8H/SQ7Q22Ort/H5yD/IrwZJiPd99LtB8YxkET1DY7gaqQ==
   dependencies:
     cheerio "^1.0.0-rc.5"
     got "^11.8.1"
