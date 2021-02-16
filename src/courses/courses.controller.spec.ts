@@ -21,6 +21,7 @@ describe('CoursesController', () => {
 		crse: '1000',
 		title: 'Intro to Programming',
 		description: '',
+		prereqs: null,
 		updatedAt: new Date(),
 		deletedAt: null
 	};

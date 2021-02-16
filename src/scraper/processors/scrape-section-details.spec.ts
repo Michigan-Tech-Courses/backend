@@ -42,6 +42,7 @@ const SAMPLE_COURSE: Course = {
 	year: 2020,
 	semester: Semester.FALL,
 	description: '',
+	prereqs: 'High School',
 	deletedAt: null,
 	updatedAt: new Date()
 };
@@ -68,6 +69,7 @@ const SAMPLE_SECTION: Section & { course: Course; instructors: Array<{ id: numbe
 const SAMPLE_SCRAPED_SECTION: ISectionDetails = {
 	title: 'Intro to Programming',
 	description: 'An introduction to programming',
+	prereqs: null,
 	semestersOffered: [],
 	instructors: []
 };
@@ -190,7 +192,8 @@ describe('Section details scrape processor', () => {
 
 		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
-			description: ''
+			description: '',
+			prereqs: SAMPLE_COURSE.prereqs
 		});
 
 		mockInstructorFindMany.mockResolvedValue([]);
@@ -198,6 +201,27 @@ describe('Section details scrape processor', () => {
 		await processJob(null as any, () => { /* empty callback */ });
 
 		expect(mockCourseUpdate).toHaveBeenCalledTimes(0);
+	});
+
+	it('updates course prereqs', async () => {
+		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		mockSectionFindMany.mockResolvedValue([]);
+
+		mockedSectionDetailScraper.mockResolvedValue({
+			...SAMPLE_SCRAPED_SECTION,
+			description: ''
+		});
+
+		mockInstructorFindMany.mockResolvedValue([]);
+
+		await processJob(null as any, () => { /* empty callback */ });
+
+		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
+			where: expect.any(Object),
+			data: {
+				prereqs: SAMPLE_SCRAPED_SECTION.prereqs
+			}
+		});
 	});
 
 	afterEach(() => {

@@ -107,6 +107,18 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 					}
 				});
 			}
+
+			// Update prereqs
+			if (details.prereqs !== section.course.prereqs) {
+				await prisma.course.update({
+					where: {
+						id: section.courseId
+					},
+					data: {
+						prereqs: details.prereqs
+					}
+				});
+			}
 		}));
 
 		numberOfSectionsProcessed += sectionsToProcess.length;

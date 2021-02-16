@@ -139,6 +139,7 @@ describe('Courses and sections scrape processor', () => {
 				year: 2020,
 				semester: Semester.FALL,
 				description: '',
+				prereqs: null,
 				deletedAt: null,
 				updatedAt: new Date()
 			};
@@ -189,6 +190,7 @@ describe('Courses and sections scrape processor', () => {
 				year: 2020,
 				semester: Semester.FALL,
 				description: '',
+				prereqs: null,
 				deletedAt: null,
 				updatedAt: now
 			};
@@ -221,6 +223,7 @@ describe('Courses and sections scrape processor', () => {
 				year: 2020,
 				semester: Semester.FALL,
 				description: '',
+				prereqs: null,
 				deletedAt: now,
 				updatedAt: now
 			};
@@ -282,6 +285,7 @@ describe('Courses and sections scrape processor', () => {
 				year: 2020,
 				semester: Semester.FALL,
 				description: '',
+				prereqs: null,
 				deletedAt: null,
 				updatedAt: new Date()
 			};
@@ -347,6 +351,7 @@ describe('Courses and sections scrape processor', () => {
 				year: 2020,
 				semester: Semester.FALL,
 				description: '',
+				prereqs: null,
 				deletedAt: null,
 				updatedAt: new Date()
 			};
@@ -407,6 +412,7 @@ describe('Courses and sections scrape processor', () => {
 				year: 2020,
 				semester: Semester.FALL,
 				description: '',
+				prereqs: null,
 				deletedAt: null,
 				updatedAt: new Date()
 			};
@@ -445,6 +451,7 @@ describe('Courses and sections scrape processor', () => {
 				year: 2020,
 				semester: Semester.FALL,
 				description: '',
+				prereqs: null,
 				deletedAt: null,
 				updatedAt: new Date()
 			};
@@ -508,6 +515,7 @@ describe('Courses and sections scrape processor', () => {
 				year: 2020,
 				semester: Semester.FALL,
 				description: '',
+				prereqs: null,
 				deletedAt: null,
 				updatedAt: new Date()
 			};
