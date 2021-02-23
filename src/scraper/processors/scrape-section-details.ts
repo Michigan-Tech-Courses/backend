@@ -5,10 +5,11 @@ import prisma from 'src/lib/prisma-singleton';
 import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
 import {getSectionDetails} from '@mtucourses/scraper';
-import {termToDate} from 'src/lib/dates';
+import {dateToTerm, termToDate} from 'src/lib/dates';
 import {deleteByKey} from 'src/cache/store';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
+import getTermsToProcess from 'src/lib/get-terms-to-process';
 
 const CONCURRENCY_LIMIT = 15;
 
@@ -21,6 +22,8 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 	let sectionsToProcess = [];
 	let numberOfSectionsProcessed = 0;
+
+	const terms = getTermsToProcess();
 
 	while (true) {
 		sectionsToProcess = await prisma.section.findMany({
@@ -38,6 +41,14 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 					orderBy: {
 						id: 'asc'
 					}
+				}
+			},
+			where: {
+				course: {
+					OR: terms.map(t => ({
+						year: dateToTerm(t).year,
+						semester: dateToTerm(t).semester
+					}))
 				}
 			}
 		});
