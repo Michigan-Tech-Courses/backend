@@ -8,6 +8,7 @@ import {getSectionDetails} from '@mtucourses/scraper';
 import {termToDate} from 'src/lib/dates';
 import {deleteByKey} from 'src/cache/store';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
+import sortByNullValues from 'src/lib/sort-by-null-values';
 
 const CONCURRENCY_LIMIT = 15;
 
@@ -66,10 +67,10 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 					const firstName = fragmentedName[0];
 					const lastName = fragmentedName[fragmentedName.length - 1];
 
-					const results: Array<{id: number}> = await prisma.$queryRaw('SELECT id FROM "Instructor" WHERE "fullName" SIMILAR TO $1;', `(${firstName} % ${lastName})|(${instructorName})`);
+					const results: Array<{id: number}> = await prisma.$queryRaw('SELECT id FROM "Instructor" WHERE "fullName" SIMILAR TO $1;', `(${firstName} % ${lastName})|(${instructorName})|(${firstName} ${lastName})|(${firstName} ${lastName} %)|(${firstName} % ${lastName} %)`);
 
 					if (results.length > 0) {
-						instructors.push({id: results[0].id});
+						instructors.push({id: sortByNullValues(results)[0].id});
 						consumedNames.push(instructorName);
 					}
 				}));
