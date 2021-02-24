@@ -49,7 +49,8 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 						year: dateToTerm(t).year,
 						semester: dateToTerm(t).semester
 					}))
-				}
+				},
+				deletedAt: null
 			}
 		});
 
