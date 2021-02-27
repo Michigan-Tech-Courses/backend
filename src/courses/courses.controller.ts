@@ -1,4 +1,4 @@
-import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors} from '@nestjs/common';
+import {CacheInterceptor, Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
 import {Prisma} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetCoursesParameters} from './types';
@@ -10,6 +10,7 @@ export class CoursesController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
+	@Header('Cache-Control', 'max-age=60, stale-while-revalidate=86400')
 	async getAllCourses(@Query() parameters?: GetCoursesParameters) {
 		let queryParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
 			where: {}

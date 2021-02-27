@@ -1,4 +1,4 @@
-import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors} from '@nestjs/common';
+import {CacheInterceptor, Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
 import {Thumbor} from '@mtucourses/thumbor';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetInstructorsParameters} from './types';
@@ -15,6 +15,7 @@ export class InstructorsController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
+	@Header('Cache-Control', 'max-age=60, stale-while-revalidate=86400')
 	async getAllInstructors(@Query() parameters?: GetInstructorsParameters) {
 		let queryParameters = {};
 

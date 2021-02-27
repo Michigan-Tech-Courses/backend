@@ -1,4 +1,4 @@
-import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors} from '@nestjs/common';
+import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors, Header} from '@nestjs/common';
 import {Prisma, Section} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetSectionsParameters} from './types';
@@ -10,6 +10,7 @@ export class SectionsController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
+	@Header('Cache-Control', 'max-age=60, stale-while-revalidate=86400')
 	async getAllSections(@Query() parameters?: GetSectionsParameters) {
 		const courseParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
 			where: {},
