@@ -11,7 +11,7 @@ import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
 
-const CONCURRENCY_LIMIT = 15;
+const CONCURRENCY_LIMIT = 20;
 
 const processJob = async (_: Job, cb: DoneCallback) => {
 	const logger = new Logger('Job: course section details scrape');
@@ -23,7 +23,7 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 	let sectionsToProcess = [];
 	let numberOfSectionsProcessed = 0;
 
-	const terms = getTermsToProcess();
+	const terms = await getTermsToProcess();
 
 	while (true) {
 		sectionsToProcess = await prisma.section.findMany({
@@ -59,12 +59,24 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 		}
 
 		await Promise.all(sectionsToProcess.map(async section => {
-			const details = await getSectionDetails({
-				subject: section.course.subject,
-				crse: section.course.crse,
-				crn: section.crn,
-				term: termToDate({year: section.course.year, semester: section.course.semester})
-			});
+			let details;
+
+			try {
+				details = await getSectionDetails({
+					subject: section.course.subject,
+					crse: section.course.crse,
+					crn: section.crn,
+					term: termToDate({year: section.course.year, semester: section.course.semester})
+				});
+			} catch (error: unknown) {
+				if ((error as Error).message === 'Course not found') {
+					console.log(`Did not find ${section.course.id}: ${JSON.stringify(section.course)}`);
+					console.log('It should be cleaned up automatically on the next course scrape.');
+					return;
+				}
+
+				throw error;
+			}
 
 			const scrapedInstructors = details.instructors;
 

@@ -57,7 +57,8 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 	await prisma.$connect();
 
 	// For all terms
-	await Promise.all(getTermsToProcess().map(async term => {
+	const terms = await getTermsToProcess();
+	await Promise.all(terms.map(async term => {
 		const {semester, year} = dateToTerm(term);
 		// Scrape courses for this term and get stored courses
 		const [courses, storedCourses] = await Promise.all([

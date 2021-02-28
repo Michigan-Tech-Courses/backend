@@ -1,3 +1,5 @@
+import {getAllSections} from '@mtucourses/scraper';
+
 const getTermsForYear = (year: number) => {
 	const spring = new Date();
 	spring.setFullYear(year, 0);
@@ -11,7 +13,7 @@ const getTermsForYear = (year: number) => {
 	return [spring, summer, fall];
 };
 
-const getTermsToProcess = () => {
+const getTermsToProcess = async () => {
 	const now = new Date();
 	const year = now.getFullYear();
 
@@ -24,12 +26,22 @@ const getTermsToProcess = () => {
 
 	const toProcess = [];
 
-	for (let i = 0; i < terms.length; i++) {
+	let i = 0;
+	while (i < terms.length) {
 		if (now < terms[i]) {
 			toProcess.push(terms[i - 2], terms[i - 1], terms[i]);
 			break;
 		}
+
+		i++;
 	}
+
+	// Adds future term (i.e. current term is spring but fall courses are available)
+	try {
+		await getAllSections(terms[i + 1]);
+
+		toProcess.push(terms[i + 1]);
+	} catch {}
 
 	return toProcess;
 };
