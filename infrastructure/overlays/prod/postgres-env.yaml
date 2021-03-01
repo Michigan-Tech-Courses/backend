@@ -32,6 +32,13 @@ spec:
               secretKeyRef:
                 name: postgres
                 key: POSTGRES_PASSWORD
+        - name: pgbouncer
+          env:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: POSTGRES_URL
       volumes:
         - name: postgredb
           persistentVolumeClaim:

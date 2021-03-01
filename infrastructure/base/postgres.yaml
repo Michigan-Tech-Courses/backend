@@ -7,7 +7,7 @@ spec:
   - port: 5432
     targetPort: 5432
   selector:
-    app: postgres
+    app: pgbouncer
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -27,3 +27,19 @@ spec:
           image: postgres:12.2
           ports:
             - containerPort: 5432
+        - name: pgbouncer
+          image: edoburu/pgbouncer
+          ports:
+            - containerPort: 5432
+          env:
+          - name: MAX_CLIENT_CONN
+            value: 200
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            periodSeconds: 60
+          lifecycle:
+            preStop:
+              exec:
+                # Allow existing queries clients to complete within 120 seconds
+                command: ["/bin/sh", "-c", "killall -INT pgbouncer && sleep 120"]
