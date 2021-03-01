@@ -11,7 +11,7 @@ import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
 
-const CONCURRENCY_LIMIT = 20;
+const CONCURRENCY_LIMIT = 15;
 
 const processJob = async (_: Job, cb: DoneCallback) => {
 	const logger = new Logger('Job: course section details scrape');
