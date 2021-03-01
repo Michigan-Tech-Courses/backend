@@ -5,9 +5,9 @@ metadata:
 spec:
   ports:
   - port: 5432
-    targetPort: 5432
+    targetPort: 6432
   selector:
-    app: pgbouncer
+    app: postgres
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -24,19 +24,21 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:12.2
+          image: postgres:13.2
           ports:
             - containerPort: 5432
         - name: pgbouncer
-          image: edoburu/pgbouncer
+          image: edoburu/pgbouncer@sha256:e173802088fdbd6626a2e9ca66d01c4be029ca04710cca73ae818efa1f4d7dd7
           ports:
-            - containerPort: 5432
+            - containerPort: 6432
           env:
           - name: MAX_CLIENT_CONN
-            value: 200
+            value: "200"
+          - name: LISTEN_PORT
+            value: "6432"
           livenessProbe:
             tcpSocket:
-              port: 5432
+              port: 6432
             periodSeconds: 60
           lifecycle:
             preStop:

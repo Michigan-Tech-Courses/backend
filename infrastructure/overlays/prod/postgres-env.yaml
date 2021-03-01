@@ -9,6 +9,10 @@ spec:
         ad.datadoghq.com/postgres.check_names: '["postgres"]'
         ad.datadoghq.com/postgres.instances: '[{"host":"%%host%%", "port":5432,"username":"datadog","password":"%%env_POSTGRES_PASSWORD%%"}]'
         ad.datadoghq.com/postgres.init_configs: '[{}]'
+
+        ad.datadoghq.com/pgbouncer.check_names: '["pgbouncer"]'
+        ad.datadoghq.com/pgbouncer.instances: '[{"database_url": "postgresql://admin:%%env_PGBOUNCER_PASSWORD%%@%%host%%:6432/pgbouncer?sslmode=allow"}]'
+        ad.datadoghq.com/pgbouncer.init_configs: '[{}]'
     spec:
       containers:
         - name: postgres
@@ -38,7 +42,9 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: postgres
-                key: POSTGRES_URL
+                key: PGBOUNCER_TO_POSTGRES_URL
+          - name: STATS_USERS
+            value: admin
       volumes:
         - name: postgredb
           persistentVolumeClaim:
