@@ -61,6 +61,7 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          PGBOUNCER_TO_POSTGRES_URL: ${{ secrets.PGBOUNCER_TO_POSTGRES_URL }}
 
       - name: Add Thumbor values
         run: |
