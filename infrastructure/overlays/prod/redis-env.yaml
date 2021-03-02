@@ -14,3 +14,7 @@ spec:
           volumeMounts:
           - mountPath: /data
             name: data
+          resources:
+            limits:
+              cpu: "0.2"
+              memory: "256Mi"
