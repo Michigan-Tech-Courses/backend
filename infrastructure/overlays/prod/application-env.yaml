@@ -15,7 +15,7 @@ spec:
                 name: postgres
                 key: POSTGRES_URL
           - name: DATABASE_URL
-            value: $(DATABASE_URL_DEFAULT)?pgbouncer=true
+            value: $(DATABASE_URL_DEFAULT)?pgbouncer=true&connection_limit=50
 
           - name: THUMBOR_URL
             value: https://thumbor.michigantechcourses.com
