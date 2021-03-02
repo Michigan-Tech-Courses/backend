@@ -27,7 +27,7 @@ export class PassFailDropController {
 		// Hoist
 		const result: Record<string, Array<{year: number; semester: Semester; dropped: number; failed: number; total: number}>> = {};
 
-		rows.forEach(row => {
+		for (const row of rows) {
 			const key = `${row.courseSubject}${row.courseCrse}`;
 
 			const newElement = {
@@ -43,7 +43,7 @@ export class PassFailDropController {
 			} else {
 				result[key] = [newElement];
 			}
-		});
+		}
 
 		return result;
 	}

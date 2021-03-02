@@ -75,9 +75,9 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 
 		// Map that keeps track of whether or not a course in the database appears in the scrape
 		const didSeeCourseInScrapedData = new CourseMap();
-		storedCourses.forEach(storedCourse => {
+		for (const storedCourse of storedCourses) {
 			didSeeCourseInScrapedData.put({saw: false, course: storedCourse});
-		});
+		}
 
 		const courseInsertLimit = pLimit(10);
 

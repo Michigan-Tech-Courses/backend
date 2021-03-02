@@ -49,7 +49,7 @@ const SAMPLE_COURSE: Course = {
 	updatedAt: new Date()
 };
 
-const SAMPLE_SECTION: Section & { course: Course; instructors: Array<{ id: number }> } = {
+const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}>} = {
 	id: 'test-section-id',
 	updatedAt: new Date(),
 	deletedAt: new Date(),
