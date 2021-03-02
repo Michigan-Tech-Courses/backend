@@ -44,11 +44,6 @@ spec:
             value: "6432"
           - name: POOL_MODE
             value: "transaction"
-          - name: IDLE_TRANSACTION_TIMEOUT
-            value: "10"
-          # Otherwise logs get filled with FIXME: query end, but query_start == 0
-          - name: LOG_POOLER_ERRORS
-            value: "0"
           livenessProbe:
             tcpSocket:
               port: 6432
