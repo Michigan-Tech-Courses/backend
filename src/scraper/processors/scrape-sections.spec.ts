@@ -31,7 +31,8 @@ const mockedPrisma = jest.fn().mockImplementation(() => ({
 }));
 
 jest.mock('@prisma/client', () => ({
-	...(jest.requireActual('@prisma/client')!),
+	/* eslint-disable-next-line */
+	...(jest.requireActual('@prisma/client') as object),
 	PrismaClient: mockedPrisma
 }));
 
