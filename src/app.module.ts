@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {CacheModule, Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {BullModule} from '@nestjs/bull';
 import {ScraperModule} from './scraper/scraper.module';
@@ -11,6 +11,7 @@ import {InitHandler} from './init';
 
 @Module({
 	imports: [
+		CacheModule.register(),
 		ConfigModule.forRoot(),
 		BullModule.forRoot({
 			redis: {
