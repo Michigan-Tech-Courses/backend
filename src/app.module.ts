@@ -1,6 +1,7 @@
-import {CacheModule, Module} from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {BullModule} from '@nestjs/bull';
+import {CacheModule} from 'src/cache/cache.module';
 import {ScraperModule} from './scraper/scraper.module';
 import {InstructorsModule} from './instructors/instructors.module';
 import {CoursesModule} from './courses/courses.module';
@@ -11,7 +12,7 @@ import {InitHandler} from './init';
 
 @Module({
 	imports: [
-		CacheModule.register(),
+		CacheModule,
 		ConfigModule.forRoot(),
 		BullModule.forRoot({
 			redis: {
