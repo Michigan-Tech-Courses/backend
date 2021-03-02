@@ -33,6 +33,10 @@ spec:
             - containerPort: 5432
         - name: pgbouncer
           image: edoburu/pgbouncer@sha256:e173802088fdbd6626a2e9ca66d01c4be029ca04710cca73ae818efa1f4d7dd7
+          args:
+            - "/usr/bin/pgbouncer"
+            - "/etc/pgbouncer/pgbouncer.ini"
+            - "-q"
           ports:
             - containerPort: 6432
           env:

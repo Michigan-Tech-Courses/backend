@@ -23,6 +23,9 @@ spec:
               name: thumbor
               key: THUMBOR_SECURITY_KEY
         resources:
+          requests:
+            cpu: "0.1"
+            memory: "128M"
           limits:
             cpu: "0.5"
             memory: 128M
