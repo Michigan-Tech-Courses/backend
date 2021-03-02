@@ -9,13 +9,13 @@ spec:
       containers:
       - name: application
         env:
-          - name: DIRECT_TO_POSTGRES_URL
+          - name: DATABASE_URL_DEFAULT
             valueFrom:
               secretKeyRef:
                 name: postgres
-                key: DIRECT_TO_POSTGRES_URL
+                key: POSTGRES_URL
           - name: DATABASE_URL
-            value: $(DIRECT_TO_POSTGRES_URL)?connection_limit=50
+            value: $(DATABASE_URL_DEFAULT)?pgbouncer=true
 
           - name: THUMBOR_URL
             value: https://thumbor.michigantechcourses.com
@@ -34,12 +34,9 @@ spec:
               fieldRef:
                 fieldPath: status.hostIP
         resources:
-          requests:
-            cpu: "0.2"
-            memory: 512Mi
           limits:
-            cpu: "1"
-            memory: 1.5Gi
+            cpu: "0.5"
+            memory: 1Gi
 
       initContainers:
         - name: migrate-application-database

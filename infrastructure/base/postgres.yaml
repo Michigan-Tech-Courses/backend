@@ -37,7 +37,7 @@ spec:
             - containerPort: 6432
           env:
           - name: MAX_CLIENT_CONN
-            value: "200"
+            value: "500"
           - name: DEFAULT_POOL_SIZE
             value: "20"
           - name: LISTEN_PORT
