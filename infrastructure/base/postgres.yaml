@@ -6,6 +6,10 @@ spec:
   ports:
   - port: 5432
     targetPort: 6432
+    name: postgres
+  - port: 3432
+    targetPort: 5432
+    name: postgres-direct
   selector:
     app: postgres
 ---
@@ -34,8 +38,14 @@ spec:
           env:
           - name: MAX_CLIENT_CONN
             value: "200"
+          - name: DEFAULT_POOL_SIZE
+            value: "20"
           - name: LISTEN_PORT
             value: "6432"
+          - name: POOL_MODE
+            value: "transaction"
+          - name: IDLE_TRANSACTION_TIMEOUT
+            value: "10"
           livenessProbe:
             tcpSocket:
               port: 6432

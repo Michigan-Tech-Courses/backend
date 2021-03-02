@@ -22,3 +22,7 @@ spec:
             secretKeyRef:
               name: thumbor
               key: THUMBOR_SECURITY_KEY
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: 128M

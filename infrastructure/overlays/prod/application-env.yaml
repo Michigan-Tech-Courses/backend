@@ -3,17 +3,20 @@ kind: Deployment
 metadata:
   name: application
 spec:
-  replicas: 4
+  replicas: 2
   template:
     spec:
       containers:
       - name: application
         env:
-          - name: DATABASE_URL
+          - name: DATABASE_URL_DEFAULT
             valueFrom:
               secretKeyRef:
                 name: postgres
                 key: POSTGRES_URL
+          - name: DATABASE_URL
+            value: $(DATABASE_URL_DEFAULT)?pgbouncer=true&connection_limit=50
+
           - name: THUMBOR_URL
             value: https://thumbor.michigantechcourses.com
           - name: THUMBOR_SECURITY_KEY
@@ -30,6 +33,11 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.hostIP
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: 512M
+
       initContainers:
         - name: migrate-application-database
           env:
@@ -37,4 +45,4 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: postgres
-                key: POSTGRES_URL
+                key: DIRECT_TO_POSTGRES_URL
