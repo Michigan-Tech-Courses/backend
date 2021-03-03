@@ -1,6 +1,6 @@
 import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
-import {BullModule} from '@nestjs/bull';
+import {BullModule} from '@codetheweb/nestjs-bull';
 import {CacheModule} from 'src/cache/cache.module';
 import {ScraperModule} from './scraper/scraper.module';
 import {InstructorsModule} from './instructors/instructors.module';
@@ -15,13 +15,9 @@ import {InitHandler} from './init';
 		CacheModule,
 		ConfigModule.forRoot(),
 		BullModule.forRoot({
-			redis: {
+			connection: {
 				port: Number.parseInt(process.env.REDIS_PORT!, 10),
 				host: process.env.REDIS_HOST
-			},
-			settings: {
-				guardInterval: 3 * 5000,
-				maxStalledCount: 0
 			}
 		}),
 		ScraperModule,
