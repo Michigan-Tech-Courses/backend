@@ -1,8 +1,9 @@
-import {Body, CacheInterceptor, Controller, Get, Injectable, Put, UseInterceptors, Headers} from '@nestjs/common';
+import {Body, CacheInterceptor, Controller, Get, Injectable, Put, UseInterceptors, Headers, Header} from '@nestjs/common';
 import {Semester} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import checkAuthHeader from 'src/lib/check-auth-header';
 import {PutDto} from './types';
+import pLimit from 'p-limit';
 
 @Controller('passfaildrop')
 @UseInterceptors(CacheInterceptor)
@@ -11,6 +12,7 @@ export class PassFailDropController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
+	@Header('Cache-Control', 'max-age=60')
 	async getAll() {
 		const rows = await this.prisma.passFailDrop.groupBy({
 			by: ['courseSubject', 'courseCrse', 'year', 'semester'],
@@ -52,7 +54,9 @@ export class PassFailDropController {
 	async putMany(@Body() putManyDto: PutDto[], @Headers('authorization') authHeader: string) {
 		checkAuthHeader(authHeader);
 
-		await Promise.all(putManyDto.map(async row => this.prisma.passFailDrop.upsert({
+		const limit = pLimit(5);
+
+		await Promise.all(putManyDto.map(async row => limit(() => this.prisma.passFailDrop.upsert({
 			where: {
 				courseSubject_courseCrse_year_semester_section: {
 					courseSubject: row.courseSubject,
@@ -64,6 +68,6 @@ export class PassFailDropController {
 			},
 			create: row,
 			update: row
-		})));
+		}))));
 	}
 }
