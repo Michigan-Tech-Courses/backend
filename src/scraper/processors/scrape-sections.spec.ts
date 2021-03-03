@@ -83,7 +83,7 @@ describe('Courses and sections scrape processor', () => {
 		mockCourseFindMany.mockResolvedValue([]);
 		mockSectionFindMany.mockResolvedValue([]);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 	});
 
 	describe('Courses', () => {
@@ -99,7 +99,7 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseFindMany.mockResolvedValue([]);
 			mockSectionFindMany.mockResolvedValue([]);
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockCourseUpsert).toHaveBeenCalledTimes(1);
 
@@ -149,7 +149,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
 				where: {
@@ -199,7 +199,7 @@ describe('Courses and sections scrape processor', () => {
 			mockedSectionsScraper.mockResolvedValue([]);
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockCourseUpdateMany.mock.calls[0][0]).toEqual({
 				data: {
@@ -239,7 +239,7 @@ describe('Courses and sections scrape processor', () => {
 			mockedSectionsScraper.mockResolvedValue([scrapedCourse]);
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
 				where: {
@@ -296,7 +296,7 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
 			mockCourseFindFirst.mockResolvedValue(storedCourse);
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockCourseUpsert).toBeCalledTimes(0);
 		});
@@ -312,7 +312,7 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseUpsert.mockImplementation(async ({create}: {create: Course}) => Promise.resolve(create));
 			mockSectionCreate.mockResolvedValue({id: 'test-id'});
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockSectionCreate).toHaveBeenCalledTimes(1);
 
@@ -381,7 +381,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockSectionFindFirst.mockResolvedValue(storedSection);
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockSectionUpdateMany.mock.calls[0][0]).toEqual({
 				data: {
@@ -424,7 +424,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockSectionFindMany.mockResolvedValue([{id: 'test-section-id'}]);
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockSectionUpdateMany.mock.calls[0][0]).toEqual({
 				data: {
@@ -479,7 +479,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockSectionFindFirst.mockResolvedValue(storedSection);
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockSectionUpdateMany.mock.calls[0][0]).toEqual({
 				data: {
@@ -543,7 +543,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockSectionFindFirst.mockResolvedValue(storedSection);
 
-			await processJob(null as any, () => { /* empty callback */ });
+			await processJob(null as any);
 
 			expect(mockSectionUpdateMany).toBeCalledTimes(0);
 		});

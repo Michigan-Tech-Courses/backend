@@ -81,7 +81,7 @@ describe('Section details scrape processor', () => {
 	it('runs without errors', async () => {
 		mockSectionFindMany.mockResolvedValue([]);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 	});
 
 	it('updates instructors', async () => {
@@ -95,7 +95,7 @@ describe('Section details scrape processor', () => {
 
 		mockQueryRaw.mockResolvedValue([{id: 1}]);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 
 		expect(mockSectionUpdate.mock.calls[0][0]).toEqual({
 			where: {
@@ -132,7 +132,7 @@ describe('Section details scrape processor', () => {
 
 		mockQueryRaw.mockResolvedValue([{id: 1}]);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 
 		expect(mockSectionUpdate).toBeCalledTimes(0);
 	});
@@ -152,7 +152,7 @@ describe('Section details scrape processor', () => {
 
 		mockQueryRaw.mockResolvedValue([]);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 
 		expect(mockSectionUpdate.mock.calls[0][0]).toEqual({
 			where: {
@@ -177,7 +177,7 @@ describe('Section details scrape processor', () => {
 
 		mockedSectionDetailScraper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 
 		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
 			where: expect.any(Object),
@@ -197,7 +197,7 @@ describe('Section details scrape processor', () => {
 			prereqs: SAMPLE_COURSE.prereqs
 		});
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 
 		expect(mockCourseUpdate).toHaveBeenCalledTimes(0);
 	});
@@ -211,7 +211,7 @@ describe('Section details scrape processor', () => {
 			description: ''
 		});
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 
 		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
 			where: expect.any(Object),

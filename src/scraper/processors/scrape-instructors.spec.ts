@@ -27,7 +27,7 @@ describe('Instructor scrape processor', () => {
 	it('runs without errors', async () => {
 		mockedFacultyScraper.mockResolvedValue([]);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 	});
 
 	it('inserts results into the database', async () => {
@@ -47,7 +47,7 @@ describe('Instructor scrape processor', () => {
 
 		mockInstructorFindUnique.mockResolvedValue(null);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 
 		const {name, ...namelessInstructor} = instructor;
 		const normalizedInstructor = {...namelessInstructor, fullName: instructor.name};
@@ -91,7 +91,7 @@ describe('Instructor scrape processor', () => {
 
 		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 
 		expect(mockInstructorUpsert).toHaveBeenCalledTimes(0);
 	});
@@ -126,7 +126,7 @@ describe('Instructor scrape processor', () => {
 
 		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
 
-		await processJob(null as any, () => { /* empty callback */ });
+		await processJob(null as any);
 
 		expect(mockInstructorUpsert).toHaveBeenCalledTimes(1);
 	});
