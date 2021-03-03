@@ -1,4 +1,4 @@
-import {Job, DoneCallback} from 'bull';
+import {Job} from 'bullmq';
 import {Logger} from '@nestjs/common';
 import equal from 'deep-equal';
 import {Except} from 'type-fest';
@@ -49,7 +49,7 @@ const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): B
 	};
 };
 
-const processJob = async (_: Job, cb: DoneCallback) => {
+const processJob = async (_: Job) => {
 	const logger = new Logger('Job: course sections scrape');
 
 	logger.log('Started processing...');
@@ -221,8 +221,6 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 	logger.log('Finished processing');
 
 	await Promise.all([prisma.$disconnect(), deleteByKey('/courses'), deleteByKey('/sections')]);
-
-	cb(null, null);
 };
 
 export default processJob;

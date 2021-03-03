@@ -1,5 +1,5 @@
 import {Module} from '@nestjs/common';
-import {BullModule} from '@nestjs/bull';
+import {BullModule} from '@codetheweb/nestjs-bull';
 import {join} from 'path';
 import {ScraperService} from './scraper.service';
 

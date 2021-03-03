@@ -1,4 +1,4 @@
-import {Job, DoneCallback} from 'bull';
+import {Job} from 'bullmq';
 import {Logger} from '@nestjs/common';
 import prisma from 'src/lib/prisma-singleton';
 import pLimit from 'p-limit';
@@ -7,7 +7,7 @@ import equal from 'deep-equal';
 import remap from 'src/lib/remap';
 import {deleteByKey} from 'src/cache/store';
 
-const processJob = async (_: Job, cb: DoneCallback) => {
+const processJob = async (_: Job) => {
 	const logger = new Logger('Job: rate my professors scrape');
 
 	logger.log('Started processing...');
@@ -52,8 +52,6 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 	logger.log('Finished processing');
 
 	await deleteByKey('/instructors');
-
-	cb(null, null);
 };
 
 export default processJob;

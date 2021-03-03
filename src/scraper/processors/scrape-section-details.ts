@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import {Job, DoneCallback} from 'bull';
+import {Job} from 'bullmq';
 import {Logger} from '@nestjs/common';
 import prisma from 'src/lib/prisma-singleton';
 import equal from 'deep-equal';
@@ -13,7 +13,7 @@ import getTermsToProcess from 'src/lib/get-terms-to-process';
 
 const CONCURRENCY_LIMIT = 15;
 
-const processJob = async (_: Job, cb: DoneCallback) => {
+const processJob = async (_: Job) => {
 	const logger = new Logger('Job: course section details scrape');
 
 	logger.log('Started processing...');
@@ -182,8 +182,6 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 	logger.log('Finished processing');
 
 	await Promise.all([prisma.$disconnect(), deleteByKey('/courses'), deleteByKey('/sections')]);
-
-	cb(null, null);
 };
 
 export default processJob;

@@ -1,4 +1,4 @@
-import {Job, DoneCallback} from 'bull';
+import {Job} from 'bullmq';
 import {Logger} from '@nestjs/common';
 import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
 import pLimit from 'p-limit';
@@ -6,7 +6,7 @@ import equal from 'deep-equal';
 import {deleteByKey} from 'src/cache/store';
 import prisma from 'src/lib/prisma-singleton';
 
-const processJob = async (_: Job, cb: DoneCallback) => {
+const processJob = async (_: Job) => {
 	const logger = new Logger('Job: instructor scrape');
 
 	logger.log('Started processing...');
@@ -63,8 +63,6 @@ const processJob = async (_: Job, cb: DoneCallback) => {
 	logger.log('Finished processing');
 
 	await Promise.all([prisma.$disconnect(), deleteByKey('/instructors')]);
-
-	cb(null, null);
 };
 
 export default processJob;

@@ -1,8 +1,8 @@
 import {Test} from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
 import {ScraperService} from 'src/scraper/scraper.service';
-import {BullModule, getQueueToken} from '@nestjs/bull';
-import {Queue} from 'bull';
+import {BullModule, getQueueToken} from '@codetheweb/nestjs-bull';
+import {Queue} from 'bullmq';
 import {promisify} from 'util';
 import * as redis from 'redis';
 import delay from 'delay';
@@ -18,7 +18,7 @@ describe('Scraper (e2e)', () => {
 	const fakeRMPProcessor = jest.fn();
 
 	const createApp = async () => {
-		const redis = {
+		const connection = {
 			port: Number.parseInt(process.env.REDIS_PORT ?? '6379', 10),
 			host: process.env.REDIS_HOST ?? 'localhost'
 		};
@@ -28,22 +28,22 @@ describe('Scraper (e2e)', () => {
 				BullModule.registerQueue({
 					name: 'scrape-instructors',
 					processors: [fakeInstructorProcessor],
-					redis
+					connection
 				}),
 				BullModule.registerQueue({
 					name: 'scrape-rmp',
 					processors: [fakeRMPProcessor],
-					redis
+					connection
 				}),
 				BullModule.registerQueue({
 					name: 'scrape-sections',
 					processors: [fakeRMPProcessor],
-					redis
+					connection
 				}),
 				BullModule.registerQueue({
 					name: 'scrape-section-details',
 					processors: [fakeRMPProcessor],
-					redis
+					connection
 				})
 			],
 			providers: [ScraperService]
@@ -65,15 +65,14 @@ describe('Scraper (e2e)', () => {
 	it('sets up jobs correctly', async () => {
 		let queue = app.get<Queue>(getQueueToken('scrape-instructors'));
 
-		const initialScrapeJob = await queue.getJob(1);
-		const repeatingScrapeJob = await queue.getJob(2);
+		const initialScrapeJob = await queue.getJob('1');
+		const repeatingScrapeJob = await queue.getRepeatableJobs();
 
 		// Expect jobs were added
 		expect(initialScrapeJob).toBeDefined();
-		expect(repeatingScrapeJob).toBeDefined();
+		expect(repeatingScrapeJob.length).toEqual(1);
 
 		await delay(100); // Have some fudge
-		await queue.whenCurrentJobsFinished();
 
 		expect(fakeInstructorProcessor).toBeCalledTimes(1);
 
@@ -86,7 +85,6 @@ describe('Scraper (e2e)', () => {
 		queue = app.get<Queue>(getQueueToken('scrape-instructors'));
 
 		await delay(100); // Have some fudge
-		await queue.whenCurrentJobsFinished();
 
 		expect(fakeInstructorProcessor).toBeCalledTimes(0);
 	});
