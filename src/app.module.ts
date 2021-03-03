@@ -18,6 +18,9 @@ import {InitHandler} from './init';
 			redis: {
 				port: Number.parseInt(process.env.REDIS_PORT!, 10),
 				host: process.env.REDIS_HOST
+			},
+			settings: {
+				guardInterval: 3 * 5000
 			}
 		}),
 		ScraperModule,
