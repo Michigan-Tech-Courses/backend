@@ -20,7 +20,8 @@ import {InitHandler} from './init';
 				host: process.env.REDIS_HOST
 			},
 			settings: {
-				guardInterval: 3 * 5000
+				guardInterval: 3 * 5000,
+				maxStalledCount: 0
 			}
 		}),
 		ScraperModule,
