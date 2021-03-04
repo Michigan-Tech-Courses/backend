@@ -56,7 +56,7 @@ const processJob = async (_: Job) => {
 
 	await prisma.$connect();
 
-	const processTerm = pThrottle({limit: 2, interval: 100})(async (term: Date) => {
+	const processTerm = pThrottle({limit: 3, interval: 100})(async (term: Date) => {
 		const {semester, year} = dateToTerm(term);
 		// Scrape courses for this term and get stored courses
 		const [courses, storedCourses] = await Promise.all([
