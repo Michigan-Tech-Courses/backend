@@ -22,6 +22,7 @@ export class ScraperService implements OnModuleInit {
 		]);
 
 		// Add jobs
+		// Schedules are attempted to be slightly offseted to limit concurrent load
 
 		// Instructor scrape
 
@@ -33,7 +34,7 @@ export class ScraperService implements OnModuleInit {
 		// Add recurring job
 		await this.scrapeInstructorQueue.add('recurring-scrape', null, {
 			repeat: {
-				every: 10 * 60 * 1000 // 10 minutes
+				cron: '10 * * * *' // Xx:10 (every hour)
 			},
 			jobId: '2'
 		});
@@ -50,7 +51,7 @@ export class ScraperService implements OnModuleInit {
 		await this.scrapeRMPQueue.add('recurring-scrape', null, {
 			jobId: '2', // Prevents adding multiple of the same job
 			repeat: {
-				every: 2 * 60 * 60 * 1000 // 2 hours
+				cron: '20 */2 * * *' // (xx % 2 == 0):20 (every 2 hours)
 			}
 		});
 
@@ -65,7 +66,7 @@ export class ScraperService implements OnModuleInit {
 		await this.scrapeSectionsQueue.add('recurring-scrape', null, {
 			jobId: '2', // Prevents adding multiple of the same job
 			repeat: {
-				every: 5 * 60 * 1000 // 5 minutes
+				cron: '*/6 * * * *' // Every 6 minutes
 			}
 		});
 
@@ -81,7 +82,7 @@ export class ScraperService implements OnModuleInit {
 		await this.scrapeSectionDetailsQueue.add('recurring-scrape', null, {
 			jobId: '2', // Prevents adding multiple of the same job
 			repeat: {
-				every: 60 * 60 * 1000 // 1 hour
+				cron: '40 * * * *' // Xx:40 (every hour)
 			}
 		});
 	}
