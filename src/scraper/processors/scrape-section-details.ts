@@ -24,7 +24,7 @@ const processJob = async (_: Job) => {
 
 	const terms = await getTermsToProcess();
 
-	const throttledGetSectionDetails = pThrottle({limit: 10, interval: 100})(getSectionDetails);
+	const throttledGetSectionDetails = pThrottle({limit: 2, interval: 100})(getSectionDetails);
 
 	while (true) {
 		sectionsToProcess = await prisma.section.findMany({
