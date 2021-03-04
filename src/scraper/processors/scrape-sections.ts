@@ -80,7 +80,7 @@ const processJob = async (_: Job) => {
 		}
 
 		const courseUpserter = pThrottle({
-			limit: 10,
+			limit: 5,
 			interval: 100
 		})(async (scrapedCourse: ICourseOverview) => {
 			const uniqueSelector = {year, semester, subject: scrapedCourse.subject, crse: scrapedCourse.crse};
