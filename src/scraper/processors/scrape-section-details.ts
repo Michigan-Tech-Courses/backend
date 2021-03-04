@@ -38,7 +38,7 @@ const processJob = async (_: Job) => {
 			orderBy: {
 				id: 'asc'
 			},
-			take: 256,
+			take: 20,
 			skip: numberOfSectionsProcessed,
 			include: {
 				course: true,
