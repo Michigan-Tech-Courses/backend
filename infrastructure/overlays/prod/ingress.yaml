@@ -22,6 +22,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: letsencrypt
     nginx.org/client-max-body-size: "600m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "600m"
 
 spec:
   rules:
@@ -66,7 +67,6 @@ metadata:
     nginx.org/client-max-body-size: "600m"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_cache static-cache;
-      proxy_cache_valid any 1m;
       proxy_cache_bypass $http_x_purge;
       add_header X-Cache-Status $upstream_cache_status;
 spec:
