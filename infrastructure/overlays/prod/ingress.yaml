@@ -17,6 +17,46 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  name: services-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.org/client-max-body-size: "600m"
+
+spec:
+  rules:
+  - host: thumbor.michigantechcourses.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: thumbor
+            port:
+              number: 80
+  - host: registry.michigantechcourses.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: registry
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - thumbor.michigantechcourses.com
+    secretName: thumbor-ingress-cert
+  - hosts:
+    - registry.michigantechcourses.com
+    secretName: registry-ingress-cert
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
   name: application-ingress
   annotations:
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
@@ -41,33 +81,7 @@ spec:
             name: application
             port:
               number: 80
-  - host: thumbor.michigantechcourses.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: thumbor
-            port:
-              number: 80
-  - host: registry.michigantechcourses.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: registry
-            port:
-              number: 80
   tls:
   - hosts:
     - api.michigantechcourses.com
     secretName: api-ingress-cert
-  - hosts:
-    - thumbor.michigantechcourses.com
-    secretName: thumbor-ingress-cert
-  - hosts:
-    - registry.michigantechcourses.com
-    secretName: registry-ingress-cert

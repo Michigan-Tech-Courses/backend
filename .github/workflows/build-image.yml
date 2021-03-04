@@ -24,7 +24,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Login to registry
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v1
         with:
           registry: registry.michigantechcourses.com
           username: ${{ secrets.REGISTRY_USERNAME }}
@@ -37,4 +37,4 @@ jobs:
           push: true
           tags: registry.michigantechcourses.com/backend:${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          cache-to: type=local,dest=/tmp/.buildx-cache
