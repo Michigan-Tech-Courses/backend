@@ -1,6 +1,7 @@
 import {Injectable, OnModuleInit} from '@nestjs/common';
 import {InjectQueue} from '@codetheweb/nestjs-bull';
 import {Queue} from 'bullmq';
+import {setQueues, BullMQAdapter} from 'bull-board';
 
 @Injectable()
 export class ScraperService implements OnModuleInit {
@@ -12,6 +13,14 @@ export class ScraperService implements OnModuleInit {
 	) {}
 
 	async onModuleInit() {
+		// Bull UI
+		setQueues([
+			new BullMQAdapter(this.scrapeInstructorQueue, {readOnlyMode: true}),
+			new BullMQAdapter(this.scrapeRMPQueue, {readOnlyMode: true}),
+			new BullMQAdapter(this.scrapeSectionsQueue, {readOnlyMode: true}),
+			new BullMQAdapter(this.scrapeSectionDetailsQueue, {readOnlyMode: true})
+		]);
+
 		// Add jobs
 
 		// Instructor scrape
