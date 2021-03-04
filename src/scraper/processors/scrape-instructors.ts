@@ -1,7 +1,7 @@
 import {Job} from 'bullmq';
 import {Logger} from '@nestjs/common';
 import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
-import pLimit from 'p-limit';
+import pThrottle from 'p-throttle';
 import equal from 'deep-equal';
 import {deleteByKey} from 'src/cache/store';
 import prisma from 'src/lib/prisma-singleton';
@@ -17,48 +17,49 @@ const processJob = async (_: Job) => {
 
 	logger.log('Finished scraping website');
 
-	const limit = pLimit(10);
+	const processInstructor = pThrottle({
+		limit: 10,
+		interval: 100
+	})(async (instructor: IFaculty) => {
+		const existingInstructor = await prisma.instructor.findUnique({where: {fullName: instructor.name}});
 
-	await Promise.all(
-		faculty.map(async instructor => limit(async () => {
-			const existingInstructor = await prisma.instructor.findUnique({where: {fullName: instructor.name}});
+		// Need to prevent upserting if nothing has changed since otherwise updatedAt will be changed
+		let shouldUpsert = false;
 
-			// Need to prevent upserting if nothing has changed since otherwise updatedAt will be changed
-			let shouldUpsert = false;
+		if (existingInstructor) {
+			const storedAttributesToCompare: IFaculty = {
+				name: existingInstructor.fullName,
+				departments: existingInstructor.departments,
+				email: existingInstructor.email,
+				phone: existingInstructor.phone,
+				office: existingInstructor.office,
+				websiteURL: existingInstructor.websiteURL,
+				interests: existingInstructor.interests,
+				occupations: existingInstructor.occupations,
+				photoURL: existingInstructor.photoURL
+			};
 
-			if (existingInstructor) {
-				const storedAttributesToCompare: IFaculty = {
-					name: existingInstructor.fullName,
-					departments: existingInstructor.departments,
-					email: existingInstructor.email,
-					phone: existingInstructor.phone,
-					office: existingInstructor.office,
-					websiteURL: existingInstructor.websiteURL,
-					interests: existingInstructor.interests,
-					occupations: existingInstructor.occupations,
-					photoURL: existingInstructor.photoURL
-				};
-
-				if (!equal(storedAttributesToCompare, instructor)) {
-					shouldUpsert = true;
-				}
-			} else {
+			if (!equal(storedAttributesToCompare, instructor)) {
 				shouldUpsert = true;
 			}
+		} else {
+			shouldUpsert = true;
+		}
 
-			if (shouldUpsert) {
-				const {name, ...preparedInstructor} = instructor;
+		if (shouldUpsert) {
+			const {name, ...preparedInstructor} = instructor;
 
-				await prisma.instructor.upsert({
-					where: {
-						fullName: instructor.name
-					},
-					update: {...preparedInstructor, fullName: instructor.name},
-					create: {...preparedInstructor, fullName: instructor.name}
-				});
-			}
-		})
-		));
+			await prisma.instructor.upsert({
+				where: {
+					fullName: instructor.name
+				},
+				update: {...preparedInstructor, fullName: instructor.name},
+				create: {...preparedInstructor, fullName: instructor.name}
+			});
+		}
+	});
+
+	await Promise.all(faculty.map(async instructor => processInstructor(instructor)));
 
 	logger.log('Finished processing');
 

@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import {Job} from 'bullmq';
 import {Logger} from '@nestjs/common';
+import pThrottle from 'p-throttle';
 import prisma from 'src/lib/prisma-singleton';
 import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
@@ -10,8 +11,6 @@ import {deleteByKey} from 'src/cache/store';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
-
-const CONCURRENCY_LIMIT = 15;
 
 const processJob = async (_: Job) => {
 	const logger = new Logger('Job: course section details scrape');
@@ -25,12 +24,14 @@ const processJob = async (_: Job) => {
 
 	const terms = await getTermsToProcess();
 
+	const throttledGetSectionDetails = pThrottle({limit: 10, interval: 100})(getSectionDetails);
+
 	while (true) {
 		sectionsToProcess = await prisma.section.findMany({
 			orderBy: {
 				id: 'asc'
 			},
-			take: CONCURRENCY_LIMIT,
+			take: 256,
 			skip: numberOfSectionsProcessed,
 			include: {
 				course: true,
@@ -62,7 +63,7 @@ const processJob = async (_: Job) => {
 			let details;
 
 			try {
-				details = await getSectionDetails({
+				details = await throttledGetSectionDetails({
 					subject: section.course.subject,
 					crse: section.course.crse,
 					crn: section.crn,

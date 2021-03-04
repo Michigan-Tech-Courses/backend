@@ -3,10 +3,10 @@ import {Logger} from '@nestjs/common';
 import equal from 'deep-equal';
 import {Except} from 'type-fest';
 import arrDiff from 'arr-diff';
-import pLimit from 'p-limit';
+import pThrottle from 'p-throttle';
 import prisma from 'src/lib/prisma-singleton';
 import {Section, Prisma} from '@prisma/client';
-import {getAllSections, ISection} from '@mtucourses/scraper';
+import {getAllSections, ICourseOverview, ISection} from '@mtucourses/scraper';
 import {CourseMap} from 'src/lib/course-map';
 import {IRuleOptions, Schedule} from 'src/lib/rschedule';
 import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src/lib/dates';
@@ -79,10 +79,10 @@ const processJob = async (_: Job) => {
 			didSeeCourseInScrapedData.put({saw: false, course: storedCourse});
 		}
 
-		const courseInsertLimit = pLimit(10);
-
-		// Upsert courses in database from scraped data
-		await Promise.all(courses.map(async scrapedCourse => courseInsertLimit(async () => {
+		const courseUpserter = pThrottle({
+			limit: 10,
+			interval: 100
+		})(async (scrapedCourse: ICourseOverview) => {
 			const uniqueSelector = {year, semester, subject: scrapedCourse.subject, crse: scrapedCourse.crse};
 
 			let storedCourse = await prisma.course.findFirst({
@@ -129,53 +129,58 @@ const processJob = async (_: Job) => {
 			}
 
 			// Upsert course sections
-			const sectionInsertLimit = pLimit(1);
+			const sectionUpserter = pThrottle({
+				limit: 1,
+				interval: 50
+			})(async (scrapedSection: BasicSection) => {
+				let storedSection = await prisma.section.findFirst({
+					where: {
+						courseId: storedCourse!.id,
+						section: scrapedSection.section
+					}
+				});
+
+				if (storedSection) {
+					// Check if there's any difference
+					const {id, courseId, updatedAt, deletedAt, ...storedSectionToCompare} = storedSection;
+
+					if (!equal(storedSectionToCompare, scrapedSection) || storedSection.deletedAt) {
+						// Section needs to be updated
+						// (We're not actually updating many, but relations
+						// can't be marked as unique in Prisma.)
+						await prisma.section.updateMany({
+							where: {
+								courseId: storedCourse!.id,
+								section: scrapedSection.section
+							},
+							data: {
+								...scrapedSection,
+								deletedAt: null
+							}
+						});
+					}
+				} else {
+					// Section doesn't exist; create
+					storedSection = await prisma.section.create({
+						data: {
+							...scrapedSection,
+							courseId: storedCourse!.id
+						}
+					});
+				}
+
+				sawSectionIds.push(storedSection.id);
+			});
 
 			await Promise.all(
 				scrapedCourse.sections
 					.map(section => reshapeSectionFromScraperToDatabase(section, year))
-					.map(async scrapedSection => sectionInsertLimit(async () => {
-						let storedSection = await prisma.section.findFirst({
-							where: {
-								courseId: storedCourse!.id,
-								section: scrapedSection.section
-							}
-						});
-
-						if (storedSection) {
-							// Check if there's any difference
-							const {id, courseId, updatedAt, deletedAt, ...storedSectionToCompare} = storedSection;
-
-							if (!equal(storedSectionToCompare, scrapedSection) || storedSection.deletedAt) {
-								// Section needs to be updated
-								// (We're not actually updating many, but relations
-								// can't be marked as unique in Prisma.)
-								await prisma.section.updateMany({
-									where: {
-										courseId: storedCourse!.id,
-										section: scrapedSection.section
-									},
-									data: {
-										...scrapedSection,
-										deletedAt: null
-									}
-								});
-							}
-						} else {
-							// Section doesn't exist; create
-							storedSection = await prisma.section.create({
-								data: {
-									...scrapedSection,
-									courseId: storedCourse!.id
-								}
-							});
-						}
-
-						sawSectionIds.push(storedSection.id);
-					})
-					)
+					.map(async scrapedSection => sectionUpserter(scrapedSection))
 			);
-		})));
+		});
+
+		// Upsert courses in database from scraped data
+		await Promise.all(courses.map(async scrapedCourse => courseUpserter(scrapedCourse)));
 
 		// Mark courses that didn't show up
 		const coursesToDelete = didSeeCourseInScrapedData.getUnseen();

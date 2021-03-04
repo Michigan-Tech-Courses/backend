@@ -1,24 +1,22 @@
 import {Job} from 'bullmq';
 import {Logger} from '@nestjs/common';
 import prisma from 'src/lib/prisma-singleton';
-import pLimit from 'p-limit';
+import pThrottle from 'p-throttle';
 import ratings from '@mtucourses/rate-my-professors';
 import equal from 'deep-equal';
 import remap from 'src/lib/remap';
 import {deleteByKey} from 'src/cache/store';
+import {Instructor} from '@prisma/client';
 
 const processJob = async (_: Job) => {
 	const logger = new Logger('Job: rate my professors scrape');
 
 	logger.log('Started processing...');
 
-	const limit = pLimit(2);
-
-	await prisma.$connect();
-
-	const instructors = await prisma.instructor.findMany();
-
-	await Promise.all(instructors.map(async instructor => limit(async () => {
+	const processInstructor = pThrottle({
+		limit: 2,
+		interval: 100
+	})(async (instructor: Instructor) => {
 		const results = await ratings.searchTeacher(`mtu ${instructor.fullName}`);
 
 		if (results.length > 0) {
@@ -47,7 +45,13 @@ const processJob = async (_: Job) => {
 				});
 			}
 		}
-	})));
+	});
+
+	await prisma.$connect();
+
+	const instructors = await prisma.instructor.findMany();
+
+	await Promise.all(instructors.map(async instructor => processInstructor(instructor)));
 
 	logger.log('Finished processing');
 

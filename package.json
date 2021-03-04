@@ -37,6 +37,7 @@
     "@rschedule/json-tools": "^1.2.3",
     "@rschedule/standard-date-adapter": "^1.2.3",
     "arr-diff": "^4.0.0",
+    "bull-board": "^1.4.1",
     "bullmq": "^1.14.7",
     "cache-manager": "^3.4.0",
     "cache-manager-redis-store": "^2.0.0",
@@ -45,7 +46,7 @@
     "dd-trace": "^0.30.5",
     "deep-equal": "^2.0.5",
     "fastify-swagger": "^3.5.0",
-    "p-limit": "^3.1.0",
+    "p-throttle": "^4.1.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3"
