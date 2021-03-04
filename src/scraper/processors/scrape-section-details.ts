@@ -25,6 +25,13 @@ const processJob = async (_: Job) => {
 	const terms = await getTermsToProcess();
 
 	const throttledGetSectionDetails = pThrottle({limit: 2, interval: 100})(getSectionDetails);
+	const throttledRawQuery = pThrottle({limit: 2, interval: 100})(prisma.$queryRaw);
+
+	const throttledInstructorCreate = pThrottle({limit: 2, interval: 100})(prisma.instructor.create);
+	const throttledInstructorFindUnique = pThrottle({limit: 2, interval: 100})(prisma.instructor.findUnique);
+
+	const throttledSectionUpdate = pThrottle({limit: 2, interval: 100})(prisma.section.update);
+	const throttledCourseUpdate = pThrottle({limit: 2, interval: 100})(prisma.course.update);
 
 	while (true) {
 		sectionsToProcess = await prisma.section.findMany({
@@ -92,7 +99,7 @@ const processJob = async (_: Job) => {
 					const firstName = fragmentedName[0];
 					const lastName = fragmentedName[fragmentedName.length - 1];
 
-					const results: Array<{id: number}> = await prisma.$queryRaw('SELECT id FROM "Instructor" WHERE "fullName" SIMILAR TO $1;', `(${firstName} % ${lastName})|(${instructorName})|(${firstName} ${lastName})|(${firstName} ${lastName} %)|(${firstName} % ${lastName} %)`);
+					const results: Array<{id: number}> = await throttledRawQuery('SELECT id FROM "Instructor" WHERE "fullName" SIMILAR TO $1;', `(${firstName} % ${lastName})|(${instructorName})|(${firstName} ${lastName})|(${firstName} ${lastName} %)|(${firstName} % ${lastName} %)`);
 
 					if (results.length > 0) {
 						instructors.push({id: sortByNullValues(results)[0].id});
@@ -106,7 +113,7 @@ const processJob = async (_: Job) => {
 				if (unconsumedNames.length > 0) {
 					await Promise.all(unconsumedNames.map(async name => {
 						try {
-							const newInstructor = await prisma.instructor.create({
+							const newInstructor = await throttledInstructorCreate({
 								data: {
 									fullName: name
 								}
@@ -118,7 +125,7 @@ const processJob = async (_: Job) => {
 								// Race condition because all sections are looking and creating for instructors at the same time.
 								// Possible for one to create an instructor and a sibling run to also create, resulting in this error.
 								// Hacky solutions FTW.
-								const previouslyCreatedInstructor = await prisma.instructor.findUnique({
+								const previouslyCreatedInstructor = await throttledInstructorFindUnique({
 									where: {
 										fullName: name
 									}
@@ -139,7 +146,7 @@ const processJob = async (_: Job) => {
 			const storedInstructorIds = section.instructors.map(i => i.id);
 
 			if (!equal(foundInstructorIds, storedInstructorIds)) {
-				await prisma.section.update({
+				await throttledSectionUpdate({
 					where: {
 						id: section.id
 					},
@@ -154,7 +161,7 @@ const processJob = async (_: Job) => {
 
 			// Update description
 			if (details.description !== section.course.description) {
-				await prisma.course.update({
+				await throttledCourseUpdate({
 					where: {
 						id: section.courseId
 					},
