@@ -15,10 +15,10 @@ export class ScraperService implements OnModuleInit {
 	async onModuleInit() {
 		// Bull UI
 		setQueues([
-			new BullMQAdapter(this.scrapeInstructorQueue, {readOnlyMode: false}),
-			new BullMQAdapter(this.scrapeRMPQueue, {readOnlyMode: false}),
-			new BullMQAdapter(this.scrapeSectionsQueue, {readOnlyMode: false}),
-			new BullMQAdapter(this.scrapeSectionDetailsQueue, {readOnlyMode: false})
+			new BullMQAdapter(this.scrapeInstructorQueue, {readOnlyMode: true}),
+			new BullMQAdapter(this.scrapeRMPQueue, {readOnlyMode: true}),
+			new BullMQAdapter(this.scrapeSectionsQueue, {readOnlyMode: true}),
+			new BullMQAdapter(this.scrapeSectionDetailsQueue, {readOnlyMode: true})
 		]);
 
 		// Add jobs
