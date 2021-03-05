@@ -26,16 +26,6 @@ metadata:
 
 spec:
   rules:
-  - host: thumbor.michigantechcourses.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: thumbor
-            port:
-              number: 80
   - host: registry.michigantechcourses.com
     http:
       paths:
@@ -47,9 +37,6 @@ spec:
             port:
               number: 80
   tls:
-  - hosts:
-    - thumbor.michigantechcourses.com
-    secretName: thumbor-ingress-cert
   - hosts:
     - registry.michigantechcourses.com
     secretName: registry-ingress-cert
@@ -81,7 +68,20 @@ spec:
             name: application
             port:
               number: 80
+  - host: thumbor.michigantechcourses.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: thumbor
+            port:
+              number: 80
   tls:
   - hosts:
     - api.michigantechcourses.com
     secretName: api-ingress-cert
+  - hosts:
+    - thumbor.michigantechcourses.com
+    secretName: thumbor-ingress-cert
