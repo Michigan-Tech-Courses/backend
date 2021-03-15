@@ -10,6 +10,7 @@ resources:
 - thumbor-resources.yaml
 - redis-resources.yaml
 - registry-resources.yaml
+- postgres-backup.yaml
 
 patchesStrategicMerge:
 - thumbor-env.yaml
