@@ -1,8 +1,11 @@
 import {Module, CacheModule as Cache} from '@nestjs/common';
 import * as redisStore from 'cache-manager-redis-store';
+import {PrismaModule} from 'src/prisma/prisma.module';
+import {WarmService} from './warm.service';
 
 @Module({
 	imports: [
+		PrismaModule,
 		Cache.register({
 			store: redisStore,
 			host: process.env.REDIS_HOST,
@@ -11,7 +14,9 @@ import * as redisStore from 'cache-manager-redis-store';
 		})
 	],
 	controllers: [],
-	providers: [],
+	providers: [
+		WarmService
+	],
 	exports: [Cache]
 })
 export class CacheModule {}

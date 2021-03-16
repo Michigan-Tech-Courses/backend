@@ -87,9 +87,11 @@ jobs:
         run: |
           cat <<EOT >> infrastructure/overlays/prod/values/application.env
           AUTH_TOKEN=$AUTH_TOKEN
+          ENDPOINT=$ENDPOINT
           EOT
         env:
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          ENDPOINT: ${{ secrets.ENDPOINT }}
 
       - name: Kustomize
         run: kustomize build infrastructure/overlays/prod > kustomized.yaml

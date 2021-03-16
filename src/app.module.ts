@@ -2,6 +2,7 @@ import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {BullModule} from '@codetheweb/nestjs-bull';
 import {CacheModule} from 'src/cache/cache.module';
+import {ScheduleModule} from '@nestjs/schedule';
 import {ScraperModule} from './scraper/scraper.module';
 import {InstructorsModule} from './instructors/instructors.module';
 import {CoursesModule} from './courses/courses.module';
@@ -20,6 +21,7 @@ import {InitHandler} from './init';
 				host: process.env.REDIS_HOST
 			}
 		}),
+		ScheduleModule.forRoot(),
 		ScraperModule,
 		CoursesModule,
 		InstructorsModule,

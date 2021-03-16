@@ -29,6 +29,12 @@ spec:
               secretKeyRef:
                 name: application
                 key: AUTH_TOKEN
+          - name: ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: application
+                key: ENDPOINT
+
           - name: DD_AGENT_HOST
             valueFrom:
               fieldRef:
