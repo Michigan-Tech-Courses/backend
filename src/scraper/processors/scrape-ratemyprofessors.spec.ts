@@ -2,6 +2,7 @@ import {mocked} from 'ts-jest/utils';
 import ratings, {ITeacherFromSearch, ITeacherPage} from '@mtucourses/rate-my-professors';
 
 jest.mock('@mtucourses/rate-my-professors');
+const mockedSearchSchool = mocked(ratings.searchSchool);
 const mockedSearchTeacher = mocked(ratings.searchTeacher);
 const mockedGetTeacher = mocked(ratings.getTeacher);
 
@@ -20,6 +21,13 @@ const mockedPrisma = jest.fn().mockImplementation(() => ({
 jest.mock('@prisma/client', () => ({
 	PrismaClient: mockedPrisma
 }));
+
+mockedSearchSchool.mockResolvedValue([{
+	city: 'Houghton',
+	id: 'U2Nob29sLTYwMg==',
+	name: 'Michigan Technological University',
+	state: 'MI'
+}]);
 
 import processJob from './scrape-ratemyprofessors';
 import {Instructor} from '@prisma/client';
