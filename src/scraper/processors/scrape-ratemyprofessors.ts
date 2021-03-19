@@ -27,7 +27,7 @@ const processJob = async (_: Job) => {
 		const firstName = nameFragments[0];
 		const lastName = nameFragments[nameFragments.length - 1];
 
-		const results = await ratings.searchTeacher(`mtu ${firstName} ${lastName}`, schools[0].id);
+		const results = await ratings.searchTeacher(`${firstName} ${lastName}`, schools[0].id);
 
 		if (results.length > 0) {
 			const rmp = await ratings.getTeacher(results[0].id);
