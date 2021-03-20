@@ -569,10 +569,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@mtucourses/rate-my-professors@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@mtucourses/rate-my-professors/-/rate-my-professors-2.0.0.tgz#9b1cc4694f6f515984ab70944acf151519b162a6"
-  integrity sha512-6gH7C+iJu90kutfMdDKPRZmCKFlYJ5a81Es7LcSvbRgDPIr86XtaCrm6D8Gh8PJ+Bl1QTX9NJ0qOOEUG/8tqAg==
+"@mtucourses/rate-my-professors@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@mtucourses/rate-my-professors/-/rate-my-professors-2.0.1.tgz#9778509b80f992e69dce6d42b0be5fb01ca1df65"
+  integrity sha512-DclQBa0XnPEj31qAFmvF0m5vDdOHwnERfvTXHSTUzI+NHHyqbmuS/0+VpSIuuiC/upipday75OhQQzG6yD+Frg==
   dependencies:
     graphql "^15.4.0"
     graphql-request "^3.4.0"
