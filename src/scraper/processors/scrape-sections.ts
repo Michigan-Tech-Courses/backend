@@ -183,16 +183,18 @@ const processJob = async (_: Job) => {
 		// Mark courses that didn't show up
 		const coursesToDelete = didSeeCourseInScrapedData.getUnseen();
 
-		await prisma.course.updateMany({
-			where: {
-				id: {
-					in: coursesToDelete.map(c => c.id)
+		if (coursesToDelete.length > 0) {
+			await prisma.course.updateMany({
+				where: {
+					id: {
+						in: coursesToDelete.map(c => c.id)
+					}
+				},
+				data: {
+					deletedAt: new Date()
 				}
-			},
-			data: {
-				deletedAt: new Date()
-			}
-		});
+			});
+		}
 
 		// Mark sections that didn't show up
 		const storedSectionIds = await prisma.section.findMany({

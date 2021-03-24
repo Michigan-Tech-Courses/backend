@@ -21,7 +21,7 @@ export class CourseMap {
 		const unseen = [];
 
 		for (const [, {saw, course}] of this.map) {
-			if (!saw) {
+			if (!saw && !course.deletedAt) {
 				unseen.push(course);
 			}
 		}

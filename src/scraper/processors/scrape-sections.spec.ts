@@ -300,6 +300,30 @@ describe('Courses and sections scrape processor', () => {
 
 			expect(mockCourseUpsert).toBeCalledTimes(0);
 		});
+
+		it('doesn\'t modify a deleted course if nothing\'s changed', async () => {
+			const storedCourse: Course = {
+				id: 'test-id',
+				subject: 'CS',
+				crse: '1000',
+				title: 'Intro to Programming',
+				year: 2020,
+				semester: Semester.FALL,
+				description: '',
+				prereqs: null,
+				deletedAt: new Date(),
+				updatedAt: new Date()
+			};
+
+			mockedSectionsScraper.mockResolvedValue([]);
+
+			mockCourseFindMany.mockResolvedValue([storedCourse]);
+			mockCourseFindFirst.mockResolvedValue(storedCourse);
+
+			await processJob(null as any);
+
+			expect(mockCourseUpdateMany).toBeCalledTimes(0);
+		});
 	});
 
 	describe('Sections', () => {
@@ -310,7 +334,8 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseFindMany.mockResolvedValue([]);
 			mockSectionFindMany.mockResolvedValue([]);
 			mockCourseUpsert.mockImplementation(async ({create}: {create: Course}) => Promise.resolve(create));
-			mockSectionCreate.mockResolvedValue({id: 'test-id'});
+			mockSectionCreate.mockResolvedValue({id: 'test-section-id'});
+			mockCourseUpsert.mockResolvedValue({id: 'test-course-id'});
 
 			await processJob(null as any);
 
@@ -328,7 +353,7 @@ describe('Courses and sections scrape processor', () => {
 					minCredits: expect.any(Number),
 					maxCredits: expect.any(Number),
 					time: expect.any(Object),
-					courseId: 'test-id'
+					courseId: 'test-course-id'
 				}
 			});
 		});
@@ -558,5 +583,7 @@ describe('Courses and sections scrape processor', () => {
 		mockSectionCreate.mockClear();
 		mockSectionFindFirst.mockClear();
 		mockSectionUpdateMany.mockClear();
+
+		mockedSectionsScraper.mockClear();
 	});
 });
