@@ -76,6 +76,12 @@ describe('CoursesController', () => {
 		});
 	});
 
+	it('should return all unique courses', async () => {
+		prismaMock.course.findMany.mockResolvedValue([course]);
+
+		expect(await controller.getAllCourses()).toStrictEqual([course]);
+	});
+
 	afterEach(() => {
 		prismaMock.course.findMany.mockClear();
 	});

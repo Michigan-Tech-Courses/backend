@@ -1,7 +1,8 @@
 import {CacheInterceptor, Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
 import {Prisma} from '@prisma/client';
+import sortSemesters from 'src/lib/sort-semesters';
 import {PrismaService} from 'src/prisma/prisma.service';
-import {GetCoursesParameters} from './types';
+import {GetCoursesParameters, GetUniqueCoursesParameters} from './types';
 
 @Controller('courses')
 @UseInterceptors(CacheInterceptor)
@@ -48,5 +49,47 @@ export class CoursesController {
 		const courses = await this.prisma.course.findMany(queryParameters);
 
 		return courses;
+	}
+
+	@Get('/unique')
+	@Header('Cache-Control', 'max-age=60, stale-while-revalidate=86400')
+	async getUniqueCourses(@Query() parameters?: GetUniqueCoursesParameters) {
+		const semesters = await this.prisma.course.findMany({
+			distinct: ['semester', 'year'],
+			select: {
+				semester: true,
+				year: true
+			}
+		});
+
+		const semestersToFilterBy = sortSemesters(semesters).reverse().slice(0, 3);
+
+		const queryParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
+			distinct: ['crse', 'subject'],
+			where: {
+				OR: semestersToFilterBy
+			},
+			orderBy: {
+				id: 'asc'
+			}
+		};
+
+		if (parameters?.updatedSince) {
+			queryParameters.where.OR = semestersToFilterBy.map(s => ({
+				...s,
+				OR: [
+					{
+						updatedAt: {
+							gt: parameters.updatedSince
+						},
+						deletedAt: {
+							gt: parameters.updatedSince
+						}
+					}
+				]
+			}));
+		}
+
+		return this.prisma.course.findMany(queryParameters);
 	}
 }

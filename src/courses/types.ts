@@ -21,3 +21,11 @@ export class GetCoursesParameters {
 	@ApiProperty({required: false, description: 'filter courses by semester'})
 	semester!: Semester;
 }
+
+export class GetUniqueCoursesParameters {
+	@IsDate()
+	@Type(() => Date)
+	@IsOptional()
+	@ApiProperty({required: false, description: 'ISO DateTime string; only return instances that have been updated since this date.'})
+	updatedSince!: Date;
+}
