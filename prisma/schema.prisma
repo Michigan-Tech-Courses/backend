@@ -31,6 +31,8 @@ model Course {
   prereqs     String?
   sections    Section[]
 
+  offered     Semester[]
+
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
 

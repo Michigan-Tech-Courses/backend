@@ -1,5 +1,5 @@
 import {mocked} from 'ts-jest/utils';
-import {getSectionDetails, ISectionDetails} from '@mtucourses/scraper';
+import {ESemester, getSectionDetails, ISectionDetails} from '@mtucourses/scraper';
 
 // Scraper mock
 jest.mock('@mtucourses/scraper');
@@ -47,7 +47,8 @@ const SAMPLE_COURSE: Course = {
 	description: '',
 	prereqs: 'High School',
 	deletedAt: null,
-	updatedAt: new Date()
+	updatedAt: new Date(),
+	offered: []
 };
 
 const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}>} = {
@@ -74,7 +75,8 @@ const SAMPLE_SCRAPED_SECTION: ISectionDetails = {
 	description: 'An introduction to programming',
 	prereqs: null,
 	semestersOffered: [],
-	instructors: []
+	instructors: [],
+	location: ''
 };
 
 describe('Section details scrape processor', () => {
@@ -182,7 +184,9 @@ describe('Section details scrape processor', () => {
 		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
 			where: expect.any(Object),
 			data: {
-				description: SAMPLE_SCRAPED_SECTION.description
+				description: SAMPLE_SCRAPED_SECTION.description,
+				offered: [],
+				prereqs: null
 			}
 		});
 	});
@@ -216,7 +220,30 @@ describe('Section details scrape processor', () => {
 		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
 			where: expect.any(Object),
 			data: {
-				prereqs: SAMPLE_SCRAPED_SECTION.prereqs
+				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
+				offered: [],
+				description: ''
+			}
+		});
+	});
+
+	it('updates course offered semesters', async () => {
+		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		mockSectionFindMany.mockResolvedValue([]);
+
+		mockedSectionDetailScraper.mockResolvedValue({
+			...SAMPLE_SCRAPED_SECTION,
+			semestersOffered: [ESemester.fall]
+		});
+
+		await processJob(null as any);
+
+		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
+			where: expect.any(Object),
+			data: {
+				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
+				offered: [Semester.FALL],
+				description: SAMPLE_SCRAPED_SECTION.description
 			}
 		});
 	});

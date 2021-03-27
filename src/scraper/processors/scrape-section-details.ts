@@ -5,12 +5,35 @@ import pThrottle from 'p-throttle';
 import prisma from 'src/lib/prisma-singleton';
 import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
-import {getSectionDetails} from '@mtucourses/scraper';
+import {ESemester, getSectionDetails} from '@mtucourses/scraper';
 import {dateToTerm, termToDate} from 'src/lib/dates';
 import {deleteByKey} from 'src/cache/store';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
+import {Semester} from '.prisma/client';
+
+const convertSemesters = (semesters: ESemester[]): Semester[] => {
+	const result: Semester[] = [];
+
+	for (const semester of semesters) {
+		switch (semester) {
+			case ESemester.fall:
+				result.push(Semester.FALL);
+				break;
+			case ESemester.spring:
+				result.push(Semester.SPRING);
+				break;
+			case ESemester.summer:
+				result.push(Semester.SUMMER);
+				break;
+			default:
+				break;
+		}
+	}
+
+	return result;
+};
 
 const processJob = async (_: Job) => {
 	const logger = new Logger('Job: course section details scrape');
@@ -152,26 +175,34 @@ const processJob = async (_: Job) => {
 				});
 			}
 
+			let shouldUpdate = false;
+
+			const scrapedSemestersOffered = convertSemesters(details.semestersOffered);
+
+			// Update offered semesters
+			if (arrDiff(scrapedSemestersOffered, section.course.offered).length > 0 || arrDiff(section.course.offered, scrapedSemestersOffered).length > 0) {
+				shouldUpdate = true;
+			}
+
 			// Update description
 			if (details.description !== section.course.description) {
-				await prisma.course.update({
-					where: {
-						id: section.courseId
-					},
-					data: {
-						description: details.description
-					}
-				});
+				shouldUpdate = true;
 			}
 
 			// Update prereqs
 			if (details.prereqs !== section.course.prereqs) {
+				shouldUpdate = true;
+			}
+
+			if (shouldUpdate) {
 				await prisma.course.update({
 					where: {
 						id: section.courseId
 					},
 					data: {
-						prereqs: details.prereqs
+						description: details.description,
+						prereqs: details.prereqs,
+						offered: scrapedSemestersOffered
 					}
 				});
 			}

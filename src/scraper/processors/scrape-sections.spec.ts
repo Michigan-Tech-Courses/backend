@@ -142,7 +142,8 @@ describe('Courses and sections scrape processor', () => {
 				description: '',
 				prereqs: null,
 				deletedAt: null,
-				updatedAt: new Date()
+				updatedAt: new Date(),
+				offered: []
 			};
 
 			mockedSectionsScraper.mockResolvedValue([scrapedCourse]);
@@ -193,7 +194,8 @@ describe('Courses and sections scrape processor', () => {
 				description: '',
 				prereqs: null,
 				deletedAt: null,
-				updatedAt: now
+				updatedAt: now,
+				offered: []
 			};
 
 			mockedSectionsScraper.mockResolvedValue([]);
@@ -226,7 +228,8 @@ describe('Courses and sections scrape processor', () => {
 				description: '',
 				prereqs: null,
 				deletedAt: now,
-				updatedAt: now
+				updatedAt: now,
+				offered: []
 			};
 
 			const scrapedCourse: ICourseOverview = {
@@ -288,7 +291,8 @@ describe('Courses and sections scrape processor', () => {
 				description: '',
 				prereqs: null,
 				deletedAt: null,
-				updatedAt: new Date()
+				updatedAt: new Date(),
+				offered: []
 			};
 
 			mockedSectionsScraper.mockResolvedValue([scrapedCourse]);
@@ -312,7 +316,8 @@ describe('Courses and sections scrape processor', () => {
 				description: '',
 				prereqs: null,
 				deletedAt: new Date(),
-				updatedAt: new Date()
+				updatedAt: new Date(),
+				offered: []
 			};
 
 			mockedSectionsScraper.mockResolvedValue([]);
@@ -379,7 +384,8 @@ describe('Courses and sections scrape processor', () => {
 				description: '',
 				prereqs: null,
 				deletedAt: null,
-				updatedAt: new Date()
+				updatedAt: new Date(),
+				offered: []
 			};
 			const storedSection: Section = {
 				id: 'test-section-id',
@@ -440,7 +446,8 @@ describe('Courses and sections scrape processor', () => {
 				description: '',
 				prereqs: null,
 				deletedAt: null,
-				updatedAt: new Date()
+				updatedAt: new Date(),
+				offered: []
 			};
 
 			mockedSectionsScraper.mockResolvedValue([]);
@@ -479,7 +486,8 @@ describe('Courses and sections scrape processor', () => {
 				description: '',
 				prereqs: null,
 				deletedAt: null,
-				updatedAt: new Date()
+				updatedAt: new Date(),
+				offered: []
 			};
 			const storedSection: Section = {
 				id: 'test-section-id',
@@ -543,7 +551,8 @@ describe('Courses and sections scrape processor', () => {
 				description: '',
 				prereqs: null,
 				deletedAt: null,
-				updatedAt: new Date()
+				updatedAt: new Date(),
+				offered: []
 			};
 			const storedSection: Section = {
 				id: 'test-section-id',
