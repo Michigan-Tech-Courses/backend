@@ -23,7 +23,8 @@ describe('CoursesController', () => {
 		description: '',
 		prereqs: null,
 		updatedAt: new Date(),
-		deletedAt: null
+		deletedAt: null,
+		offered: []
 	};
 
 	beforeEach(async () => {
