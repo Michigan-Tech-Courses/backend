@@ -12,6 +12,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "strict": true
+    "strict": true,
+    "lib": ["es2019"]
   }
 }

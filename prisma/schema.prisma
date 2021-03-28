@@ -7,7 +7,7 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["groupBy"]
 }
 
@@ -18,9 +18,7 @@ enum Semester {
 }
 
 model Course {
-  @@id([year, semester, subject, crse])
-
-  id          String @unique @default(cuid())
+  id String @unique @default(cuid())
 
   year        Int
   semester    Semester
@@ -31,63 +29,78 @@ model Course {
   prereqs     String?
   sections    Section[]
 
-  offered     Semester[]
+  offered Semester[]
 
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
+  @@id([year, semester, subject, crse])
   @@index(updatedAt)
   @@index(deletedAt)
 }
 
-model Section {
-  id             String @id @default(cuid())
+model TransferCourse {
+  id String @unique @default(cuid())
 
-  course         Course @relation(fields: [courseId], references: [id])
-  courseId       String
+  fromCollege String
+  fromCRSE    String
+  fromSubject String
+  fromCredits Float
+  toCRSE      String
+  toSubject   String
+  toCredits   Float
+  title       String
+  @@id([fromCollege, fromCRSE, fromSubject, toCRSE, toSubject])
+}
+
+model Section {
+  id String @id @default(cuid())
+
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId String
 
   // CRN *is not* unique across semesters
-  crn            String
-  section        String
-  cmp            String
+  crn     String
+  section String
+  cmp     String
 
-  minCredits     Float
-  maxCredits     Float
+  minCredits Float
+  maxCredits Float
 
   // Output of rschedule
-  time           Json
+  time Json
 
   totalSeats     Int
   takenSeats     Int
   availableSeats Int
 
   // Cents
-  fee            Int
+  fee Int
 
-  instructors    Instructor[]
+  instructors Instructor[]
 
-  updatedAt      DateTime @updatedAt
-  deletedAt      DateTime?
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index(updatedAt)
   @@index(deletedAt)
 }
 
 model Instructor {
-  id                      Int    @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   // Scraped from Michigan Tech
-  fullName                String @unique
-  departments             String[]
-  email                   String?
-  phone                   String?
-  office                  String?
-  websiteURL              String?
-  photoURL                String?
-  interests               String[]
-  occupations             String[]
+  fullName    String   @unique
+  departments String[]
+  email       String?
+  phone       String?
+  office      String?
+  websiteURL  String?
+  photoURL    String?
+  interests   String[]
+  occupations String[]
 
-  sections                Section[]
+  sections Section[]
 
   // Scraped from RateMyProfessor
   averageDifficultyRating Float?
@@ -95,7 +108,7 @@ model Instructor {
   numRatings              Int?
   rmpId                   String?
 
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@index(updatedAt)

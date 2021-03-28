@@ -9,7 +9,8 @@ export class ScraperService implements OnModuleInit {
 		@InjectQueue('scrape-instructors') private readonly scrapeInstructorQueue: Queue,
 		@InjectQueue('scrape-rmp') private readonly scrapeRMPQueue: Queue,
 		@InjectQueue('scrape-sections') private readonly scrapeSectionsQueue: Queue,
-		@InjectQueue('scrape-section-details') private readonly scrapeSectionDetailsQueue: Queue
+		@InjectQueue('scrape-section-details') private readonly scrapeSectionDetailsQueue: Queue,
+		@InjectQueue('scrape-transfer-courses') private readonly scrapeTransferCoursesQueue: Queue
 	) {}
 
 	async onModuleInit() {
@@ -18,7 +19,8 @@ export class ScraperService implements OnModuleInit {
 			new BullMQAdapter(this.scrapeInstructorQueue, {readOnlyMode: true}),
 			new BullMQAdapter(this.scrapeRMPQueue, {readOnlyMode: true}),
 			new BullMQAdapter(this.scrapeSectionsQueue, {readOnlyMode: true}),
-			new BullMQAdapter(this.scrapeSectionDetailsQueue, {readOnlyMode: true})
+			new BullMQAdapter(this.scrapeSectionDetailsQueue, {readOnlyMode: true}),
+			new BullMQAdapter(this.scrapeTransferCoursesQueue, {readOnlyMode: true})
 		]);
 
 		// Add jobs
@@ -83,6 +85,22 @@ export class ScraperService implements OnModuleInit {
 			jobId: '2', // Prevents adding multiple of the same job
 			repeat: {
 				cron: '40 * * * *' // Xx:40 (every hour)
+			}
+		});
+
+		// Course section details scrape
+		// Fetches instructors and course description
+		// Run immediately if job doesn't exist
+		await this.scrapeTransferCoursesQueue.add('initial-scrape', null, {
+			// Because we pass a job ID, this will only run if it hasn't run before
+			jobId: '1'
+		});
+
+		// Add recurring job
+		await this.scrapeTransferCoursesQueue.add('recurring-scrape', null, {
+			jobId: '2', // Prevents adding multiple of the same job
+			repeat: {
+				cron: '45 * * * *' // Xx:45 (every hour)
 			}
 		});
 	}

@@ -577,15 +577,16 @@
     graphql "^15.4.0"
     graphql-request "^3.4.0"
 
-"@mtucourses/scraper@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@mtucourses/scraper/-/scraper-2.2.1.tgz#a287428366ee60edc5e95200d72469f2019904ca"
-  integrity sha512-Z35FK9HXlwGP39g7UdMAEbEM7uzbaPpPAPoSTVsEZmdVYKIU7IX2Bhgm5axBZmu9cCwcvYlYy3UxwBbI6Apu3w==
+"@mtucourses/scraper@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@mtucourses/scraper/-/scraper-2.3.1.tgz#51dda77f2b8704f31b01ea476f4817feeed6398b"
+  integrity sha512-dMQnf5B0wc+d6fcHQBZ9plkxM2Mgi6i2e/IHMz2yrz/pOPQOdbTZb3jvmmJFZpSU8BQdXW9jOS1oOBxmAdJ1sA==
   dependencies:
     cheerio "^1.0.0-rc.5"
     got "^11.8.1"
     nock "^13.0.5"
     p-limit "^3.1.0"
+    p-throttle "^4.1.1"
 
 "@mtucourses/thumbor@^1.0.1":
   version "1.0.1"
@@ -9245,6 +9246,11 @@ type-fest@^0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
+
+type-fest@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-1.0.1.tgz#2494455e65c59170ec98bdda05b7d7184f5b74ad"
+  integrity sha512-+UTPE7JT3O+sUpRroRgQAbbSfIRBwOHh+o/oruB1JJE6g6uBm3Y0D82fO3xu8VHfxJLQjeRp0PEY6mRmh/lElA==
 
 type-is@^1.6.4, type-is@~1.6.17, type-is@~1.6.18:
   version "1.6.18"

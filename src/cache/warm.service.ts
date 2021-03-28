@@ -33,6 +33,8 @@ export class WarmService {
 		promises.push(client.get('instructors'));
 		promises.push(client.get('passfaildrop'));
 		promises.push(client.get('semesters'));
+		promises.push(client.get('courses/unique'));
+		promises.push(client.get('transfer-courses'));
 
 		await Promise.all(promises);
 	}
