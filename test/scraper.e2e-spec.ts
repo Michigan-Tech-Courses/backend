@@ -44,6 +44,11 @@ describe('Scraper (e2e)', () => {
 					name: 'scrape-section-details',
 					processors: [fakeRMPProcessor],
 					connection
+				}),
+				BullModule.registerQueue({
+					name: 'scrape-transfer-courses',
+					processors: [fakeRMPProcessor],
+					connection
 				})
 			],
 			providers: [ScraperService]
