@@ -9,6 +9,7 @@ import {CoursesModule} from './courses/courses.module';
 import {SectionsModule} from './sections/sections.module';
 import {PassFailDropModule} from './passfaildrop/passfaildrop.module';
 import {SemestersModule} from './semesters/semesters.module';
+import {TransferCoursesModule} from './transfer-courses/transfer-courses.module';
 import {InitHandler} from './init';
 
 @Module({
@@ -27,7 +28,8 @@ import {InitHandler} from './init';
 		InstructorsModule,
 		PassFailDropModule,
 		SectionsModule,
-		SemestersModule
+		SemestersModule,
+		TransferCoursesModule
 	],
 	controllers: [],
 	providers: [InitHandler]
