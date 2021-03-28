@@ -42,14 +42,15 @@ model Course {
 model TransferCourse {
   id String @unique @default(cuid())
 
-  fromCollege String
-  fromCRSE    String
-  fromSubject String
-  fromCredits Float
-  toCRSE      String
-  toSubject   String
-  toCredits   Float
-  title       String
+  fromCollege      String
+  fromCollegeState String
+  fromCRSE         String
+  fromSubject      String
+  fromCredits      Float
+  toCRSE           String
+  toSubject        String
+  toCredits        Float
+  title            String
   @@id([fromCollege, fromCRSE, fromSubject, toCRSE, toSubject])
 }
 

@@ -27,6 +27,7 @@ import processJob from './scrape-transfer-courses';
 const SAMPLE_COURSE: ITransferCourse = {
 	from: {
 		college: 'UNIV OF ALABAMA HUNTSVILLE',
+		state: 'AL',
 		credits: 3,
 		crse: '100',
 		subject: 'MU'
@@ -41,6 +42,7 @@ const SAMPLE_COURSE: ITransferCourse = {
 
 const SAMPLE_SAVED_COURSE: Except<TransferCourse, 'id'> = {
 	fromCollege: SAMPLE_COURSE.from.college,
+	fromCollegeState: SAMPLE_COURSE.from.state,
 	fromCRSE: SAMPLE_COURSE.from.crse,
 	fromCredits: SAMPLE_COURSE.from.credits,
 	fromSubject: SAMPLE_COURSE.from.subject,

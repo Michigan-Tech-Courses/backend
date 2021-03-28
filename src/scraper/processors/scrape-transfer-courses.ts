@@ -47,6 +47,7 @@ const processJob = async () => {
 		if (shouldUpsert) {
 			const model: Except<TransferCourse, 'id'> = {
 				fromCollege: course.from.college,
+				fromCollegeState: course.from.state,
 				fromCRSE: course.from.crse,
 				fromCredits: course.from.credits,
 				fromSubject: course.from.subject,

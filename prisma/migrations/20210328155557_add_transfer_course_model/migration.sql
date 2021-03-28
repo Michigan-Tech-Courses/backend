@@ -2,6 +2,7 @@
 CREATE TABLE "TransferCourse" (
     "id" TEXT NOT NULL,
     "fromCollege" TEXT NOT NULL,
+    "fromCollegeState" TEXT NOT NULL,
     "fromCRSE" TEXT NOT NULL,
     "fromSubject" TEXT NOT NULL,
     "fromCredits" DOUBLE PRECISION NOT NULL,
