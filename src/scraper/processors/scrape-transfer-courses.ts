@@ -13,6 +13,13 @@ const processJob = async () => {
 
 	await prisma.$connect();
 
+	const savedCourses = await prisma.transferCourse.findMany({select: {id: true}});
+	const seenCourses = new Map();
+
+	for (const savedCourse of savedCourses) {
+		seenCourses.set(savedCourse.id, false);
+	}
+
 	const processCourse = async (course: ITransferCourse) => {
 		const uniqueWhere = {
 			fromCollege_fromCRSE_fromSubject_toCRSE_toSubject: {
@@ -31,6 +38,8 @@ const processJob = async () => {
 		let shouldUpsert = !existingCourse;
 
 		if (existingCourse) {
+			seenCourses.set(existingCourse.id, true);
+
 			if (existingCourse.fromCredits !== course.from.credits) {
 				shouldUpsert = true;
 			}
@@ -70,6 +79,22 @@ const processJob = async () => {
 	const courses = await getAllTransferCourses();
 
 	await Promise.all(courses.map(async course => throttledProcessCourse(course)));
+
+	// Delete courses that didn't show up
+	const unseenIds: Array<TransferCourse['id']> = [];
+	for (const [courseId, seen] of seenCourses) {
+		if (!seen) {
+			unseenIds.push(courseId);
+		}
+	}
+
+	await prisma.transferCourse.deleteMany({
+		where: {
+			id: {
+				in: unseenIds
+			}
+		}
+	});
 
 	logger.log('Finished processing');
 
