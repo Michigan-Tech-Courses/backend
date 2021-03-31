@@ -25,16 +25,20 @@ export class WarmService {
 
 		const promises: Array<Promise<any>> = [];
 
-		semesters.forEach(semester => {
-			promises.push(client.get('courses', {searchParams: semester}));
-			promises.push(client.get('sections', {searchParams: semester}));
-		});
+		for (const semester of semesters) {
+			promises.push(
+				client.get('courses', {searchParams: semester}),
+				client.get('sections', {searchParams: semester})
+			);
+		}
 
-		promises.push(client.get('instructors'));
-		promises.push(client.get('passfaildrop'));
-		promises.push(client.get('semesters'));
-		promises.push(client.get('courses/unique'));
-		promises.push(client.get('transfer-courses'));
+		promises.push(
+			client.get('instructors'),
+			client.get('passfaildrop'),
+			client.get('semesters'),
+			client.get('courses/unique'),
+			client.get('transfer-courses')
+		);
 
 		await Promise.all(promises);
 	}
