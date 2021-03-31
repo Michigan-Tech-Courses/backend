@@ -49,7 +49,8 @@ const SAMPLE_SAVED_COURSE: Except<TransferCourse, 'id'> = {
 	toCRSE: SAMPLE_COURSE.to.crse,
 	toCredits: SAMPLE_COURSE.to.credits,
 	toSubject: SAMPLE_COURSE.to.subject,
-	title: SAMPLE_COURSE.to.title
+	title: SAMPLE_COURSE.to.title,
+	updatedAt: new Date()
 };
 
 describe('Transfer course scrape processor', () => {

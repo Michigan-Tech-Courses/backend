@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "TransferCourse" ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

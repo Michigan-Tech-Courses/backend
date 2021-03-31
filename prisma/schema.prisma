@@ -51,6 +51,7 @@ model TransferCourse {
   toSubject        String
   toCredits        Float
   title            String
+  updatedAt        DateTime @default(now()) @updatedAt
   @@id([fromCollege, fromCRSE, fromSubject, toCRSE, toSubject])
 }
 
