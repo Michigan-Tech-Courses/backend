@@ -8,7 +8,7 @@ export class TransferCoursesController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
-	@Header('Cache-Control', 'max-age=60, stale-while-revalidate=86400')
+	@Header('Cache-Control', 'max-age=120, stale-while-revalidate=86400')
 	async getAll(@Query() parameters?: GetTransferCoursesParameters) {
 		if (parameters?.updatedSince) {
 			return this.prisma.transferCourse.findMany({

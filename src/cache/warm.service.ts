@@ -1,13 +1,15 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {Cron, CronExpression} from '@nestjs/schedule';
 import got from 'got';
 import {PrismaService} from 'src/prisma/prisma.service';
 
 @Injectable()
 export class WarmService {
+	private readonly logger = new Logger(WarmService.name);
+
 	constructor(private readonly prisma: PrismaService) {}
 
-	@Cron(CronExpression.EVERY_30_SECONDS)
+	@Cron(CronExpression.EVERY_10_SECONDS)
 	async warmCache() {
 		const semesters = await this.prisma.course.findMany({
 			distinct: ['semester', 'year'],
@@ -40,6 +42,10 @@ export class WarmService {
 			client.get('transfer-courses')
 		);
 
-		await Promise.all(promises);
+		const results = await Promise.all(promises);
+
+		for (const result of results as Response[]) {
+			this.logger.log(`Cache result for ${result.url}: ${(result.headers as unknown as Record<string, string>)['cf-cache-status']}`);
+		}
 	}
 }

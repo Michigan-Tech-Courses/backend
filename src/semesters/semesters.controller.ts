@@ -7,7 +7,7 @@ export class SemestersController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
-	@Header('Cache-Control', 'max-age=60')
+	@Header('Cache-Control', 'max-age=120')
 	async getDistinctSemesters() {
 		const semesters = await this.prisma.course.findMany({
 			distinct: ['semester', 'year'],

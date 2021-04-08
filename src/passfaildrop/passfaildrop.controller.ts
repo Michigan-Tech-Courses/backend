@@ -12,7 +12,7 @@ export class PassFailDropController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
-	@Header('Cache-Control', 'max-age=60')
+	@Header('Cache-Control', 'max-age=120')
 	async getAll() {
 		const rows = await this.prisma.passFailDrop.groupBy({
 			by: ['courseSubject', 'courseCrse', 'year', 'semester'],
