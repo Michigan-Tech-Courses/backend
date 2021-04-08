@@ -2,12 +2,12 @@ import {Logger} from '@nestjs/common';
 import {getAllTransferCourses, ITransferCourse} from '@mtucourses/scraper';
 import prisma from 'src/lib/prisma-singleton';
 import {deleteByKey} from 'src/cache/store';
-import {TransferCourse} from '.prisma/client';
 import pThrottle from 'p-throttle';
 import {Except} from 'type-fest';
+import {Prisma, TransferCourse} from '@prisma/client';
 
 const processJob = async () => {
-	const logger = new Logger('Job: course sections scrape');
+	const logger = new Logger('Job: transfer courses scrape');
 
 	logger.log('Started processing...');
 
@@ -21,13 +21,14 @@ const processJob = async () => {
 	}
 
 	const processCourse = async (course: ITransferCourse) => {
-		const uniqueWhere = {
-			fromCollege_fromCRSE_fromSubject_toCRSE_toSubject: {
+		const uniqueWhere: Prisma.TransferCourseWhereUniqueInput = {
+			fromCollege_fromCRSE_fromSubject_toCRSE_toSubject_toCredits: {
 				fromCollege: course.from.college,
 				fromCRSE: course.from.crse,
 				fromSubject: course.from.subject,
 				toCRSE: course.to.crse,
-				toSubject: course.to.subject
+				toSubject: course.to.subject,
+				toCredits: course.to.credits
 			}
 		};
 
@@ -35,7 +36,7 @@ const processJob = async () => {
 			where: uniqueWhere
 		});
 
-		let shouldUpsert = !existingCourse;
+		let shouldUpsert = false;
 
 		if (existingCourse) {
 			seenCourses.set(existingCourse.id, true);
@@ -51,6 +52,8 @@ const processJob = async () => {
 			if (existingCourse.title !== course.to.title) {
 				shouldUpsert = true;
 			}
+		} else {
+			shouldUpsert = true;
 		}
 
 		if (shouldUpsert) {
@@ -74,7 +77,7 @@ const processJob = async () => {
 		}
 	};
 
-	const throttledProcessCourse = pThrottle({interval: 264, limit: 4})(processCourse);
+	const throttledProcessCourse = pThrottle({interval: 128, limit: 4})(processCourse);
 
 	const courses = await getAllTransferCourses();
 
