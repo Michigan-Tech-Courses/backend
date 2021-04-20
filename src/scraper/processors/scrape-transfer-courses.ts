@@ -77,7 +77,7 @@ const processJob = async () => {
 		}
 	};
 
-	const throttledProcessCourse = pThrottle({interval: 128, limit: 4})(processCourse);
+	const throttledProcessCourse = pThrottle({interval: 128, limit: 2})(processCourse);
 
 	const courses = await getAllTransferCourses();
 
