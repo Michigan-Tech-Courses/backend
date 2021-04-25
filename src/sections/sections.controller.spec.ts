@@ -48,7 +48,7 @@ describe('SectionsController', () => {
 	it('should return all sections', async () => {
 		prismaMock.course.findMany.mockResolvedValue([{sections: [section]}]);
 
-		expect(await controller.getAllSections()).toStrictEqual([section]);
+		expect(await controller.getSections()).toStrictEqual([section]);
 	});
 
 	it('should only return updated sections', async () => {
@@ -56,7 +56,7 @@ describe('SectionsController', () => {
 
 		const now = new Date();
 
-		expect(await controller.getAllSections({updatedSince: now, year: 2020, semester: Semester.FALL})).toStrictEqual([]);
+		expect(await controller.getSections({updatedSince: now, year: 2020, semester: Semester.FALL})).toStrictEqual([]);
 
 		expect(prismaMock.course.findMany).toHaveBeenCalledWith({
 			where: {
@@ -67,6 +67,7 @@ describe('SectionsController', () => {
 			},
 			select: {
 				sections: {
+					where: {},
 					include: {
 						instructors: {
 							select: {
