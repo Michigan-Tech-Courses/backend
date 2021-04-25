@@ -2,7 +2,7 @@ import {CacheInterceptor, Controller, Get, Header, Injectable, Query, UseInterce
 import {Prisma} from '@prisma/client';
 import sortSemesters from 'src/lib/sort-semesters';
 import {PrismaService} from 'src/prisma/prisma.service';
-import {GetCoursesParameters, GetUniqueCoursesParameters} from './types';
+import {GetCoursesParameters, GetUniqueCoursesParameters, FindFirstCourseParameters} from './types';
 
 @Controller('courses')
 @UseInterceptors(CacheInterceptor)
@@ -91,5 +91,30 @@ export class CoursesController {
 		}
 
 		return this.prisma.course.findMany(queryParameters);
+	}
+
+	@Get('/first')
+	async findFirst(@Query() parameters?: FindFirstCourseParameters) {
+		const queryParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
+			where: {}
+		};
+
+		if (parameters?.crse) {
+			queryParameters.where.crse = parameters.crse;
+		}
+
+		if (parameters?.subject) {
+			queryParameters.where.subject = parameters.subject;
+		}
+
+		if (parameters?.year) {
+			queryParameters.where.year = parameters.year;
+		}
+
+		if (parameters?.semester) {
+			queryParameters.where.semester = parameters.semester;
+		}
+
+		return this.prisma.course.findFirst(queryParameters);
 	}
 }

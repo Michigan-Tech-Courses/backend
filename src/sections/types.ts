@@ -13,11 +13,28 @@ export class GetSectionsParameters {
 	@IsNumber()
 	@IsOptional()
 	@Type(() => Number)
-	@ApiProperty({required: false, description: 'filter courses by year'})
+	@ApiProperty({required: false, description: 'filter sections by year'})
 	year!: number;
 
 	@IsIn(Object.values(Semester))
 	@IsOptional()
-	@ApiProperty({required: false, description: 'filter courses by semester'})
+	@ApiProperty({required: false, description: 'filter sections by semester'})
+	semester!: Semester;
+}
+
+export class FindFirstSectionParamters {
+	@IsOptional()
+	@ApiProperty({required: false, description: 'filter sections by CRN (combine with year and semester)'})
+	crn!: string;
+
+	@IsNumber()
+	@IsOptional()
+	@Type(() => Number)
+	@ApiProperty({required: false, description: 'filter sections by year'})
+	year!: number;
+
+	@IsIn(Object.values(Semester))
+	@IsOptional()
+	@ApiProperty({required: false, description: 'filter sections by semester'})
 	semester!: Semester;
 }
