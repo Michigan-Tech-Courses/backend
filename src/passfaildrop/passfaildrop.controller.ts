@@ -1,9 +1,9 @@
-import {Body, CacheInterceptor, Controller, Get, Injectable, Put, UseInterceptors, Headers, Header} from '@nestjs/common';
-import {Semester} from '@prisma/client';
+import {Body, CacheInterceptor, Controller, Get, Injectable, Put, UseInterceptors, Headers, Header, Query} from '@nestjs/common';
+import {Prisma, Semester} from '@prisma/client';
 import pThrottle from 'p-throttle';
 import {PrismaService} from 'src/prisma/prisma.service';
 import checkAuthHeader from 'src/lib/check-auth-header';
-import {PutDto} from './types';
+import {GetAllParameters, PutDto} from './types';
 
 @Controller('passfaildrop')
 @UseInterceptors(CacheInterceptor)
@@ -13,8 +13,8 @@ export class PassFailDropController {
 
 	@Get()
 	@Header('Cache-Control', 'max-age=120')
-	async getAll() {
-		const rows = await this.prisma.passFailDrop.groupBy({
+	async getAll(@Query() parameters?: GetAllParameters) {
+		const query: Prisma.PassFailDropGroupByArgs & {orderBy: Prisma.Enumerable<Prisma.PassFailDropOrderByInput> | undefined} = {
 			by: ['courseSubject', 'courseCrse', 'year', 'semester'],
 			avg: {
 				dropped: true,
@@ -23,8 +23,19 @@ export class PassFailDropController {
 			},
 			orderBy: {
 				year: 'asc'
-			}
-		});
+			},
+			where: {}
+		};
+
+		if (parameters?.courseCrse) {
+			query.where!.courseCrse = parameters.courseCrse;
+		}
+
+		if (parameters?.courseSubject) {
+			query.where!.courseSubject = parameters.courseSubject;
+		}
+
+		const rows = await this.prisma.passFailDrop.groupBy(query);
 
 		// Hoist
 		const result: Record<string, Array<{year: number; semester: Semester; dropped: number; failed: number; total: number}>> = {};
@@ -35,9 +46,9 @@ export class PassFailDropController {
 			const newElement = {
 				year: row.year,
 				semester: row.semester,
-				dropped: row.avg.dropped,
-				failed: row.avg.failed,
-				total: row.avg.total
+				dropped: row.avg!.dropped!,
+				failed: row.avg!.failed!,
+				total: row.avg!.total!
 			};
 
 			if (result[key]) {

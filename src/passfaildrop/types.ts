@@ -1,4 +1,5 @@
 import {Semester} from '@prisma/client';
+import {IsOptional} from 'class-validator';
 
 export class PutDto {
 	courseSubject!: string;
@@ -9,4 +10,12 @@ export class PutDto {
 	failed!: number;
 	dropped!: number;
 	total!: number;
+}
+
+export class GetAllParameters {
+	@IsOptional()
+	courseSubject!: string;
+
+	@IsOptional()
+	courseCrse!: string;
 }
