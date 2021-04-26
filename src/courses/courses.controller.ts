@@ -96,7 +96,14 @@ export class CoursesController {
 	@Get('/first')
 	async findFirst(@Query() parameters?: FindFirstCourseParameters) {
 		const queryParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
-			where: {}
+			where: {},
+			include: {
+				sections: {
+					include: {
+						instructors: true
+					}
+				}
+			}
 		};
 
 		if (parameters?.crse) {
