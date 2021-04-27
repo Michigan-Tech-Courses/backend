@@ -18,8 +18,8 @@ const processJob = async (_: Job) => {
 	logger.log('Finished scraping website');
 
 	const processInstructor = pThrottle({
-		limit: 10,
-		interval: 100
+		limit: 5,
+		interval: 512
 	})(async (instructor: IFaculty) => {
 		const existingInstructor = await prisma.instructor.findUnique({where: {fullName: instructor.name}});
 
