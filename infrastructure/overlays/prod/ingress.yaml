@@ -47,11 +47,12 @@ kind: Ingress
 metadata:
   name: application-ingress
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.org/client-max-body-size: "600m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "600m"
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
     nginx.ingress.kubernetes.io/rewrite-target: /
-    cert-manager.io/cluster-issuer: letsencrypt
-    nginx.ingress.kubernetes.io/proxy-body-size: "600m"
-    nginx.org/client-max-body-size: "600m"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_cache static-cache;
       proxy_cache_bypass $http_x_purge;
