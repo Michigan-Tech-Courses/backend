@@ -45,6 +45,8 @@ spec:
           value: "31536000"
         - name: AUTO_WEBP
           value: "True"
+        - name: CORS_ALLOW_ORIGIN
+          value: "*"
         - name: ALLOW_UNSAFE_URL
           value: "False"
         - name: DETECTORS
