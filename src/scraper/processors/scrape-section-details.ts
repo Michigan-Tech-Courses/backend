@@ -12,6 +12,8 @@ import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
 import {Semester} from '.prisma/client';
+import extractBuildingAndRoom, { InstructionTypeE } from 'src/lib/extract-building-and-room';
+import { Prisma, Section } from '@prisma/client';
 
 const convertSemesters = (semesters: ESemester[]): Semester[] => {
 	const result: Semester[] = [];
@@ -48,6 +50,8 @@ const processJob = async (_: Job) => {
 	const terms = await getTermsToProcess();
 
 	const throttledGetSectionDetails = pThrottle({limit: 2, interval: 100})(getSectionDetails);
+
+	const allBuildings = await prisma.building.findMany();
 
 	while (true) {
 		sectionsToProcess = await prisma.section.findMany({
@@ -158,43 +162,96 @@ const processJob = async (_: Job) => {
 				}
 			}
 
+			/* Update section */
+			let updatedSectionData: Prisma.SectionUpdateArgs['data'] = {};
+
 			const foundInstructorIds = instructors.map(i => i.id);
 			const storedInstructorIds = section.instructors.map(i => i.id);
 
 			if (!equal(foundInstructorIds, storedInstructorIds)) {
+				updatedSectionData.instructors = {
+					connect: arrDiff(foundInstructorIds, storedInstructorIds).map(i => ({id: i})),
+					disconnect: arrDiff(storedInstructorIds, foundInstructorIds).map(i => ({id: i}))
+				}
+			}
+
+			const extractedLocation = extractBuildingAndRoom(details.location);
+
+			// Typescript doesn't seem to correctly infer types in switch
+			const previousLocation: Pick<Section, 'isOnline' | 'isRemote' | 'buildingName' | 'room'> = {
+				isOnline: section.isOnline,
+				isRemote: section.isRemote,
+				buildingName: section.buildingName,
+				room: section.room
+			};
+			const newLocation = Object.assign({}, previousLocation);
+
+			if (extractedLocation.instructionType === InstructionTypeE.ONLINE) {
+				newLocation.isOnline = true
+				newLocation.isRemote = false;
+				newLocation.buildingName = null;
+				newLocation.room = null;
+			} else if (extractedLocation.instructionType === InstructionTypeE.REMOTE) {
+				newLocation.isOnline = false
+				newLocation.isRemote = true;
+				newLocation.buildingName = null;
+				newLocation.room = null;
+			} else if (extractedLocation.instructionType === InstructionTypeE.PHYSICAL) {
+				newLocation.isOnline = false;
+				newLocation.isRemote = false;
+
+				const mappedBuilding = allBuildings.find(b => b.name === extractedLocation.building);
+
+				if (mappedBuilding) {
+					newLocation.buildingName = mappedBuilding.name
+				} else {
+					console.error(`Building was not found: ${extractedLocation.building} ${extractedLocation.room}`)
+				}
+
+				newLocation.room = extractedLocation.room;
+			} else if (extractedLocation.instructionType === InstructionTypeE.UNKNOWN) {
+				newLocation.isOnline = false;
+				newLocation.isRemote = false;
+				newLocation.buildingName = null;
+				newLocation.room = null;
+			}
+
+			if (!equal(previousLocation, newLocation)) {
+				Object.assign(updatedSectionData, newLocation)
+			};
+
+			const shouldUpdateSection = Object.keys(updatedSectionData).length > 0;
+
+			if (shouldUpdateSection) {
 				await prisma.section.update({
 					where: {
 						id: section.id
 					},
-					data: {
-						instructors: {
-							connect: arrDiff(foundInstructorIds, storedInstructorIds).map(i => ({id: i})),
-							disconnect: arrDiff(storedInstructorIds, foundInstructorIds).map(i => ({id: i}))
-						}
-					}
+					data: updatedSectionData
 				});
 			}
 
-			let shouldUpdate = false;
+			/* Update course */
+			let shouldUpdateCourse = false;
 
 			const scrapedSemestersOffered = convertSemesters(details.semestersOffered);
 
 			// Update offered semesters
 			if (arrDiff(scrapedSemestersOffered, section.course.offered).length > 0 || arrDiff(section.course.offered, scrapedSemestersOffered).length > 0) {
-				shouldUpdate = true;
+				shouldUpdateCourse = true;
 			}
 
 			// Update description
 			if (details.description !== section.course.description) {
-				shouldUpdate = true;
+				shouldUpdateCourse = true;
 			}
 
 			// Update prereqs
 			if (details.prereqs !== section.course.prereqs) {
-				shouldUpdate = true;
+				shouldUpdateCourse = true;
 			}
 
-			if (shouldUpdate) {
+			if (shouldUpdateCourse) {
 				await prisma.course.update({
 					where: {
 						id: section.courseId

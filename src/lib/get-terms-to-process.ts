@@ -19,7 +19,7 @@ const getTermsToProcess = async () => {
 
 	const terms = [...getTermsForYear(year - 1), ...getTermsForYear(year), ...getTermsForYear(year + 1)];
 
-	if (process.env.NODE_ENV === 'test') {
+	if (['test', 'dev'].includes(process.env.NODE_ENV ?? '')) {
 		// Simplifies testing
 		return [terms[0]];
 	}

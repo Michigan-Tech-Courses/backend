@@ -45,7 +45,11 @@ const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): B
 		totalSeats: section.seats,
 		takenSeats: section.seatsTaken,
 		availableSeats: section.seatsAvailable,
-		fee: Math.round(section.fee)
+		fee: Math.round(section.fee),
+		buildingName: null,
+		room: null,
+		isOnline: false,
+		isRemote: false
 	};
 };
 

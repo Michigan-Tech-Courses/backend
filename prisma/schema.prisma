@@ -8,6 +8,7 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
+  previewFeatures = ["nApi"]
 }
 
 enum Semester {
@@ -54,6 +55,14 @@ model TransferCourse {
   @@id([fromCollege, fromCRSE, fromSubject, toCRSE, toSubject, toCredits])
 }
 
+model Building {
+  name      String    @id
+  shortName String
+  lat       Float
+  lon       Float
+  Section   Section[]
+}
+
 model Section {
   id String @id @default(cuid())
 
@@ -80,9 +89,15 @@ model Section {
 
   instructors Instructor[]
 
+  building Building? @relation(fields: [buildingName], references: [name])
+  room     String?
+  isOnline Boolean   @default(false)
+  isRemote Boolean   @default(false)
+
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  buildingName String?
   @@index(updatedAt)
   @@index(deletedAt)
 }

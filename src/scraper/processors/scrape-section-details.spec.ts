@@ -11,6 +11,7 @@ const mockSectionFindMany = jest.fn();
 const mockSectionUpdate = jest.fn();
 const mockQueryRaw = jest.fn();
 const mockInstructorCreate = jest.fn();
+const mockBuildingFindMany = jest.fn();
 
 const mockedPrisma = jest.fn().mockImplementation(() => ({
 	$connect: jest.fn(),
@@ -25,6 +26,9 @@ const mockedPrisma = jest.fn().mockImplementation(() => ({
 	},
 	instructor: {
 		create: mockInstructorCreate
+	},
+	building: {
+		findMany: mockBuildingFindMany
 	}
 }));
 
@@ -35,7 +39,7 @@ jest.mock('@prisma/client', () => ({
 }));
 
 import processJob from './scrape-section-details';
-import {Course, Section, Semester} from '@prisma/client';
+import {Building, Course, Section, Semester} from '@prisma/client';
 
 const SAMPLE_COURSE: Course = {
 	id: 'test-id',
@@ -67,7 +71,11 @@ const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}
 	time: {},
 	courseId: SAMPLE_COURSE.id,
 	course: SAMPLE_COURSE,
-	instructors: []
+	instructors: [],
+	buildingName: 'Fisher Hall',
+				isOnline: false,
+				isRemote: false,
+				room: "121"
 };
 
 const SAMPLE_SCRAPED_SECTION: ISectionDetails = {
@@ -76,15 +84,52 @@ const SAMPLE_SCRAPED_SECTION: ISectionDetails = {
 	prereqs: null,
 	semestersOffered: [],
 	instructors: [],
-	location: ''
+	location: 'Fisher Hall 121'
 };
 
+const SAMPLE_BUILDING: Building = {
+	name: 'Fisher Hall',
+	shortName: 'Fisher',
+	lat: 0,
+	lon: 0
+}
+
 describe('Section details scrape processor', () => {
+	beforeEach(() => {
+		mockBuildingFindMany.mockResolvedValueOnce([SAMPLE_BUILDING]);
+	});
+
 	it('runs without errors', async () => {
 		mockSectionFindMany.mockResolvedValue([]);
 
 		await processJob(null as any);
 	});
+
+	it('updates location', async () => {
+		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		mockSectionFindMany.mockResolvedValue([]);
+
+		mockedSectionDetailScraper.mockResolvedValue({
+			...SAMPLE_SCRAPED_SECTION,
+			location: 'Online Instruction'
+		});
+
+		mockQueryRaw.mockResolvedValue([{id: 1}]);
+
+		await processJob(null as any);
+
+		expect(mockSectionUpdate.mock.calls[0][0]).toEqual({
+			where: {
+				id: SAMPLE_SECTION.id
+			},
+			data: {
+				isOnline: true,
+				isRemote: false,
+				buildingName: null,
+				room: null
+			}
+		});
+	})
 
 	it('updates instructors', async () => {
 		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
@@ -254,5 +299,6 @@ describe('Section details scrape processor', () => {
 		mockSectionUpdate.mockClear();
 		mockQueryRaw.mockClear();
 		mockInstructorCreate.mockClear();
+		mockedSectionDetailScraper.mockClear();
 	});
 });

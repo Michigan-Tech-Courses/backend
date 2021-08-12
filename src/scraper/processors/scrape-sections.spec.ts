@@ -65,6 +65,53 @@ const SCRAPED_SECTION: ISection = {
 	]
 };
 
+const EXPECTED_PARSED_TIME = {
+       "exdates":  {
+         "dates":  [],
+         "type": "Dates",
+       },
+       "exrules":  [],
+       "rdates":  {
+         "dates":  [],
+         "type": "Dates",
+       },
+       "rrules":  [
+          {
+           "config":  {
+             "byDayOfWeek":  [
+               "MO",
+               "WE",
+             ],
+             "duration": 4500000,
+             "end":  {
+               "day": 11,
+               "hour": 15,
+               "millisecond": 0,
+               "minute": 15,
+               "month": 12,
+               "second": 0,
+               "timezone": null,
+               "year": 2020,
+             },
+             "frequency": "WEEKLY",
+             "start":  {
+               "day": 27,
+               "hour": 14,
+               "millisecond": 0,
+               "minute": 0,
+               "month": 8,
+               "second": 0,
+               "timezone": null,
+               "year": 2020,
+             },
+           },
+           "type": "Rule",
+         },
+       ],
+       "timezone": null,
+       "type": "Schedule",
+			}
+
 const SCRAPED_COURSE: ICourseOverview = {
 	subject: 'CS',
 	crse: '1000',
@@ -357,8 +404,12 @@ describe('Courses and sections scrape processor', () => {
 					fee: SCRAPED_SECTION.fee,
 					minCredits: expect.any(Number),
 					maxCredits: expect.any(Number),
-					time: expect.any(Object),
-					courseId: 'test-course-id'
+					time: EXPECTED_PARSED_TIME,
+					courseId: 'test-course-id',
+					buildingName: null,
+					room: null,
+					isOnline: false,
+					isRemote: false
 				}
 			});
 		});
@@ -401,7 +452,11 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null}
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				buildingName: null,
+				room: null,
+				isOnline: false,
+				isRemote: false
 			};
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
@@ -426,7 +481,11 @@ describe('Courses and sections scrape processor', () => {
 					minCredits: expect.any(Number),
 					maxCredits: expect.any(Number),
 					time: expect.any(Object),
-					deletedAt: null
+					deletedAt: null,
+					buildingName: null,
+					room: null,
+					isOnline: false,
+					isRemote: false
 				},
 				where: {
 					courseId: 'test-id',
@@ -503,7 +562,11 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {}
+				time: {},
+				buildingName: null,
+				room: null,
+				isOnline: false,
+				isRemote: false
 			};
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
@@ -526,7 +589,11 @@ describe('Courses and sections scrape processor', () => {
 					minCredits: expect.any(Number),
 					maxCredits: expect.any(Number),
 					time: expect.any(Object),
-					deletedAt: null
+					deletedAt: null,
+					buildingName: null,
+					room: null,
+					isOnline: false,
+					isRemote: false
 				},
 				where: {
 					courseId: 'test-id',
@@ -568,7 +635,11 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null}
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				buildingName: null,
+				room: null,
+				isRemote: false,
+				isOnline: false
 			};
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);

@@ -45,7 +45,7 @@ describe('PassFailDropController', () => {
 			courseCrse: record.courseCrse,
 			year: record.year,
 			semester: record.semester,
-			avg: {
+			_avg: {
 				dropped: record.dropped,
 				failed: record.failed,
 				total: record.total

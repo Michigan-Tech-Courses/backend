@@ -27,7 +27,11 @@ describe('SectionsController', () => {
 		availableSeats: 5,
 		fee: 0,
 		updatedAt: new Date(),
-		deletedAt: null
+		deletedAt: null,
+		isOnline: false,
+		isRemote: false,
+		buildingName: null,
+		room: null
 	};
 
 	beforeEach(async () => {

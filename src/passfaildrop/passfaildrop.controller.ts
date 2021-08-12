@@ -16,7 +16,7 @@ export class PassFailDropController {
 	async getAll(@Query() parameters?: GetAllParameters) {
 		const query: Prisma.PassFailDropGroupByArgs & {orderBy: Prisma.Enumerable<Prisma.PassFailDropOrderByInput> | undefined} = {
 			by: ['courseSubject', 'courseCrse', 'year', 'semester'],
-			avg: {
+			_avg: {
 				dropped: true,
 				failed: true,
 				total: true
@@ -46,9 +46,9 @@ export class PassFailDropController {
 			const newElement = {
 				year: row.year,
 				semester: row.semester,
-				dropped: row.avg!.dropped!,
-				failed: row.avg!.failed!,
-				total: row.avg!.total!
+				dropped: row._avg!.dropped!,
+				failed: row._avg!.failed!,
+				total: row._avg!.total!
 			};
 
 			if (result[key]) {

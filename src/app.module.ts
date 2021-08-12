@@ -9,6 +9,7 @@ import {CoursesModule} from './courses/courses.module';
 import {SectionsModule} from './sections/sections.module';
 import {PassFailDropModule} from './passfaildrop/passfaildrop.module';
 import {SemestersModule} from './semesters/semesters.module';
+import { BuildingsModule } from './buildings/buildings.module';
 import {TransferCoursesModule} from './transfer-courses/transfer-courses.module';
 import {InitHandler} from './init';
 
@@ -29,6 +30,7 @@ import {InitHandler} from './init';
 		PassFailDropModule,
 		SectionsModule,
 		SemestersModule,
+		BuildingsModule,
 		TransferCoursesModule
 	],
 	controllers: [],

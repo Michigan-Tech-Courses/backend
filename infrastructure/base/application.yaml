@@ -36,6 +36,6 @@ spec:
       initContainers:
         - name: migrate-application-database
           image: registry.michigantechcourses.com/backend:latest
-          args: ["migrations:run"]
+          args: ["prod:prepare"]
       imagePullSecrets:
       - name: regcred

@@ -11,6 +11,10 @@ export class WarmService {
 
 	@Cron(CronExpression.EVERY_10_SECONDS)
 	async warmCache() {
+		if (process.env.NODE_ENV === 'dev') {
+			return;
+		}
+
 		const semesters = await this.prisma.course.findMany({
 			distinct: ['semester', 'year'],
 			select: {
