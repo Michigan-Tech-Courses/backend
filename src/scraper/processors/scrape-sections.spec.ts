@@ -66,51 +66,51 @@ const SCRAPED_SECTION: ISection = {
 };
 
 const EXPECTED_PARSED_TIME = {
-       "exdates":  {
-         "dates":  [],
-         "type": "Dates",
-       },
-       "exrules":  [],
-       "rdates":  {
-         "dates":  [],
-         "type": "Dates",
-       },
-       "rrules":  [
-          {
-           "config":  {
-             "byDayOfWeek":  [
-               "MO",
-               "WE",
-             ],
-             "duration": 4500000,
-             "end":  {
-               "day": 11,
-               "hour": 15,
-               "millisecond": 0,
-               "minute": 15,
-               "month": 12,
-               "second": 0,
-               "timezone": null,
-               "year": 2020,
-             },
-             "frequency": "WEEKLY",
-             "start":  {
-               "day": 27,
-               "hour": 14,
-               "millisecond": 0,
-               "minute": 0,
-               "month": 8,
-               "second": 0,
-               "timezone": null,
-               "year": 2020,
-             },
-           },
-           "type": "Rule",
-         },
-       ],
-       "timezone": null,
-       "type": "Schedule",
-			}
+	exdates: {
+		dates: [],
+		type: 'Dates'
+	},
+	exrules: [],
+	rdates: {
+		dates: [],
+		type: 'Dates'
+	},
+	rrules: [
+		{
+			config: {
+				byDayOfWeek: [
+					'MO',
+					'WE'
+				],
+				duration: 4500000,
+				end: {
+					day: 11,
+					hour: 15,
+					millisecond: 0,
+					minute: 15,
+					month: 12,
+					second: 0,
+					timezone: null,
+					year: 2020
+				},
+				frequency: 'WEEKLY',
+				start: {
+					day: 27,
+					hour: 14,
+					millisecond: 0,
+					minute: 0,
+					month: 8,
+					second: 0,
+					timezone: null,
+					year: 2020
+				}
+			},
+			type: 'Rule'
+		}
+	],
+	timezone: null,
+	type: 'Schedule'
+};
 
 const SCRAPED_COURSE: ICourseOverview = {
 	subject: 'CS',

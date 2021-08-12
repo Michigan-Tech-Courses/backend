@@ -73,9 +73,9 @@ const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}
 	course: SAMPLE_COURSE,
 	instructors: [],
 	buildingName: 'Fisher Hall',
-				isOnline: false,
-				isRemote: false,
-				room: "121"
+	isOnline: false,
+	isRemote: false,
+	room: '121'
 };
 
 const SAMPLE_SCRAPED_SECTION: ISectionDetails = {
@@ -92,7 +92,7 @@ const SAMPLE_BUILDING: Building = {
 	shortName: 'Fisher',
 	lat: 0,
 	lon: 0
-}
+};
 
 describe('Section details scrape processor', () => {
 	beforeEach(() => {
@@ -129,7 +129,7 @@ describe('Section details scrape processor', () => {
 				room: null
 			}
 		});
-	})
+	});
 
 	it('updates instructors', async () => {
 		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);

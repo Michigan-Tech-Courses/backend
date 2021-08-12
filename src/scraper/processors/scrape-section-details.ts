@@ -12,8 +12,8 @@ import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
 import {Semester} from '.prisma/client';
-import extractBuildingAndRoom, { InstructionTypeE } from 'src/lib/extract-building-and-room';
-import { Prisma, Section } from '@prisma/client';
+import extractBuildingAndRoom, {InstructionTypeE} from 'src/lib/extract-building-and-room';
+import {Prisma, Section} from '@prisma/client';
 
 const convertSemesters = (semesters: ESemester[]): Semester[] => {
 	const result: Semester[] = [];
@@ -163,7 +163,7 @@ const processJob = async (_: Job) => {
 			}
 
 			/* Update section */
-			let updatedSectionData: Prisma.SectionUpdateArgs['data'] = {};
+			const updatedSectionData: Prisma.SectionUpdateArgs['data'] = {};
 
 			const foundInstructorIds = instructors.map(i => i.id);
 			const storedInstructorIds = section.instructors.map(i => i.id);
@@ -172,7 +172,7 @@ const processJob = async (_: Job) => {
 				updatedSectionData.instructors = {
 					connect: arrDiff(foundInstructorIds, storedInstructorIds).map(i => ({id: i})),
 					disconnect: arrDiff(storedInstructorIds, foundInstructorIds).map(i => ({id: i}))
-				}
+				};
 			}
 
 			const extractedLocation = extractBuildingAndRoom(details.location);
@@ -187,12 +187,12 @@ const processJob = async (_: Job) => {
 			const newLocation = Object.assign({}, previousLocation);
 
 			if (extractedLocation.instructionType === InstructionTypeE.ONLINE) {
-				newLocation.isOnline = true
+				newLocation.isOnline = true;
 				newLocation.isRemote = false;
 				newLocation.buildingName = null;
 				newLocation.room = null;
 			} else if (extractedLocation.instructionType === InstructionTypeE.REMOTE) {
-				newLocation.isOnline = false
+				newLocation.isOnline = false;
 				newLocation.isRemote = true;
 				newLocation.buildingName = null;
 				newLocation.room = null;
@@ -203,9 +203,9 @@ const processJob = async (_: Job) => {
 				const mappedBuilding = allBuildings.find(b => b.name === extractedLocation.building);
 
 				if (mappedBuilding) {
-					newLocation.buildingName = mappedBuilding.name
+					newLocation.buildingName = mappedBuilding.name;
 				} else {
-					console.error(`Building was not found: ${extractedLocation.building} ${extractedLocation.room}`)
+					console.error(`Building was not found: ${extractedLocation.building ?? ''} ${extractedLocation.room ?? ''}`);
 				}
 
 				newLocation.room = extractedLocation.room;
@@ -217,8 +217,8 @@ const processJob = async (_: Job) => {
 			}
 
 			if (!equal(previousLocation, newLocation)) {
-				Object.assign(updatedSectionData, newLocation)
-			};
+				Object.assign(updatedSectionData, newLocation);
+			}
 
 			const shouldUpdateSection = Object.keys(updatedSectionData).length > 0;
 
