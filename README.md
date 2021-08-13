@@ -15,6 +15,9 @@ yarn install
 # start dev server in watch mode
 yarn dev
 
+# or run a lighter version (don't actively scrape)
+yarn dev:no-processors
+
 # and you can:
 
 # run tests

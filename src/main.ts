@@ -8,7 +8,6 @@ import {
 	NestFastifyApplication
 } from '@nestjs/platform-fastify';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
-import {router as bullUI} from 'bull-board';
 import {AppModule} from './app.module';
 
 async function bootstrap() {
@@ -26,12 +25,6 @@ async function bootstrap() {
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('docs', app, document);
-
-	// BullUI isn't that happy with Fastify
-	app.use('/queues', (request: any, response: any, next: any) => {
-		request.proxyUrl = '/queues';
-		next();
-	}).use('/queues', bullUI);
 
 	app.enableCors();
 
