@@ -1,5 +1,5 @@
 import {Test, TestingModule} from '@nestjs/testing';
-import {Section, Semester} from '@prisma/client';
+import {LocationType, Section, Semester} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {SectionsController} from './sections.controller';
 import {SectionsModule} from './sections.module';
@@ -28,8 +28,7 @@ describe('SectionsController', () => {
 		fee: 0,
 		updatedAt: new Date(),
 		deletedAt: null,
-		isOnline: false,
-		isRemote: false,
+		locationType: LocationType.PHYSICAL,
 		buildingName: null,
 		room: null
 	};

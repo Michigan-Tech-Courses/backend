@@ -37,7 +37,7 @@ jest.mock('@prisma/client', () => ({
 }));
 
 import processJob from './scrape-sections';
-import {Course, Section, Semester} from '@prisma/client';
+import {Course, LocationType, Section, Semester} from '@prisma/client';
 
 const SCRAPED_SECTION: ISection = {
 	cmp: '1',
@@ -406,10 +406,9 @@ describe('Courses and sections scrape processor', () => {
 					maxCredits: expect.any(Number),
 					time: EXPECTED_PARSED_TIME,
 					courseId: 'test-course-id',
+					locationType: LocationType.UNKNOWN,
 					buildingName: null,
-					room: null,
-					isOnline: false,
-					isRemote: false
+					room: null
 				}
 			});
 		});
@@ -453,10 +452,9 @@ describe('Courses and sections scrape processor', () => {
 				minCredits: 3,
 				maxCredits: 3,
 				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				locationType: LocationType.UNKNOWN,
 				buildingName: null,
-				room: null,
-				isOnline: false,
-				isRemote: false
+				room: null
 			};
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
@@ -482,10 +480,9 @@ describe('Courses and sections scrape processor', () => {
 					maxCredits: expect.any(Number),
 					time: expect.any(Object),
 					deletedAt: null,
+					locationType: LocationType.UNKNOWN,
 					buildingName: null,
-					room: null,
-					isOnline: false,
-					isRemote: false
+					room: null
 				},
 				where: {
 					courseId: 'test-id',
@@ -563,10 +560,9 @@ describe('Courses and sections scrape processor', () => {
 				minCredits: 3,
 				maxCredits: 3,
 				time: {},
+				locationType: LocationType.UNKNOWN,
 				buildingName: null,
-				room: null,
-				isOnline: false,
-				isRemote: false
+				room: null
 			};
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
@@ -590,10 +586,9 @@ describe('Courses and sections scrape processor', () => {
 					maxCredits: expect.any(Number),
 					time: expect.any(Object),
 					deletedAt: null,
+					locationType: LocationType.UNKNOWN,
 					buildingName: null,
-					room: null,
-					isOnline: false,
-					isRemote: false
+					room: null
 				},
 				where: {
 					courseId: 'test-id',
@@ -636,10 +631,9 @@ describe('Courses and sections scrape processor', () => {
 				minCredits: 3,
 				maxCredits: 3,
 				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				locationType: LocationType.UNKNOWN,
 				buildingName: null,
-				room: null,
-				isRemote: false,
-				isOnline: false
+				room: null
 			};
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
