@@ -63,6 +63,13 @@ model Building {
   Section   Section[]
 }
 
+enum LocationType {
+  PHYSICAL
+  ONLINE
+  REMOTE
+  UNKNOWN
+}
+
 model Section {
   id String @id @default(cuid())
 
@@ -89,10 +96,9 @@ model Section {
 
   instructors Instructor[]
 
-  building Building? @relation(fields: [buildingName], references: [name])
-  room     String?
-  isOnline Boolean   @default(false)
-  isRemote Boolean   @default(false)
+  locationType LocationType @default(PHYSICAL)
+  building     Building?    @relation(fields: [buildingName], references: [name])
+  room         String?
 
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?

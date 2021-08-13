@@ -11,9 +11,8 @@ import {deleteByKey} from 'src/cache/store';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
-import {Semester} from '.prisma/client';
-import extractBuildingAndRoom, {InstructionTypeE} from 'src/lib/extract-building-and-room';
-import {Prisma, Section} from '@prisma/client';
+import parseLocation from 'src/lib/parse-location';
+import {Prisma, Section, Semester} from '@prisma/client';
 
 const convertSemesters = (semesters: ESemester[]): Semester[] => {
 	const result: Semester[] = [];
@@ -175,46 +174,14 @@ const processJob = async (_: Job) => {
 				};
 			}
 
-			const extractedLocation = extractBuildingAndRoom(details.location);
-
 			// Typescript doesn't seem to correctly infer types in switch
-			const previousLocation: Pick<Section, 'isOnline' | 'isRemote' | 'buildingName' | 'room'> = {
-				isOnline: section.isOnline,
-				isRemote: section.isRemote,
+			const previousLocation: Pick<Section, 'locationType' | 'buildingName' | 'room'> = {
+				locationType: section.locationType,
 				buildingName: section.buildingName,
 				room: section.room
 			};
-			const newLocation = Object.assign({}, previousLocation);
 
-			if (extractedLocation.instructionType === InstructionTypeE.ONLINE) {
-				newLocation.isOnline = true;
-				newLocation.isRemote = false;
-				newLocation.buildingName = null;
-				newLocation.room = null;
-			} else if (extractedLocation.instructionType === InstructionTypeE.REMOTE) {
-				newLocation.isOnline = false;
-				newLocation.isRemote = true;
-				newLocation.buildingName = null;
-				newLocation.room = null;
-			} else if (extractedLocation.instructionType === InstructionTypeE.PHYSICAL) {
-				newLocation.isOnline = false;
-				newLocation.isRemote = false;
-
-				const mappedBuilding = allBuildings.find(b => b.name === extractedLocation.building);
-
-				if (mappedBuilding) {
-					newLocation.buildingName = mappedBuilding.name;
-				} else {
-					console.error(`Building was not found: ${extractedLocation.building ?? ''} ${extractedLocation.room ?? ''}`);
-				}
-
-				newLocation.room = extractedLocation.room;
-			} else if (extractedLocation.instructionType === InstructionTypeE.UNKNOWN) {
-				newLocation.isOnline = false;
-				newLocation.isRemote = false;
-				newLocation.buildingName = null;
-				newLocation.room = null;
-			}
+			const newLocation = parseLocation(details.location, allBuildings);
 
 			if (!equal(previousLocation, newLocation)) {
 				Object.assign(updatedSectionData, newLocation);

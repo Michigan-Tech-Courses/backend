@@ -5,7 +5,7 @@ import {Except} from 'type-fest';
 import arrDiff from 'arr-diff';
 import pThrottle from 'p-throttle';
 import prisma from 'src/lib/prisma-singleton';
-import {Section, Prisma} from '@prisma/client';
+import {Section, Prisma, LocationType} from '@prisma/client';
 import {getAllSections, ICourseOverview, ISection} from '@mtucourses/scraper';
 import {CourseMap} from 'src/lib/course-map';
 import {IRuleOptions, Schedule} from 'src/lib/rschedule';
@@ -46,10 +46,9 @@ const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): B
 		takenSeats: section.seatsTaken,
 		availableSeats: section.seatsAvailable,
 		fee: Math.round(section.fee),
+		locationType: LocationType.UNKNOWN,
 		buildingName: null,
-		room: null,
-		isOnline: false,
-		isRemote: false
+		room: null
 	};
 };
 

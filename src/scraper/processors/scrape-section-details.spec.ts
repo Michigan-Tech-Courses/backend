@@ -39,7 +39,7 @@ jest.mock('@prisma/client', () => ({
 }));
 
 import processJob from './scrape-section-details';
-import {Building, Course, Section, Semester} from '@prisma/client';
+import {Building, Course, LocationType, Section, Semester} from '@prisma/client';
 
 const SAMPLE_COURSE: Course = {
 	id: 'test-id',
@@ -72,9 +72,8 @@ const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}
 	courseId: SAMPLE_COURSE.id,
 	course: SAMPLE_COURSE,
 	instructors: [],
+	locationType: LocationType.PHYSICAL,
 	buildingName: 'Fisher Hall',
-	isOnline: false,
-	isRemote: false,
 	room: '121'
 };
 
@@ -123,8 +122,7 @@ describe('Section details scrape processor', () => {
 				id: SAMPLE_SECTION.id
 			},
 			data: {
-				isOnline: true,
-				isRemote: false,
+				locationType: LocationType.ONLINE,
 				buildingName: null,
 				room: null
 			}
