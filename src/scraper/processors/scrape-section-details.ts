@@ -162,7 +162,7 @@ const processJob = async (_: Job) => {
 			}
 
 			/* Update section */
-			const updatedSectionData: Prisma.SectionUpdateArgs['data'] = {};
+			let updatedSectionData: Prisma.SectionUpdateArgs['data'] = {};
 
 			const foundInstructorIds = instructors.map(i => i.id);
 			const storedInstructorIds = section.instructors.map(i => i.id);
@@ -184,7 +184,27 @@ const processJob = async (_: Job) => {
 			const newLocation = parseLocation(details.location, allBuildings);
 
 			if (!equal(previousLocation, newLocation)) {
-				Object.assign(updatedSectionData, newLocation);
+				const {buildingName, ...otherNewLocationParameters} = newLocation;
+
+				if (buildingName) {
+					updatedSectionData = {
+						...(updatedSectionData as Prisma.SectionUpdateInput),
+						...otherNewLocationParameters,
+						building: {
+							connect: {
+								name: buildingName
+							}
+						}
+					};
+				} else {
+					updatedSectionData = {
+						...(updatedSectionData as Prisma.SectionUpdateInput),
+						...otherNewLocationParameters,
+						building: {
+							disconnect: true
+						}
+					};
+				}
 			}
 
 			const shouldUpdateSection = Object.keys(updatedSectionData).length > 0;

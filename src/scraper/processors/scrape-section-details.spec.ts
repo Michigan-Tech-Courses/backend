@@ -86,16 +86,23 @@ const SAMPLE_SCRAPED_SECTION: ISectionDetails = {
 	location: 'Fisher Hall 121'
 };
 
-const SAMPLE_BUILDING: Building = {
+const SAMPLE_BUILDING1: Building = {
 	name: 'Fisher Hall',
 	shortName: 'Fisher',
 	lat: 0,
 	lon: 0
 };
 
+const SAMPLE_BUILDING2: Building = {
+	name: 'Rekhi',
+	shortName: 'Rekhi',
+	lat: 0,
+	lon: 0
+};
+
 describe('Section details scrape processor', () => {
 	beforeEach(() => {
-		mockBuildingFindMany.mockResolvedValueOnce([SAMPLE_BUILDING]);
+		mockBuildingFindMany.mockResolvedValueOnce([SAMPLE_BUILDING1, SAMPLE_BUILDING2]);
 	});
 
 	it('runs without errors', async () => {
@@ -123,8 +130,39 @@ describe('Section details scrape processor', () => {
 			},
 			data: {
 				locationType: LocationType.ONLINE,
-				buildingName: null,
+				building: {
+					disconnect: true
+				},
 				room: null
+			}
+		});
+	});
+
+	it('updates location (2)', async () => {
+		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		mockSectionFindMany.mockResolvedValue([]);
+
+		mockedSectionDetailScraper.mockResolvedValue({
+			...SAMPLE_SCRAPED_SECTION,
+			location: 'Rekhi 0200'
+		});
+
+		mockQueryRaw.mockResolvedValue([{id: 1}]);
+
+		await processJob(null as any);
+
+		expect(mockSectionUpdate.mock.calls[0][0]).toEqual({
+			where: {
+				id: SAMPLE_SECTION.id
+			},
+			data: {
+				locationType: LocationType.PHYSICAL,
+				building: {
+					connect: {
+						name: 'Rekhi'
+					}
+				},
+				room: '0200'
 			}
 		});
 	});
