@@ -405,10 +405,7 @@ describe('Courses and sections scrape processor', () => {
 					minCredits: expect.any(Number),
 					maxCredits: expect.any(Number),
 					time: EXPECTED_PARSED_TIME,
-					courseId: 'test-course-id',
-					locationType: LocationType.UNKNOWN,
-					buildingName: null,
-					room: null
+					courseId: 'test-course-id'
 				}
 			});
 		});
@@ -479,10 +476,7 @@ describe('Courses and sections scrape processor', () => {
 					minCredits: expect.any(Number),
 					maxCredits: expect.any(Number),
 					time: expect.any(Object),
-					deletedAt: null,
-					locationType: LocationType.UNKNOWN,
-					buildingName: null,
-					room: null
+					deletedAt: null
 				},
 				where: {
 					courseId: 'test-id',
@@ -585,10 +579,7 @@ describe('Courses and sections scrape processor', () => {
 					minCredits: expect.any(Number),
 					maxCredits: expect.any(Number),
 					time: expect.any(Object),
-					deletedAt: null,
-					locationType: LocationType.UNKNOWN,
-					buildingName: null,
-					room: null
+					deletedAt: null
 				},
 				where: {
 					courseId: 'test-id',
@@ -634,6 +625,56 @@ describe('Courses and sections scrape processor', () => {
 				locationType: LocationType.UNKNOWN,
 				buildingName: null,
 				room: null
+			};
+
+			mockCourseFindMany.mockResolvedValue([storedCourse]);
+
+			mockSectionFindMany.mockResolvedValue([storedSection]);
+
+			mockSectionFindFirst.mockResolvedValue(storedSection);
+
+			await processJob(null as any);
+
+			expect(mockSectionUpdateMany).toBeCalledTimes(0);
+		});
+
+		it('doesn\'t ever modify a section\'s location', async () => {
+			mockedSectionsScraper.mockResolvedValue([{
+				...SCRAPED_COURSE,
+				sections: [SCRAPED_SECTION]
+			}]);
+
+			const storedCourse: Course = {
+				id: 'test-id',
+				subject: 'CS',
+				crse: '1000',
+				title: 'Intro to Programming',
+				year: 2020,
+				semester: Semester.FALL,
+				description: '',
+				prereqs: null,
+				deletedAt: null,
+				updatedAt: new Date(),
+				offered: []
+			};
+			const storedSection: Section = {
+				id: 'test-section-id',
+				updatedAt: new Date(),
+				deletedAt: null,
+				courseId: 'test-id',
+				availableSeats: SCRAPED_SECTION.seatsAvailable,
+				takenSeats: SCRAPED_SECTION.seatsTaken,
+				totalSeats: SCRAPED_SECTION.seats,
+				section: SCRAPED_SECTION.section,
+				cmp: SCRAPED_SECTION.cmp,
+				crn: SCRAPED_SECTION.crn,
+				fee: SCRAPED_SECTION.fee,
+				minCredits: 3,
+				maxCredits: 3,
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				locationType: LocationType.PHYSICAL,
+				buildingName: 'Fisher Hall',
+				room: '0100'
 			};
 
 			mockCourseFindMany.mockResolvedValue([storedCourse]);

@@ -5,7 +5,7 @@ import {Except} from 'type-fest';
 import arrDiff from 'arr-diff';
 import pThrottle from 'p-throttle';
 import prisma from 'src/lib/prisma-singleton';
-import {Section, Prisma, LocationType} from '@prisma/client';
+import {Section, Prisma} from '@prisma/client';
 import {getAllSections, ICourseOverview, ISection} from '@mtucourses/scraper';
 import {CourseMap} from 'src/lib/course-map';
 import {IRuleOptions, Schedule} from 'src/lib/rschedule';
@@ -13,9 +13,9 @@ import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src
 import {deleteByKey} from 'src/cache/store';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
 
-type BasicSection = Except<Section, 'id' | 'updatedAt' | 'deletedAt' | 'courseId'>;
+type ModifiableSection = Except<Section, 'id' | 'updatedAt' | 'deletedAt' | 'courseId' | 'buildingName' | 'locationType' | 'room'>;
 
-const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): BasicSection => {
+const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): ModifiableSection => {
 	const scheduleRules: IRuleOptions[] = [];
 
 	if (section.timeRange?.length === 2 && section.dateRange.length === 2 && section.days !== '' && section.days !== 'TBA') {
@@ -45,10 +45,7 @@ const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): B
 		totalSeats: section.seats,
 		takenSeats: section.seatsTaken,
 		availableSeats: section.seatsAvailable,
-		fee: Math.round(section.fee),
-		locationType: LocationType.UNKNOWN,
-		buildingName: null,
-		room: null
+		fee: Math.round(section.fee)
 	};
 };
 
@@ -133,7 +130,7 @@ const processJob = async (_: Job) => {
 			const sectionUpserter = pThrottle({
 				limit: 1,
 				interval: 50
-			})(async (scrapedSection: BasicSection) => {
+			})(async (scrapedSection: ModifiableSection) => {
 				let storedSection = await prisma.section.findFirst({
 					where: {
 						courseId: storedCourse!.id,
@@ -143,7 +140,18 @@ const processJob = async (_: Job) => {
 
 				if (storedSection) {
 					// Check if there's any difference
-					const {id, courseId, updatedAt, deletedAt, ...storedSectionToCompare} = storedSection;
+					const storedSectionToCompare: ModifiableSection = {
+						crn: storedSection.crn,
+						section: storedSection.section,
+						cmp: storedSection.cmp,
+						minCredits: storedSection.minCredits,
+						maxCredits: storedSection.maxCredits,
+						time: storedSection.time,
+						totalSeats: storedSection.totalSeats,
+						takenSeats: storedSection.takenSeats,
+						availableSeats: storedSection.availableSeats,
+						fee: storedSection.fee
+					};
 
 					if (!equal(storedSectionToCompare, scrapedSection) || storedSection.deletedAt) {
 						// Section needs to be updated

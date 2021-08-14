@@ -162,7 +162,7 @@ const processJob = async (_: Job) => {
 			}
 
 			/* Update section */
-			let updatedSectionData: Prisma.SectionUpdateArgs['data'] = {};
+			let updatedSectionData: Prisma.SectionUpdateInput = {};
 
 			const foundInstructorIds = instructors.map(i => i.id);
 			const storedInstructorIds = section.instructors.map(i => i.id);
@@ -174,7 +174,6 @@ const processJob = async (_: Job) => {
 				};
 			}
 
-			// Typescript doesn't seem to correctly infer types in switch
 			const previousLocation: Pick<Section, 'locationType' | 'buildingName' | 'room'> = {
 				locationType: section.locationType,
 				buildingName: section.buildingName,
@@ -188,7 +187,7 @@ const processJob = async (_: Job) => {
 
 				if (buildingName) {
 					updatedSectionData = {
-						...(updatedSectionData as Prisma.SectionUpdateInput),
+						...updatedSectionData,
 						...otherNewLocationParameters,
 						building: {
 							connect: {
@@ -198,7 +197,7 @@ const processJob = async (_: Job) => {
 					};
 				} else {
 					updatedSectionData = {
-						...(updatedSectionData as Prisma.SectionUpdateInput),
+						...updatedSectionData,
 						...otherNewLocationParameters,
 						building: {
 							disconnect: true
