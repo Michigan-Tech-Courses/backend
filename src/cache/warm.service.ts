@@ -49,7 +49,7 @@ export class WarmService {
 		const results = await Promise.all(promises);
 
 		for (const result of results as Response[]) {
-			this.logger.log(`Cache result for ${result.url}: ${(result.headers as unknown as Record<string, string>)['cf-cache-status']}`);
+			this.logger.debug(`Cache result for ${result.url}: ${(result.headers as unknown as Record<string, string>)['cf-cache-status']}`);
 		}
 	}
 }
