@@ -15,7 +15,7 @@ export class InstructorsController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
-	@Header('Cache-Control', 'max-age=120, stale-while-revalidate=86400')
+	@Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400')
 	async getAllInstructors(@Query() parameters?: GetInstructorsParameters) {
 		let queryParameters = {};
 

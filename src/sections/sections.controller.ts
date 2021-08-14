@@ -37,7 +37,7 @@ export class SectionsController {
 	}
 
 	@Get()
-	@Header('Cache-Control', 'max-age=120, stale-while-revalidate=86400')
+	@Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400')
 	async getSections(@Query() parameters?: GetSectionsParameters) {
 		const courseParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
 			where: {},

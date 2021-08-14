@@ -7,7 +7,7 @@ export class BuildingsController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
-	@Header('Cache-Control', 'max-age=120')
+	@Header('Cache-Control', 'public,max-age=120')
 	async getAllBuildings() {
 		return this.prisma.building.findMany();
 	}

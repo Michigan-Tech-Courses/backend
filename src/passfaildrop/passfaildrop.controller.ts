@@ -12,7 +12,7 @@ export class PassFailDropController {
 	constructor(private readonly prisma: PrismaService) {}
 
 	@Get()
-	@Header('Cache-Control', 'max-age=120')
+	@Header('Cache-Control', 'public, max-age=120')
 	async getAll(@Query() parameters?: GetAllParameters) {
 		const query: Prisma.PassFailDropGroupByArgs & {orderBy: Prisma.Enumerable<Prisma.PassFailDropOrderByInput> | undefined} = {
 			by: ['courseSubject', 'courseCrse', 'year', 'semester'],
