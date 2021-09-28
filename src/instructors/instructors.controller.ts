@@ -2,9 +2,10 @@ import {CacheInterceptor, Controller, Get, Header, Injectable, Query, UseInterce
 import {Thumbor} from '@mtucourses/thumbor';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetInstructorsParameters} from './types';
+import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 
 @Controller('instructors')
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(CacheInterceptor, NoCacheUpdatedSinceInterceptor)
 @Injectable()
 export class InstructorsController {
 	private readonly thumbor = new Thumbor({

@@ -1,11 +1,12 @@
 import {CacheInterceptor, Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
 import {Prisma} from '@prisma/client';
+import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import sortSemesters from 'src/lib/sort-semesters';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetCoursesParameters, GetUniqueCoursesParameters, FindFirstCourseParameters} from './types';
 
 @Controller('courses')
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(CacheInterceptor, NoCacheUpdatedSinceInterceptor)
 @Injectable()
 export class CoursesController {
 	constructor(private readonly prisma: PrismaService) {}

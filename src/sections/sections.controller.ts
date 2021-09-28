@@ -1,10 +1,11 @@
 import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors, Header} from '@nestjs/common';
 import {Prisma, Section} from '@prisma/client';
+import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetSectionsParameters, FindFirstSectionParamters} from './types';
 
 @Controller('sections')
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(CacheInterceptor, NoCacheUpdatedSinceInterceptor)
 @Injectable()
 export class SectionsController {
 	constructor(private readonly prisma: PrismaService) {}

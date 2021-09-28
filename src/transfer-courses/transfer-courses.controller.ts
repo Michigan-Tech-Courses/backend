@@ -1,8 +1,10 @@
-import {Controller, Get, Header, Injectable, Query} from '@nestjs/common';
+import {Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
+import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetTransferCoursesParameters} from './types';
 
 @Controller('transfer-courses')
+@UseInterceptors(NoCacheUpdatedSinceInterceptor)
 @Injectable()
 export class TransferCoursesController {
 	constructor(private readonly prisma: PrismaService) {}
