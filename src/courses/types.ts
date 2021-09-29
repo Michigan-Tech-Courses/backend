@@ -49,4 +49,10 @@ export class GetUniqueCoursesParameters {
 	@IsOptional()
 	@ApiProperty({required: false, description: 'ISO DateTime string; only return instances that have been updated since this date.'})
 	updatedSince!: Date;
+
+	@IsNumber()
+	@Type(() => Number)
+	@IsOptional()
+	@ApiProperty({required: false, description: 'Return courses in and after this year'})
+	startYear!: number;
 }

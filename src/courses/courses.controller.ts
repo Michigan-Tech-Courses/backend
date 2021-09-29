@@ -57,6 +57,11 @@ export class CoursesController {
 	async getUniqueCourses(@Query() parameters?: GetUniqueCoursesParameters) {
 		const semesters = await this.prisma.course.findMany({
 			distinct: ['semester', 'year'],
+			where: parameters?.startYear ? {
+				year: {
+					gte: parameters.startYear
+				}
+			} : {},
 			select: {
 				semester: true,
 				year: true
