@@ -55,4 +55,9 @@ export class GetUniqueCoursesParameters {
 	@IsOptional()
 	@ApiProperty({required: false, description: 'Return courses in and after this year'})
 	startYear!: number;
+
+	@IsIn(Object.values(Semester))
+	@IsOptional()
+	@ApiProperty({required: false, description: 'Filter by semester'})
+	semester!: Semester;
 }

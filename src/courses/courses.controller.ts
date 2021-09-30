@@ -55,13 +55,21 @@ export class CoursesController {
 	@Get('/unique')
 	@Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400')
 	async getUniqueCourses(@Query() parameters?: GetUniqueCoursesParameters) {
+		const semesterParameters: Prisma.CourseFindManyArgs['where'] = {};
+
+		if (parameters?.startYear) {
+			semesterParameters.year = {
+				gte: parameters.startYear
+			};
+		}
+
+		if (parameters?.semester) {
+			semesterParameters.semester = parameters.semester;
+		}
+
 		const semesters = await this.prisma.course.findMany({
 			distinct: ['semester', 'year'],
-			where: parameters?.startYear ? {
-				year: {
-					gte: parameters.startYear
-				}
-			} : {},
+			where: semesterParameters,
 			select: {
 				semester: true,
 				year: true
