@@ -6,6 +6,10 @@ COPY package.json ./
 COPY yarn.lock ./
 COPY prisma .
 
+# Make directory structure for seed file
+RUN mkdir prisma
+COPY prisma/seed.ts prisma/seed.ts
+
 # Install prod dependencies
 RUN yarn install --prod --frozen-lockfile
 
