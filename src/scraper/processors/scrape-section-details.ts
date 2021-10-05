@@ -118,7 +118,13 @@ const processJob = async (_: Job) => {
 					const firstName = fragmentedName[0];
 					const lastName = fragmentedName[fragmentedName.length - 1];
 
-					const results: Array<{id: number}> = await prisma.$queryRaw('SELECT id FROM "Instructor" WHERE "fullName" SIMILAR TO $1;', `(${firstName} % ${lastName})|(${instructorName})|(${firstName} ${lastName})|(${firstName} ${lastName} %)|(${firstName} % ${lastName} %)`);
+					const results = await prisma.instructor.findMany({
+						where: {
+							fullName: {
+								search: `${firstName} & ${lastName}`
+							}
+						}
+					});
 
 					if (results.length > 0) {
 						instructors.push({id: sortByNullValues(results)[0].id});

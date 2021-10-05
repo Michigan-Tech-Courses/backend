@@ -1,47 +1,35 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["nApi"]
-}
-
-enum Semester {
-  FALL
-  SPRING
-  SUMMER
-}
-
 model Course {
-  id String @unique @default(cuid())
-
+  id          String     @unique(map: "Course.id_unique") @default(cuid())
   year        Int
   semester    Semester
   subject     String
   crse        String
   title       String
   description String?
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
   prereqs     String?
+  offered     Semester[]
+  credits     Float      @default(0)
   sections    Section[]
 
-  offered Semester[]
-
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
   @@id([year, semester, subject, crse])
-  @@index(updatedAt)
-  @@index(deletedAt)
+  @@index([deletedAt], map: "Course.deletedAt_index")
+  @@index([updatedAt], map: "Course.updatedAt_index")
 }
 
 model TransferCourse {
-  id String @unique @default(cuid())
-
+  id               String   @unique(map: "TransferCourse.id_unique") @default(cuid())
   fromCollege      String
   fromCollegeState String
   fromCRSE         String
@@ -52,89 +40,65 @@ model TransferCourse {
   toCredits        Float
   title            String
   updatedAt        DateTime @default(now()) @updatedAt
+
   @@id([fromCollege, fromCRSE, fromSubject, toCRSE, toSubject, toCredits])
 }
 
 model Building {
   name      String    @id
-  shortName String
   lat       Float
   lon       Float
+  shortName String
   Section   Section[]
 }
 
-enum LocationType {
-  PHYSICAL
-  ONLINE
-  REMOTE
-  UNKNOWN
-}
-
 model Section {
-  id String @id @default(cuid())
-
-  course   Course @relation(fields: [courseId], references: [id])
-  courseId String
-
-  // CRN *is not* unique across semesters
-  crn     String
-  section String
-  cmp     String
-
-  minCredits Float
-  maxCredits Float
-
-  // Output of rschedule
-  time Json
-
+  id             String       @id @default(cuid())
+  courseId       String
+  crn            String
+  section        String
+  cmp            String
+  minCredits     Float
+  maxCredits     Float
+  time           Json
   totalSeats     Int
   takenSeats     Int
   availableSeats Int
+  fee            Int
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+  room           String?
+  buildingName   String?
+  locationType   LocationType @default(PHYSICAL)
+  building       Building?    @relation(fields: [buildingName], references: [name])
+  course         Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  instructors    Instructor[]
 
-  // Cents
-  fee Int
-
-  instructors Instructor[]
-
-  locationType LocationType @default(PHYSICAL)
-  building     Building?    @relation(fields: [buildingName], references: [name])
-  room         String?
-
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  buildingName String?
-  @@index(updatedAt)
-  @@index(deletedAt)
+  @@index([deletedAt], map: "Section.deletedAt_index")
+  @@index([updatedAt], map: "Section.updatedAt_index")
 }
 
 model Instructor {
-  id Int @id @default(autoincrement())
-
-  // Scraped from Michigan Tech
-  fullName    String   @unique
-  departments String[]
-  email       String?
-  phone       String?
-  office      String?
-  websiteURL  String?
-  photoURL    String?
-  interests   String[]
-  occupations String[]
-
-  sections Section[]
-
-  // Scraped from RateMyProfessor
+  id                      Int       @id @default(autoincrement())
+  fullName                String    @unique(map: "Instructor.fullName_unique")
+  departments             String[]
+  email                   String?
+  phone                   String?
+  office                  String?
+  websiteURL              String?
+  photoURL                String?
+  interests               String[]
+  occupations             String[]
+  updatedAt               DateTime  @updatedAt
+  deletedAt               DateTime?
   averageDifficultyRating Float?
   averageRating           Float?
   numRatings              Int?
   rmpId                   String?
+  sections                Section[]
 
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@index(updatedAt)
-  @@index(deletedAt)
+  @@index([deletedAt], map: "Instructor.deletedAt_index")
+  @@index([updatedAt], map: "Instructor.updatedAt_index")
 }
 
 model PassFailDrop {
@@ -148,4 +112,17 @@ model PassFailDrop {
   total         Int
 
   @@id([courseSubject, courseCrse, year, semester, section])
+}
+
+enum Semester {
+  FALL
+  SPRING
+  SUMMER
+}
+
+enum LocationType {
+  PHYSICAL
+  ONLINE
+  REMOTE
+  UNKNOWN
 }

@@ -11,6 +11,7 @@ const mockSectionFindMany = jest.fn();
 const mockSectionUpdate = jest.fn();
 const mockQueryRaw = jest.fn();
 const mockInstructorCreate = jest.fn();
+const mockInstructorFindMany = jest.fn();
 const mockBuildingFindMany = jest.fn();
 
 const mockedPrisma = jest.fn().mockImplementation(() => ({
@@ -25,7 +26,8 @@ const mockedPrisma = jest.fn().mockImplementation(() => ({
 		update: mockSectionUpdate
 	},
 	instructor: {
-		create: mockInstructorCreate
+		create: mockInstructorCreate,
+		findMany: mockInstructorFindMany
 	},
 	building: {
 		findMany: mockBuildingFindMany
@@ -52,7 +54,8 @@ const SAMPLE_COURSE: Course = {
 	prereqs: 'High School',
 	deletedAt: null,
 	updatedAt: new Date(),
-	offered: []
+	offered: [],
+	credits: 3
 };
 
 const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}>} = {
@@ -83,7 +86,8 @@ const SAMPLE_SCRAPED_SECTION: ISectionDetails = {
 	prereqs: null,
 	semestersOffered: [],
 	instructors: [],
-	location: 'Fisher Hall 121'
+	location: 'Fisher Hall 121',
+	credits: 3
 };
 
 const SAMPLE_BUILDING1: Building = {
@@ -120,7 +124,7 @@ describe('Section details scrape processor', () => {
 			location: 'Online Instruction'
 		});
 
-		mockQueryRaw.mockResolvedValue([{id: 1}]);
+		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
 
 		await processJob(null as any);
 
@@ -147,7 +151,7 @@ describe('Section details scrape processor', () => {
 			location: 'Rekhi 0200'
 		});
 
-		mockQueryRaw.mockResolvedValue([{id: 1}]);
+		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
 
 		await processJob(null as any);
 
@@ -176,7 +180,7 @@ describe('Section details scrape processor', () => {
 			instructors: ['Leo Ureel']
 		});
 
-		mockQueryRaw.mockResolvedValue([{id: 1}]);
+		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
 
 		await processJob(null as any);
 
@@ -213,7 +217,7 @@ describe('Section details scrape processor', () => {
 			instructors: ['Leo Ureel']
 		});
 
-		mockQueryRaw.mockResolvedValue([{id: 1}]);
+		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
 
 		await processJob(null as any);
 
@@ -233,7 +237,7 @@ describe('Section details scrape processor', () => {
 
 		mockedSectionDetailScraper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
 
-		mockQueryRaw.mockResolvedValue([]);
+		mockInstructorFindMany.mockResolvedValue([]);
 
 		await processJob(null as any);
 
@@ -335,6 +339,7 @@ describe('Section details scrape processor', () => {
 		mockSectionUpdate.mockClear();
 		mockQueryRaw.mockClear();
 		mockInstructorCreate.mockClear();
+		mockInstructorFindMany.mockClear();
 		mockedSectionDetailScraper.mockClear();
 	});
 });

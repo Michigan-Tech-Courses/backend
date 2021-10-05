@@ -14,7 +14,9 @@ export class PassFailDropController {
 	@Get()
 	@Header('Cache-Control', 'public, max-age=120')
 	async getAll(@Query() parameters?: GetAllParameters) {
-		const query: Prisma.PassFailDropGroupByArgs & {orderBy: Prisma.Enumerable<Prisma.PassFailDropOrderByInput> | undefined} = {
+		const query: Prisma.PassFailDropGroupByArgs & {
+			orderBy: Prisma.PassFailDropGroupByArgs['orderBy'];
+		} = {
 			by: ['courseSubject', 'courseCrse', 'year', 'semester'],
 			_avg: {
 				dropped: true,

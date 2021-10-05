@@ -15,7 +15,9 @@ import getTermsToProcess from 'src/lib/get-terms-to-process';
 
 type ModifiableSection = Except<Section, 'id' | 'updatedAt' | 'deletedAt' | 'courseId' | 'buildingName' | 'locationType' | 'room'>;
 
-const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): ModifiableSection => {
+type ModifiableSectionInput = ModifiableSection & {time: Prisma.InputJsonValue | undefined};
+
+const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): ModifiableSectionInput => {
 	const scheduleRules: IRuleOptions[] = [];
 
 	if (section.timeRange?.length === 2 && section.dateRange.length === 2 && section.days !== '' && section.days !== 'TBA') {
@@ -41,7 +43,7 @@ const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): M
 		cmp: section.cmp,
 		minCredits: Math.min(...section.creditRange),
 		maxCredits: Math.max(...section.creditRange),
-		time: (schedule as any).toJSON() as unknown as Prisma.JsonObject,
+		time: (schedule as any).toJSON() as unknown as Prisma.InputJsonValue,
 		totalSeats: section.seats,
 		takenSeats: section.seatsTaken,
 		availableSeats: section.seatsAvailable,
@@ -130,7 +132,7 @@ const processJob = async (_: Job) => {
 			const sectionUpserter = pThrottle({
 				limit: 1,
 				interval: 50
-			})(async (scrapedSection: ModifiableSection) => {
+			})(async (scrapedSection: ModifiableSectionInput) => {
 				let storedSection = await prisma.section.findFirst({
 					where: {
 						courseId: storedCourse!.id,

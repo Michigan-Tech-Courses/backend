@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Course" ADD COLUMN     "credits" DOUBLE PRECISION NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "Section" ALTER COLUMN "locationType" SET DEFAULT E'PHYSICAL';

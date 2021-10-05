@@ -24,6 +24,7 @@ describe('CoursesController', () => {
 		prereqs: null,
 		updatedAt: new Date(),
 		deletedAt: null,
+		credits: 3,
 		offered: []
 	};
 
