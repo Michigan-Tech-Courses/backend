@@ -271,7 +271,8 @@ describe('Section details scrape processor', () => {
 			data: {
 				description: SAMPLE_SCRAPED_SECTION.description,
 				offered: [],
-				prereqs: null
+				prereqs: null,
+				credits: 3
 			}
 		});
 	});
@@ -307,7 +308,8 @@ describe('Section details scrape processor', () => {
 			data: {
 				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
 				offered: [],
-				description: ''
+				description: '',
+				credits: 3
 			}
 		});
 	});
@@ -328,7 +330,30 @@ describe('Section details scrape processor', () => {
 			data: {
 				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
 				offered: [Semester.FALL],
-				description: SAMPLE_SCRAPED_SECTION.description
+				description: SAMPLE_SCRAPED_SECTION.description,
+				credits: 3
+			}
+		});
+	});
+
+	it('updates course credits', async () => {
+		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		mockSectionFindMany.mockResolvedValue([]);
+
+		mockedSectionDetailScraper.mockResolvedValue({
+			...SAMPLE_SCRAPED_SECTION,
+			credits: 5
+		});
+
+		await processJob(null as any);
+
+		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
+			where: expect.any(Object),
+			data: {
+				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
+				offered: [],
+				description: SAMPLE_SCRAPED_SECTION.description,
+				credits: 5
 			}
 		});
 	});
