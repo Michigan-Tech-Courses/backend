@@ -1,4 +1,6 @@
 import {CallHandler, ExecutionContext, Injectable, NestInterceptor} from '@nestjs/common';
+// NestJS bug: https://stackoverflow.com/a/63984129/12638523
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {FastifyReply} from 'fastify';
 
 @Injectable()
