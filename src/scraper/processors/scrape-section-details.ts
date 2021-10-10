@@ -114,6 +114,11 @@ const processJob = async (_: Job) => {
 				const consumedNames: string[] = [];
 
 				await Promise.all(scrapedInstructors.map(async instructorName => {
+					if (instructorName.trim() === '') {
+						consumedNames.push(instructorName);
+						return;
+					}
+
 					const fragmentedName = instructorName.split(' ');
 					const firstName = fragmentedName[0];
 					const lastName = fragmentedName[fragmentedName.length - 1];
