@@ -56,17 +56,29 @@ const getCreditsRangeFromCourse = (course: ICourseOverview): [number, number] =>
 	let max = Number.MIN_SAFE_INTEGER;
 
 	for (const section of course.sections) {
-		const [
-			sectionMin,
-			sectionMax
-		] = section.creditRange;
+		if (section.creditRange.length === 2) {
+			const [
+				sectionMin,
+				sectionMax
+			] = section.creditRange;
 
-		if (sectionMin < min) {
-			min = sectionMin;
-		}
+			if (sectionMin < min) {
+				min = sectionMin;
+			}
 
-		if (sectionMax > max) {
-			max = sectionMax;
+			if (sectionMax > max) {
+				max = sectionMax;
+			}
+		} else {
+			const [minAndMax] = section.creditRange;
+
+			if (minAndMax < min) {
+				min = minAndMax;
+			}
+
+			if (minAndMax > max) {
+				max = minAndMax;
+			}
 		}
 	}
 

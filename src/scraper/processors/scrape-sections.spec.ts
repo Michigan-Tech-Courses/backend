@@ -280,6 +280,73 @@ describe('Courses and sections scrape processor', () => {
 			});
 		});
 
+		it('correctly populates credits of an existing course (all sections have same range)', async () => {
+			const scrapedCourse: ICourseOverview = {
+				subject: 'CS',
+				crse: '1000',
+				title: 'Intro to Programming (new title)',
+				sections: [
+					{
+						...SCRAPED_SECTION,
+						creditRange: [3]
+					}
+				]
+			};
+
+			const storedSection: Section = {
+				id: 'test-section-id',
+				updatedAt: new Date(),
+				deletedAt: null,
+				courseId: 'test-course-id',
+				availableSeats: SCRAPED_SECTION.seatsAvailable,
+				takenSeats: SCRAPED_SECTION.seatsTaken,
+				totalSeats: SCRAPED_SECTION.seats,
+				section: SCRAPED_SECTION.section,
+				cmp: SCRAPED_SECTION.cmp,
+				crn: SCRAPED_SECTION.crn,
+				fee: SCRAPED_SECTION.fee,
+				minCredits: 3,
+				maxCredits: 3,
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				locationType: LocationType.UNKNOWN,
+				buildingName: null,
+				room: null
+			};
+
+			mockedSectionsScraper.mockResolvedValue([scrapedCourse]);
+			mockSectionFindFirst.mockResolvedValue(storedSection);
+
+			mockCourseFindMany.mockResolvedValue([COURSE]);
+			mockCourseFindFirst.mockResolvedValue(COURSE);
+			mockCourseUpsert.mockResolvedValue(COURSE);
+
+			await processJob(null as any);
+
+			const expectedModel = {
+				year: expect.any(Number),
+				semester: expect.any(String),
+				subject: 'CS',
+				crse: '1000',
+				title: 'Intro to Programming (new title)',
+				updatedAt: expect.any(Date),
+				deletedAt: null,
+				fromCredits: 3,
+				toCredits: 3
+			};
+
+			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
+				where: {
+					year_semester_subject_crse: {
+						year: expect.any(Number),
+						semester: expect.any(String),
+						subject: 'CS', crse: '1000'
+					}
+				},
+				create: expectedModel,
+				update: expectedModel
+			});
+		});
+
 		it('deletes a course if it\'s missing in scraped data', async () => {
 			mockedSectionsScraper.mockResolvedValue([]);
 			mockCourseFindMany.mockResolvedValue([COURSE]);
