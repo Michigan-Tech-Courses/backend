@@ -20,7 +20,8 @@ model Course {
   deletedAt   DateTime?
   prereqs     String?
   offered     Semester[]
-  credits     Float      @default(0)
+  fromCredits Float      @default(0)
+  toCredits   Float      @default(0)
   sections    Section[]
 
   @@id([year, semester, subject, crse])

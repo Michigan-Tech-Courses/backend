@@ -248,12 +248,6 @@ const processJob = async (_: Job) => {
 				shouldUpdateCourse = true;
 			}
 
-			// Update credits
-			// TODO: possible issue when a course changes from 3 credits to 1
-			if (details.credits && details.credits > section.course.credits) {
-				shouldUpdateCourse = true;
-			}
-
 			if (shouldUpdateCourse) {
 				await prisma.course.update({
 					where: {
@@ -262,8 +256,7 @@ const processJob = async (_: Job) => {
 					data: {
 						description: details.description,
 						prereqs: details.prereqs,
-						offered: scrapedSemestersOffered,
-						credits: details.credits ?? 0
+						offered: scrapedSemestersOffered
 					}
 				});
 			}

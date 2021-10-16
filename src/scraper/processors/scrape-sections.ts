@@ -51,6 +51,35 @@ const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): M
 	};
 };
 
+const getCreditsRangeFromCourse = (course: ICourseOverview): [number, number] => {
+	let min = Number.MAX_SAFE_INTEGER;
+	let max = Number.MIN_SAFE_INTEGER;
+
+	for (const section of course.sections) {
+		const [
+			sectionMin,
+			sectionMax
+		] = section.creditRange;
+
+		if (sectionMin < min) {
+			min = sectionMin;
+		}
+
+		if (sectionMax > max) {
+			max = sectionMax;
+		}
+	}
+
+	return [
+		min === Number.MAX_SAFE_INTEGER ? 0 : min,
+		max === Number.MIN_SAFE_INTEGER ? 0 : max
+	];
+};
+
+const areCreditRangesEqual = (firstRange: [number, number], secondRange: [number, number]) => {
+	return firstRange[0] === secondRange[0] && firstRange[1] === secondRange[1];
+};
+
 const processJob = async (_: Job) => {
 	const logger = new Logger('Job: course sections scrape');
 
@@ -101,20 +130,30 @@ const processJob = async (_: Job) => {
 
 				didSeeCourseInScrapedData.markAsSeen(storedCourse);
 
-				// The only attribute that can change without becoming a new row is the title
+				// The only two attributes that can change without becoming a new row is the title or credits
 				// (description field is scraped somewhere else)
 				if (storedCourse.title !== scrapedCourse.title || storedCourse.deletedAt) {
+					shouldUpsert = true;
+				}
+
+				if (!areCreditRangesEqual([
+					storedCourse.fromCredits,
+					storedCourse.toCredits
+				], getCreditsRangeFromCourse(scrapedCourse))) {
 					shouldUpsert = true;
 				}
 			}
 
 			if (shouldUpsert) {
-				const courseToUpsert = {
+				const [fromCredits, toCredits] = getCreditsRangeFromCourse(scrapedCourse);
+				const courseToUpsert: Prisma.CourseCreateInput = {
 					year,
 					semester,
 					subject: scrapedCourse.subject,
 					crse: scrapedCourse.crse,
 					title: scrapedCourse.title,
+					fromCredits,
+					toCredits,
 					updatedAt: new Date(),
 					deletedAt: null
 				};

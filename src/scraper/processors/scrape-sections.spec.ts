@@ -37,7 +37,8 @@ jest.mock('@prisma/client', () => ({
 }));
 
 import processJob from './scrape-sections';
-import {Course, LocationType, Section, Semester} from '@prisma/client';
+import {Course, LocationType, Section} from '@prisma/client';
+import {COURSE} from 'test/test-data';
 
 const SCRAPED_SECTION: ISection = {
 	cmp: '1',
@@ -156,6 +157,8 @@ describe('Courses and sections scrape processor', () => {
 
 			const expectedModel = {
 				...courseWithoutSections,
+				fromCredits: 0,
+				toCredits: 0,
 				year: expect.any(Number),
 				semester: expect.any(String),
 				updatedAt: expect.any(Date),
@@ -179,26 +182,23 @@ describe('Courses and sections scrape processor', () => {
 				sections: []
 			};
 
-			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
-				deletedAt: null,
-				updatedAt: new Date(),
-				offered: [],
-				credits: 3
-			};
-
 			mockedSectionsScraper.mockResolvedValue([scrapedCourse]);
 
-			mockCourseFindMany.mockResolvedValue([storedCourse]);
+			mockCourseFindMany.mockResolvedValue([COURSE]);
 
 			await processJob(null as any);
+
+			const expectedModel = {
+				year: expect.any(Number),
+				semester: expect.any(String),
+				subject: 'CS',
+				crse: '1000',
+				title: 'Intro to Programming (new title)',
+				updatedAt: expect.any(Date),
+				deletedAt: null,
+				fromCredits: 0,
+				toCredits: 0
+			};
 
 			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
 				where: {
@@ -208,47 +208,81 @@ describe('Courses and sections scrape processor', () => {
 						subject: 'CS', crse: '1000'
 					}
 				},
-				create: {
-					year: expect.any(Number),
-					semester: expect.any(String),
-					subject: 'CS',
-					crse: '1000',
-					title: 'Intro to Programming (new title)',
-					updatedAt: expect.any(Date),
-					deletedAt: null
+				create: expectedModel,
+				update: expectedModel
+			});
+		});
+
+		it('updates credits of an existing course', async () => {
+			const scrapedCourse: ICourseOverview = {
+				subject: 'CS',
+				crse: '1000',
+				title: 'Intro to Programming (new title)',
+				sections: [
+					{
+						...SCRAPED_SECTION,
+						creditRange: [1, 3]
+					}
+				]
+			};
+
+			const storedSection: Section = {
+				id: 'test-section-id',
+				updatedAt: new Date(),
+				deletedAt: null,
+				courseId: 'test-course-id',
+				availableSeats: SCRAPED_SECTION.seatsAvailable,
+				takenSeats: SCRAPED_SECTION.seatsTaken,
+				totalSeats: SCRAPED_SECTION.seats,
+				section: SCRAPED_SECTION.section,
+				cmp: SCRAPED_SECTION.cmp,
+				crn: SCRAPED_SECTION.crn,
+				fee: SCRAPED_SECTION.fee,
+				minCredits: 1,
+				maxCredits: 3,
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				locationType: LocationType.UNKNOWN,
+				buildingName: null,
+				room: null
+			};
+
+			mockedSectionsScraper.mockResolvedValue([scrapedCourse]);
+			mockSectionFindFirst.mockResolvedValue(storedSection);
+
+			mockCourseFindMany.mockResolvedValue([COURSE]);
+			mockCourseFindFirst.mockResolvedValue(COURSE);
+			mockCourseUpsert.mockResolvedValue(COURSE);
+
+			await processJob(null as any);
+
+			const expectedModel = {
+				year: expect.any(Number),
+				semester: expect.any(String),
+				subject: 'CS',
+				crse: '1000',
+				title: 'Intro to Programming (new title)',
+				updatedAt: expect.any(Date),
+				deletedAt: null,
+				fromCredits: 1,
+				toCredits: 3
+			};
+
+			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
+				where: {
+					year_semester_subject_crse: {
+						year: expect.any(Number),
+						semester: expect.any(String),
+						subject: 'CS', crse: '1000'
+					}
 				},
-				update: {
-					year: expect.any(Number),
-					semester: expect.any(String),
-					subject: 'CS',
-					crse: '1000',
-					title: 'Intro to Programming (new title)',
-					updatedAt: expect.any(Date),
-					deletedAt: null
-				}
+				create: expectedModel,
+				update: expectedModel
 			});
 		});
 
 		it('deletes a course if it\'s missing in scraped data', async () => {
-			const now = new Date();
-
-			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
-				deletedAt: null,
-				updatedAt: now,
-				offered: [],
-				credits: 3
-			};
-
 			mockedSectionsScraper.mockResolvedValue([]);
-			mockCourseFindMany.mockResolvedValue([storedCourse]);
+			mockCourseFindMany.mockResolvedValue([COURSE]);
 
 			await processJob(null as any);
 
@@ -258,7 +292,7 @@ describe('Courses and sections scrape processor', () => {
 				},
 				where: {
 					id: {
-						in: ['test-id']
+						in: ['test-course-id']
 					}
 				}
 			});
@@ -268,18 +302,9 @@ describe('Courses and sections scrape processor', () => {
 			const now = new Date();
 
 			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
+				...COURSE,
 				deletedAt: now,
-				updatedAt: now,
-				offered: [],
-				credits: 3
+				updatedAt: now
 			};
 
 			const scrapedCourse: ICourseOverview = {
@@ -294,6 +319,18 @@ describe('Courses and sections scrape processor', () => {
 
 			await processJob(null as any);
 
+			const expectedModel = {
+				year: expect.any(Number),
+				semester: expect.any(String),
+				subject: 'CS',
+				crse: '1000',
+				title: 'Intro to Programming',
+				updatedAt: expect.any(Date),
+				deletedAt: null,
+				fromCredits: 0,
+				toCredits: 0
+			};
+
 			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
 				where: {
 					year_semester_subject_crse: {
@@ -302,48 +339,23 @@ describe('Courses and sections scrape processor', () => {
 						subject: 'CS', crse: '1000'
 					}
 				},
-				create: {
-					year: expect.any(Number),
-					semester: expect.any(String),
-					subject: 'CS',
-					crse: '1000',
-					title: 'Intro to Programming',
-					updatedAt: expect.any(Date),
-					deletedAt: null
-				},
-				update: {
-					year: expect.any(Number),
-					semester: expect.any(String),
-					subject: 'CS',
-					crse: '1000',
-					title: 'Intro to Programming',
-					updatedAt: expect.any(Date),
-					deletedAt: null
-				}
+				create: expectedModel,
+				update: expectedModel
 			});
 		});
 
-		it('doesn\'t modify a section if nothing\'s changed', async () => {
+		it('doesn\'t modify a course if nothing\'s changed', async () => {
 			const scrapedCourse: ICourseOverview = {
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
+				subject: COURSE.subject,
+				crse: COURSE.crse,
+				title: COURSE.title,
 				sections: []
 			};
 
 			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
-				deletedAt: null,
-				updatedAt: new Date(),
-				offered: [],
-				credits: 3
+				...COURSE,
+				fromCredits: 0,
+				toCredits: 0
 			};
 
 			mockedSectionsScraper.mockResolvedValue([scrapedCourse]);
@@ -357,19 +369,11 @@ describe('Courses and sections scrape processor', () => {
 		});
 
 		it('doesn\'t modify a deleted course if nothing\'s changed', async () => {
+			const now = new Date();
 			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
+				...COURSE,
 				deletedAt: new Date(),
-				updatedAt: new Date(),
-				offered: [],
-				credits: 3
+				updatedAt: new Date()
 			};
 
 			mockedSectionsScraper.mockResolvedValue([]);
@@ -389,6 +393,7 @@ describe('Courses and sections scrape processor', () => {
 			mockedSectionsScraper.mockResolvedValue([]);
 
 			mockCourseFindMany.mockResolvedValue([]);
+			mockSectionFindFirst.mockResolvedValue(null);
 			mockSectionFindMany.mockResolvedValue([]);
 			mockCourseUpsert.mockImplementation(async ({create}: {create: Course}) => Promise.resolve(create));
 			mockSectionCreate.mockResolvedValue({id: 'test-section-id'});
@@ -426,25 +431,11 @@ describe('Courses and sections scrape processor', () => {
 				]
 			}]);
 
-			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
-				deletedAt: null,
-				updatedAt: new Date(),
-				offered: [],
-				credits: 3
-			};
 			const storedSection: Section = {
 				id: 'test-section-id',
 				updatedAt: new Date(),
 				deletedAt: null,
-				courseId: 'test-id',
+				courseId: 'test-course-id',
 				availableSeats: SCRAPED_SECTION.seatsAvailable,
 				takenSeats: SCRAPED_SECTION.seatsTaken,
 				totalSeats: SCRAPED_SECTION.seats,
@@ -460,9 +451,9 @@ describe('Courses and sections scrape processor', () => {
 				room: null
 			};
 
-			mockCourseFindMany.mockResolvedValue([storedCourse]);
+			mockCourseFindMany.mockResolvedValue([COURSE]);
 
-			mockCourseFindFirst.mockResolvedValue(storedCourse);
+			mockCourseFindFirst.mockResolvedValue(COURSE);
 
 			mockSectionFindMany.mockResolvedValue([storedSection]);
 
@@ -485,31 +476,16 @@ describe('Courses and sections scrape processor', () => {
 					deletedAt: null
 				},
 				where: {
-					courseId: 'test-id',
+					courseId: 'test-course-id',
 					section: SCRAPED_SECTION.section
 				}
 			});
 		});
 
 		it('deletes a section if it\'s missing in scraped data', async () => {
-			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
-				deletedAt: null,
-				updatedAt: new Date(),
-				offered: [],
-				credits: 3
-			};
-
 			mockedSectionsScraper.mockResolvedValue([]);
 
-			mockCourseFindMany.mockResolvedValue([storedCourse]);
+			mockCourseFindMany.mockResolvedValue([COURSE]);
 
 			mockSectionFindMany.mockResolvedValue([{id: 'test-section-id'}]);
 
@@ -533,25 +509,11 @@ describe('Courses and sections scrape processor', () => {
 				sections: [SCRAPED_SECTION]
 			}]);
 
-			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
-				deletedAt: null,
-				updatedAt: new Date(),
-				offered: [],
-				credits: 3
-			};
 			const storedSection: Section = {
 				id: 'test-section-id',
 				updatedAt: new Date(),
 				deletedAt: new Date(),
-				courseId: 'test-id',
+				courseId: 'test-course-id',
 				availableSeats: SCRAPED_SECTION.seatsAvailable,
 				takenSeats: SCRAPED_SECTION.seatsTaken,
 				totalSeats: SCRAPED_SECTION.seats,
@@ -567,7 +529,7 @@ describe('Courses and sections scrape processor', () => {
 				room: null
 			};
 
-			mockCourseFindMany.mockResolvedValue([storedCourse]);
+			mockCourseFindMany.mockResolvedValue([COURSE]);
 
 			mockSectionFindMany.mockResolvedValue([storedSection]);
 
@@ -590,7 +552,7 @@ describe('Courses and sections scrape processor', () => {
 					deletedAt: null
 				},
 				where: {
-					courseId: 'test-id',
+					courseId: 'test-course-id',
 					section: SCRAPED_SECTION.section
 				}
 			});
@@ -602,20 +564,6 @@ describe('Courses and sections scrape processor', () => {
 				sections: [SCRAPED_SECTION]
 			}]);
 
-			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
-				deletedAt: null,
-				updatedAt: new Date(),
-				offered: [],
-				credits: 3
-			};
 			const storedSection: Section = {
 				id: 'test-section-id',
 				updatedAt: new Date(),
@@ -636,7 +584,7 @@ describe('Courses and sections scrape processor', () => {
 				room: null
 			};
 
-			mockCourseFindMany.mockResolvedValue([storedCourse]);
+			mockCourseFindMany.mockResolvedValue([COURSE]);
 
 			mockSectionFindMany.mockResolvedValue([storedSection]);
 
@@ -653,20 +601,6 @@ describe('Courses and sections scrape processor', () => {
 				sections: [SCRAPED_SECTION]
 			}]);
 
-			const storedCourse: Course = {
-				id: 'test-id',
-				subject: 'CS',
-				crse: '1000',
-				title: 'Intro to Programming',
-				year: 2020,
-				semester: Semester.FALL,
-				description: '',
-				prereqs: null,
-				deletedAt: null,
-				updatedAt: new Date(),
-				offered: [],
-				credits: 3
-			};
 			const storedSection: Section = {
 				id: 'test-section-id',
 				updatedAt: new Date(),
@@ -687,7 +621,7 @@ describe('Courses and sections scrape processor', () => {
 				room: '0100'
 			};
 
-			mockCourseFindMany.mockResolvedValue([storedCourse]);
+			mockCourseFindMany.mockResolvedValue([COURSE]);
 
 			mockSectionFindMany.mockResolvedValue([storedSection]);
 

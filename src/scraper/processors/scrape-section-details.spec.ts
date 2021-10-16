@@ -42,21 +42,7 @@ jest.mock('@prisma/client', () => ({
 
 import processJob from './scrape-section-details';
 import {Building, Course, LocationType, Section, Semester} from '@prisma/client';
-
-const SAMPLE_COURSE: Course = {
-	id: 'test-id',
-	subject: 'CS',
-	crse: '1000',
-	title: 'Intro to Programming',
-	year: 2020,
-	semester: Semester.FALL,
-	description: '',
-	prereqs: 'High School',
-	deletedAt: null,
-	updatedAt: new Date(),
-	offered: [],
-	credits: 3
-};
+import {COURSE} from 'test/test-data';
 
 const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}>} = {
 	id: 'test-section-id',
@@ -72,8 +58,8 @@ const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}
 	minCredits: 3,
 	maxCredits: 3,
 	time: {},
-	courseId: SAMPLE_COURSE.id,
-	course: SAMPLE_COURSE,
+	courseId: COURSE.id,
+	course: COURSE,
 	instructors: [],
 	locationType: LocationType.PHYSICAL,
 	buildingName: 'Fisher Hall',
@@ -271,8 +257,7 @@ describe('Section details scrape processor', () => {
 			data: {
 				description: SAMPLE_SCRAPED_SECTION.description,
 				offered: [],
-				prereqs: null,
-				credits: 3
+				prereqs: null
 			}
 		});
 	});
@@ -284,7 +269,7 @@ describe('Section details scrape processor', () => {
 		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			description: '',
-			prereqs: SAMPLE_COURSE.prereqs
+			prereqs: COURSE.prereqs
 		});
 
 		await processJob(null as any);
@@ -293,7 +278,15 @@ describe('Section details scrape processor', () => {
 	});
 
 	it('updates course prereqs', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		const storedSection: Section & {course: Course} = {
+			...SAMPLE_SECTION,
+			course: {
+				...SAMPLE_SECTION.course,
+				prereqs: 'High School'
+			}
+		};
+
+		mockSectionFindMany.mockResolvedValueOnce([storedSection]);
 		mockSectionFindMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue({
@@ -308,8 +301,7 @@ describe('Section details scrape processor', () => {
 			data: {
 				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
 				offered: [],
-				description: '',
-				credits: 3
+				description: ''
 			}
 		});
 	});
@@ -330,30 +322,7 @@ describe('Section details scrape processor', () => {
 			data: {
 				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
 				offered: [Semester.FALL],
-				description: SAMPLE_SCRAPED_SECTION.description,
-				credits: 3
-			}
-		});
-	});
-
-	it('updates course credits', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
-		mockSectionFindMany.mockResolvedValue([]);
-
-		mockedSectionDetailScraper.mockResolvedValue({
-			...SAMPLE_SCRAPED_SECTION,
-			credits: 5
-		});
-
-		await processJob(null as any);
-
-		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
-			where: expect.any(Object),
-			data: {
-				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
-				offered: [],
-				description: SAMPLE_SCRAPED_SECTION.description,
-				credits: 5
+				description: SAMPLE_SCRAPED_SECTION.description
 			}
 		});
 	});

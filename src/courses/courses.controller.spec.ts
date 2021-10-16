@@ -1,6 +1,7 @@
 import {Test, TestingModule} from '@nestjs/testing';
-import {Course, Semester} from '@prisma/client';
+import {Semester} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
+import {COURSE} from 'test/test-data';
 import {CoursesController} from './courses.controller';
 import {CoursesModule} from './courses.module';
 
@@ -11,21 +12,6 @@ describe('CoursesController', () => {
 		course: {
 			findMany: jest.fn()
 		}
-	};
-
-	const course: Course = {
-		id: 'test-course',
-		year: 2020,
-		semester: Semester.FALL,
-		subject: 'CS',
-		crse: '1000',
-		title: 'Intro to Programming',
-		description: '',
-		prereqs: null,
-		updatedAt: new Date(),
-		deletedAt: null,
-		credits: 3,
-		offered: []
 	};
 
 	beforeEach(async () => {
@@ -44,9 +30,9 @@ describe('CoursesController', () => {
 	});
 
 	it('should return all courses', async () => {
-		prismaMock.course.findMany.mockResolvedValue([course]);
+		prismaMock.course.findMany.mockResolvedValue([COURSE]);
 
-		expect(await controller.getAllCourses()).toStrictEqual([course]);
+		expect(await controller.getAllCourses()).toStrictEqual([COURSE]);
 	});
 
 	it('should only return updated courses', async () => {
@@ -78,9 +64,9 @@ describe('CoursesController', () => {
 	});
 
 	it('should return all unique courses', async () => {
-		prismaMock.course.findMany.mockResolvedValue([course]);
+		prismaMock.course.findMany.mockResolvedValue([COURSE]);
 
-		expect(await controller.getAllCourses()).toStrictEqual([course]);
+		expect(await controller.getAllCourses()).toStrictEqual([COURSE]);
 	});
 
 	afterEach(() => {
