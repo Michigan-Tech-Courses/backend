@@ -119,8 +119,8 @@ const BUILDINGS: Building[] = [
 	{
 		name: 'Student Development Complex',
 		shortName: 'SDC',
-		lat: 47.11363882085836,
-		lon: -88.54736484245618
+		lat: 47.11233238286495,
+		lon: -88.5467048246771
 	},
 	{
 		name: 'U.J.Noblet Forestry Building',
