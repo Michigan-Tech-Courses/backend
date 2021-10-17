@@ -149,23 +149,23 @@ const processJob = async (_: Job) => {
 				}
 
 				if (!areCreditRangesEqual([
-					storedCourse.fromCredits,
-					storedCourse.toCredits
+					storedCourse.minCredits,
+					storedCourse.maxCredits
 				], getCreditsRangeFromCourse(scrapedCourse))) {
 					shouldUpsert = true;
 				}
 			}
 
 			if (shouldUpsert) {
-				const [fromCredits, toCredits] = getCreditsRangeFromCourse(scrapedCourse);
+				const [minCredits, maxCredits] = getCreditsRangeFromCourse(scrapedCourse);
 				const courseToUpsert: Prisma.CourseCreateInput = {
 					year,
 					semester,
 					subject: scrapedCourse.subject,
 					crse: scrapedCourse.crse,
 					title: scrapedCourse.title,
-					fromCredits,
-					toCredits,
+					minCredits,
+					maxCredits,
 					updatedAt: new Date(),
 					deletedAt: null
 				};

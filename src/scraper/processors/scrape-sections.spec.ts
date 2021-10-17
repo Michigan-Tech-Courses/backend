@@ -157,8 +157,8 @@ describe('Courses and sections scrape processor', () => {
 
 			const expectedModel = {
 				...courseWithoutSections,
-				fromCredits: 0,
-				toCredits: 0,
+				minCredits: 0,
+				maxCredits: 0,
 				year: expect.any(Number),
 				semester: expect.any(String),
 				updatedAt: expect.any(Date),
@@ -196,8 +196,8 @@ describe('Courses and sections scrape processor', () => {
 				title: 'Intro to Programming (new title)',
 				updatedAt: expect.any(Date),
 				deletedAt: null,
-				fromCredits: 0,
-				toCredits: 0
+				minCredits: 0,
+				maxCredits: 0
 			};
 
 			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
@@ -263,8 +263,8 @@ describe('Courses and sections scrape processor', () => {
 				title: 'Intro to Programming (new title)',
 				updatedAt: expect.any(Date),
 				deletedAt: null,
-				fromCredits: 1,
-				toCredits: 3
+				minCredits: 1,
+				maxCredits: 3
 			};
 
 			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
@@ -330,8 +330,8 @@ describe('Courses and sections scrape processor', () => {
 				title: 'Intro to Programming (new title)',
 				updatedAt: expect.any(Date),
 				deletedAt: null,
-				fromCredits: 3,
-				toCredits: 3
+				minCredits: 3,
+				maxCredits: 3
 			};
 
 			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
@@ -394,8 +394,8 @@ describe('Courses and sections scrape processor', () => {
 				title: 'Intro to Programming',
 				updatedAt: expect.any(Date),
 				deletedAt: null,
-				fromCredits: 0,
-				toCredits: 0
+				minCredits: 0,
+				maxCredits: 0
 			};
 
 			expect(mockCourseUpsert.mock.calls[0][0]).toEqual({
@@ -421,8 +421,8 @@ describe('Courses and sections scrape processor', () => {
 
 			const storedCourse: Course = {
 				...COURSE,
-				fromCredits: 0,
-				toCredits: 0
+				minCredits: 0,
+				maxCredits: 0
 			};
 
 			mockedSectionsScraper.mockResolvedValue([scrapedCourse]);

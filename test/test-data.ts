@@ -11,7 +11,7 @@ export const COURSE: Course = {
 	prereqs: null,
 	updatedAt: new Date(),
 	deletedAt: null,
-	fromCredits: 3,
-	toCredits: 3,
+	minCredits: 3,
+	maxCredits: 3,
 	offered: []
 };
