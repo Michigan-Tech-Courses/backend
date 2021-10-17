@@ -5,7 +5,7 @@ import pThrottle from 'p-throttle';
 import prisma from 'src/lib/prisma-singleton';
 import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
-import {ESemester, getSectionDetails} from '@mtucourses/scraper';
+import {ESemester, getSectionDetails, ISectionDetails} from '@mtucourses/scraper';
 import {dateToTerm, termToDate} from 'src/lib/dates';
 import {deleteByKey} from 'src/cache/store';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
@@ -86,7 +86,7 @@ const processJob = async (_: Job) => {
 		}
 
 		await Promise.all(sectionsToProcess.map(async section => {
-			let details;
+			let details: ISectionDetails;
 
 			try {
 				details = await throttledGetSectionDetails({
@@ -123,13 +123,24 @@ const processJob = async (_: Job) => {
 					const firstName = fragmentedName[0];
 					const lastName = fragmentedName[fragmentedName.length - 1];
 
-					const results = await prisma.instructor.findMany({
+					// First try searching by full name
+					let results = await prisma.instructor.findMany({
 						where: {
 							fullName: {
-								search: `${firstName} & ${lastName}`
+								search: fragmentedName.join(' & ')
 							}
 						}
 					});
+
+					if (results.length === 0) {
+						results = await prisma.instructor.findMany({
+							where: {
+								fullName: {
+									search: `${firstName} & ${lastName}`
+								}
+							}
+						});
+					}
 
 					if (results.length > 0) {
 						instructors.push({id: sortByNullValues(results)[0].id});
