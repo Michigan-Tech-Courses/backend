@@ -20,17 +20,19 @@ type ModifiableSectionInput = ModifiableSection & {time: Prisma.InputJsonValue |
 const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): ModifiableSectionInput => {
 	const scheduleRules: IRuleOptions[] = [];
 
-	if (section.timeRange?.length === 2 && section.dateRange.length === 2 && section.days !== '' && section.days !== 'TBA') {
-		const start = new Date(`${section.dateRange[0]}/${year} ${section.timeRange[0]}`);
-		const end = new Date(`${section.dateRange[1]}/${year} ${section.timeRange[1]}`);
+	for (const schedule of section.schedules) {
+		if (schedule.timeRange.length === 2 && schedule.dateRange.length === 2 && !['', 'TBA'].includes(schedule.days))	{
+			const start = new Date(`${schedule.dateRange[0]}/${year} ${schedule.timeRange[0]}`);
+			const end = new Date(`${schedule.dateRange[1]}/${year} ${schedule.timeRange[1]}`);
 
-		scheduleRules.push({
-			frequency: 'WEEKLY',
-			duration: calculateDiffInTime(section.timeRange[0], section.timeRange[1]),
-			byDayOfWeek: section.days.split('').map(d => mapDayCharToRRScheduleString(d)),
-			start,
-			end
-		});
+			scheduleRules.push({
+				frequency: 'WEEKLY',
+				duration: calculateDiffInTime(schedule.timeRange[0], schedule.timeRange[1]),
+				byDayOfWeek: schedule.days.split('').map(d => mapDayCharToRRScheduleString(d)),
+				start,
+				end
+			});
+		}
 	}
 
 	const schedule = new Schedule({

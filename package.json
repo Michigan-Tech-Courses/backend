@@ -29,7 +29,7 @@
     "@bull-board/express": "^3.6.0",
     "@codetheweb/nestjs-bull": "^0.3.1",
     "@mtucourses/rate-my-professors": "^2.0.1",
-    "@mtucourses/scraper": "^2.4.2",
+    "@mtucourses/scraper": "^3.0.0",
     "@mtucourses/thumbor": "^1.0.3",
     "@nestjs/common": "^8.0.6",
     "@nestjs/config": "^1.0.1",

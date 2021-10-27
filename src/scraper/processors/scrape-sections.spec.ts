@@ -46,11 +46,19 @@ const SCRAPED_SECTION: ISection = {
 		3
 	],
 	crn: '84887',
-	dateRange: [
-		'08/27',
-		'12/11'
+	schedules: [
+		{
+			dateRange: [
+				'08/27',
+				'12/11'
+			],
+			days: 'MW',
+			timeRange: [
+				'02:00 pm',
+				'03:15 pm'
+			]
+		}
 	],
-	days: 'MW',
 	fee: 10000,
 	instructors: [
 		'Cyr'
@@ -59,11 +67,7 @@ const SCRAPED_SECTION: ISection = {
 	seats: 15,
 	seatsAvailable: 6,
 	seatsTaken: 9,
-	section: 'R01',
-	timeRange: [
-		'02:00 pm',
-		'03:15 pm'
-	]
+	section: 'R01'
 };
 
 const EXPECTED_PARSED_TIME = {
