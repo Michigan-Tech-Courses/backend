@@ -96,7 +96,7 @@ const EXPECTED_PARSED_TIME = {
 					month: 12,
 					second: 0,
 					timezone: null,
-					year: 2020
+					year: new Date().getFullYear() - 1
 				},
 				frequency: 'WEEKLY',
 				start: {
@@ -107,7 +107,7 @@ const EXPECTED_PARSED_TIME = {
 					month: 8,
 					second: 0,
 					timezone: null,
-					year: 2020
+					year: new Date().getFullYear() - 1
 				}
 			},
 			type: 'Rule'
@@ -244,7 +244,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 1,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.UNKNOWN,
 				buildingName: null,
 				room: null
@@ -311,7 +311,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.UNKNOWN,
 				buildingName: null,
 				room: null
@@ -516,7 +516,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.UNKNOWN,
 				buildingName: null,
 				room: null
@@ -649,7 +649,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.UNKNOWN,
 				buildingName: null,
 				room: null
@@ -686,7 +686,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: 2020, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: 2020, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.PHYSICAL,
 				buildingName: 'Fisher Hall',
 				room: '0100'
