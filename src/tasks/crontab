@@ -1,5 +1,4 @@
 10 * * * * scrape-instructors
 20 */2 * * * scrape-rate-my-professors
-*/6 * * * * scrape-sections
-40 * * * * scrape-courses
+40 * * * * scrape-sections
 45 * * * * scrape-transfer-courses

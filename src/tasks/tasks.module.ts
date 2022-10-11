@@ -1,5 +1,5 @@
 import {Module} from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { ScrapeInstructorsTask } from './scrape-instructors';
 import { ScrapeRateMyProfessorsTask } from './scrape-ratemyprofessors';
 import { ScrapeSectionDetailsTask } from './scrape-section-details';
@@ -8,7 +8,7 @@ import { ScrapeTransferCoursesTask } from './scrape-transfer-courses';
 
 @Module({
 	imports: [
-		PrismaService
+		PrismaModule,
 	],
 	controllers: [],
 	providers: [
@@ -16,8 +16,8 @@ import { ScrapeTransferCoursesTask } from './scrape-transfer-courses';
 		ScrapeRateMyProfessorsTask,
 		ScrapeSectionDetailsTask,
 		ScrapeSectionsTask,
-		ScrapeTransferCoursesTask
+		ScrapeTransferCoursesTask,
 	],
 	exports: []
 })
-export class ScraperModule {}
+export class TasksModule {}

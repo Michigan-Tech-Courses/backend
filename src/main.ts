@@ -11,6 +11,7 @@ import {
 } from '@nestjs/platform-fastify';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import {AppModule} from './app.module';
+import { WorkerService } from 'nestjs-graphile-worker';
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
@@ -31,6 +32,8 @@ async function bootstrap() {
 	app.enableCors();
 
 	await app.listen(process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3000, '0.0.0.0');
+
+	void app.get(WorkerService).run();
 }
 
 void bootstrap();

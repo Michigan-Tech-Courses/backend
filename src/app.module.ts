@@ -2,8 +2,7 @@ import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {GraphileWorkerModule} from 'nestjs-graphile-worker';
 import {CacheModule} from 'src/cache/cache.module';
-import {ScheduleModule} from '@nestjs/schedule';
-import {ScraperModule} from './tasks/tasks.module';
+import {TasksModule} from './tasks/tasks.module';
 import {InstructorsModule} from './instructors/instructors.module';
 import {CoursesModule} from './courses/courses.module';
 import {SectionsModule} from './sections/sections.module';
@@ -16,19 +15,20 @@ import {TransferCoursesModule} from './transfer-courses/transfer-courses.module'
 	imports: [
 		CacheModule,
 		ConfigModule.forRoot(),
-		GraphileWorkerModule.forRoot({
-			connectionString: process.env.DATABASE_URL,
-			crontabFile: './scraper/crontab'
+		GraphileWorkerModule.forRootAsync({
+			useFactory: () => ({
+				connectionString: process.env.DATABASE_URL,
+				crontabFile: './scraper/crontab'
+			})
 		}),
-		ScheduleModule.forRoot(),
-		ScraperModule,
+		TasksModule,
 		CoursesModule,
 		InstructorsModule,
 		PassFailDropModule,
 		SectionsModule,
 		SemestersModule,
 		BuildingsModule,
-		TransferCoursesModule
+		TransferCoursesModule,
 	],
 	controllers: [],
 	providers: []
