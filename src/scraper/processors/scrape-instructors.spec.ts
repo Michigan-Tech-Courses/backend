@@ -1,10 +1,10 @@
 import {mocked} from 'ts-jest/utils';
-import {Instructor, prisma} from '@prisma/client';
+import {Instructor} from '@prisma/client';
 import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
 import {ScrapeInstructorsTask} from './scrape-instructors';
-import { Test } from '@nestjs/testing';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import {Test} from '@nestjs/testing';
+import {PrismaService} from 'src/prisma/prisma.service';
+import {PrismaModule} from 'src/prisma/prisma.module';
 
 jest.mock('@mtucourses/scraper');
 const mockedFacultyScraper = mocked(getAllFaculty, true);
@@ -13,10 +13,10 @@ describe('Instructor scrape processor', () => {
 	let task: ScrapeInstructorsTask;
 
 	const prismaMock = {
-	instructor: {
-		upsert: jest.fn(),
-		findUnique: jest.fn()
-	}
+		instructor: {
+			upsert: jest.fn(),
+			findUnique: jest.fn()
+		}
 	};
 
 	beforeEach(async () => {

@@ -1,5 +1,10 @@
 import {mocked} from 'ts-jest/utils';
 import ratings, {ITeacherFromSearch, ITeacherPage} from '@mtucourses/rate-my-professors';
+import {Test} from '@nestjs/testing';
+import {PrismaService} from 'src/prisma/prisma.service';
+import {PrismaModule} from 'src/prisma/prisma.module';
+import {ScrapeRateMyProfessorsTask} from './scrape-ratemyprofessors';
+import {Instructor} from '@prisma/client';
 
 jest.mock('@mtucourses/rate-my-professors');
 const mockedSearchSchool = mocked(ratings.searchSchool);
@@ -9,19 +14,6 @@ const mockedGetTeacher = mocked(ratings.getTeacher);
 const mockInstructorUpdate = jest.fn();
 const mockInstructorFindMany = jest.fn();
 
-const mockedPrisma = jest.fn().mockImplementation(() => ({
-	$connect: jest.fn(),
-	$disconnect: jest.fn(),
-	instructor: {
-		update: mockInstructorUpdate,
-		findMany: mockInstructorFindMany
-	}
-}));
-
-jest.mock('@prisma/client', () => ({
-	PrismaClient: mockedPrisma
-}));
-
 mockedSearchSchool.mockResolvedValue([{
 	city: 'Houghton',
 	id: 'U2Nob29sLTYwMg==',
@@ -29,14 +21,37 @@ mockedSearchSchool.mockResolvedValue([{
 	state: 'MI'
 }]);
 
-import processJob from './scrape-ratemyprofessors';
-import {Instructor} from '@prisma/client';
-
 describe('Rate My Professor scrape processor', () => {
+	let task: ScrapeRateMyProfessorsTask;
+
+	const prismaMock = {
+		instructor: {
+			update: mockInstructorUpdate,
+			findMany: mockInstructorFindMany
+		}
+	};
+
+	beforeEach(async () => {
+		const module = await Test.createTestingModule({
+			imports: [PrismaModule],
+			providers: [ScrapeRateMyProfessorsTask]
+		})
+			.overrideProvider(PrismaService)
+			.useValue(prismaMock)
+			.compile();
+
+		task = module.get(ScrapeRateMyProfessorsTask);
+	});
+
+	afterEach(() => {
+		prismaMock.instructor.update.mockClear();
+		prismaMock.instructor.findMany.mockClear();
+	});
+
 	it('runs without errors', async () => {
 		mockInstructorFindMany.mockResolvedValue([]);
 
-		await processJob(null as any);
+		await task.handler();
 	});
 
 	it('does not update instructor if equal', async () => {
@@ -89,7 +104,7 @@ describe('Rate My Professor scrape processor', () => {
 		mockedGetTeacher.mockResolvedValue(teacher);
 		mockInstructorFindMany.mockResolvedValue([instructor]);
 
-		await processJob(null as any);
+		await task.handler();
 
 		expect(mockInstructorUpdate).toHaveBeenCalledTimes(0);
 	});
@@ -145,16 +160,8 @@ describe('Rate My Professor scrape processor', () => {
 		mockedGetTeacher.mockResolvedValue(teacher);
 		mockInstructorFindMany.mockResolvedValue([instructor]);
 
-		await processJob(null as any);
+		await task.handler();
 
 		expect(mockInstructorUpdate).toHaveBeenCalledTimes(1);
-	});
-
-	afterEach(() => {
-		mockedSearchTeacher.mockClear();
-		mockedGetTeacher.mockClear();
-		mockedPrisma.mockClear();
-		mockInstructorUpdate.mockClear();
-		mockInstructorFindMany.mockClear();
 	});
 });
