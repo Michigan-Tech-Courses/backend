@@ -11,7 +11,6 @@ import {PassFailDropModule} from './passfaildrop/passfaildrop.module';
 import {SemestersModule} from './semesters/semesters.module';
 import {BuildingsModule} from './buildings/buildings.module';
 import {TransferCoursesModule} from './transfer-courses/transfer-courses.module';
-import {InitHandler} from './init';
 
 @Module({
 	imports: [
@@ -19,7 +18,7 @@ import {InitHandler} from './init';
 		ConfigModule.forRoot(),
 		GraphileWorkerModule.forRoot({
 			connectionString: process.env.DATABASE_URL,
-			 crontabFile: './scraper/crontab'
+			crontabFile: './scraper/crontab'
 		}),
 		ScheduleModule.forRoot(),
 		ScraperModule,
@@ -32,6 +31,6 @@ import {InitHandler} from './init';
 		TransferCoursesModule
 	],
 	controllers: [],
-	providers: [InitHandler]
+	providers: []
 })
 export class AppModule {}
