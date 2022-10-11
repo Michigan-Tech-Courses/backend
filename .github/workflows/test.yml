@@ -6,17 +6,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container: node:15.5-buster
-    services:
-      # Label used to access the service container
-      redis:
-        # Docker Hub image
-        image: redis
-        # Set health checks to wait until redis has started
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - uses: actions/setup-node@v2
 
@@ -40,15 +29,9 @@ jobs:
 
       - name: Unit tests
         run: yarn test:coverage
-        env:
-          REDIS_HOST: redis
-          REDIS_PORT: 6379
 
       - name: E2E tests
         run: yarn test:e2e --coverage
-        env:
-          REDIS_HOST: redis
-          REDIS_PORT: 6379
 
       - name: Upload coverage
         uses: codecov/codecov-action@v1

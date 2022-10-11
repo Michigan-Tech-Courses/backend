@@ -1,27 +1,28 @@
-import {Job} from 'bullmq';
-import {Logger} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
 import pThrottle from 'p-throttle';
 import equal from 'deep-equal';
-import {deleteByKey} from 'src/cache/store';
-import prisma from 'src/lib/prisma-singleton';
+import { Task, TaskHandler } from 'nestjs-graphile-worker';
+import { PrismaService } from 'src/prisma/prisma.service';
 
-const processJob = async (_: Job) => {
-	const logger = new Logger('Job: instructor scrape');
+@Injectable()
+@Task('scrape-instructors')
+export class ScrapeInstructorsTask {
+	private logger = new Logger(ScrapeInstructorsTask.name);
 
-	logger.log('Started processing...');
+	constructor(private readonly prisma: PrismaService) {}
 
-	await prisma.$connect();
+	@TaskHandler()
+	async handler() {
+		const faculty = await getAllFaculty();
 
-	const faculty = await getAllFaculty();
-
-	logger.log('Finished scraping website');
+	this.logger.log('Finished scraping website');
 
 	const processInstructor = pThrottle({
 		limit: 5,
 		interval: 512
 	})(async (instructor: IFaculty) => {
-		const existingInstructor = await prisma.instructor.findUnique({where: {fullName: instructor.name}});
+		const existingInstructor = await this.prisma.instructor.findUnique({where: {fullName: instructor.name}});
 
 		// Need to prevent upserting if nothing has changed since otherwise updatedAt will be changed
 		let shouldUpsert = false;
@@ -49,7 +50,7 @@ const processJob = async (_: Job) => {
 		if (shouldUpsert) {
 			const {name, ...preparedInstructor} = instructor;
 
-			await prisma.instructor.upsert({
+			await this.prisma.instructor.upsert({
 				where: {
 					fullName: instructor.name
 				},
@@ -60,10 +61,5 @@ const processJob = async (_: Job) => {
 	});
 
 	await Promise.all(faculty.map(async instructor => processInstructor(instructor)));
-
-	logger.log('Finished processing');
-
-	await Promise.all([prisma.$disconnect(), deleteByKey('/instructors')]);
-};
-
-export default processJob;
+	}
+}

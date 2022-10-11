@@ -1,33 +1,45 @@
 import {mocked} from 'ts-jest/utils';
+import {Instructor, prisma} from '@prisma/client';
 import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
+import {ScrapeInstructorsTask} from './scrape-instructors';
+import { Test } from '@nestjs/testing';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 jest.mock('@mtucourses/scraper');
 const mockedFacultyScraper = mocked(getAllFaculty, true);
 
-const mockInstructorUpsert = jest.fn();
-const mockInstructorFindUnique = jest.fn();
-
-const mockedPrisma = jest.fn().mockImplementation(() => ({
-	$connect: jest.fn(),
-	$disconnect: jest.fn(),
-	instructor: {
-		upsert: mockInstructorUpsert,
-		findUnique: mockInstructorFindUnique
-	}
-}));
-
-jest.mock('@prisma/client', () => ({
-	PrismaClient: mockedPrisma
-}));
-
-import {Instructor} from '@prisma/client';
-import processJob from './scrape-instructors';
-
 describe('Instructor scrape processor', () => {
+	let task: ScrapeInstructorsTask;
+
+	const prismaMock = {
+	instructor: {
+		upsert: jest.fn(),
+		findUnique: jest.fn()
+	}
+	};
+
+	beforeEach(async () => {
+		const module = await Test.createTestingModule({
+			imports: [PrismaModule],
+			providers: [ScrapeInstructorsTask]
+		})
+			.overrideProvider(PrismaService)
+			.useValue(prismaMock)
+			.compile();
+
+		task = module.get(ScrapeInstructorsTask);
+	});
+
+	afterEach(() => {
+		prismaMock.instructor.upsert.mockClear();
+		prismaMock.instructor.findUnique.mockClear();
+	});
+
 	it('runs without errors', async () => {
 		mockedFacultyScraper.mockResolvedValue([]);
 
-		await processJob(null as any);
+		await task.handler();
 	});
 
 	it('inserts results into the database', async () => {
@@ -45,14 +57,14 @@ describe('Instructor scrape processor', () => {
 
 		mockedFacultyScraper.mockResolvedValue([instructor]);
 
-		mockInstructorFindUnique.mockResolvedValue(null);
+		prismaMock.instructor.findUnique.mockResolvedValue(null);
 
-		await processJob(null as any);
+		await task.handler();
 
 		const {name, ...namelessInstructor} = instructor;
 		const normalizedInstructor = {...namelessInstructor, fullName: instructor.name};
 
-		expect(mockInstructorUpsert).toHaveBeenCalledWith({
+		expect(prismaMock.instructor.upsert).toHaveBeenCalledWith({
 			create: normalizedInstructor,
 			update: normalizedInstructor,
 			where: {
@@ -89,11 +101,11 @@ describe('Instructor scrape processor', () => {
 
 		mockedFacultyScraper.mockResolvedValue([instructor]);
 
-		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
+		prismaMock.instructor.findUnique.mockResolvedValue(storedInstructor);
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockInstructorUpsert).toHaveBeenCalledTimes(0);
+		expect(prismaMock.instructor.upsert).toHaveBeenCalledTimes(0);
 	});
 
 	it('updates instructor if not equal', async () => {
@@ -124,17 +136,10 @@ describe('Instructor scrape processor', () => {
 
 		mockedFacultyScraper.mockResolvedValue([instructor]);
 
-		mockInstructorFindUnique.mockResolvedValue(storedInstructor);
+		prismaMock.instructor.findUnique.mockResolvedValue(storedInstructor);
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockInstructorUpsert).toHaveBeenCalledTimes(1);
-	});
-
-	afterEach(() => {
-		mockedFacultyScraper.mockClear();
-		mockedPrisma.mockClear();
-		mockInstructorUpsert.mockClear();
-		mockInstructorFindUnique.mockClear();
+		expect(prismaMock.instructor.upsert).toHaveBeenCalledTimes(1);
 	});
 });

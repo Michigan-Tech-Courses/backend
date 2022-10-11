@@ -1,6 +1,6 @@
 import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
-import {BullModule} from '@codetheweb/nestjs-bull';
+import { GraphileWorkerModule } from 'nestjs-graphile-worker';
 import {CacheModule} from 'src/cache/cache.module';
 import {ScheduleModule} from '@nestjs/schedule';
 import {ScraperModule} from './scraper/scraper.module';
@@ -17,12 +17,10 @@ import {InitHandler} from './init';
 	imports: [
 		CacheModule,
 		ConfigModule.forRoot(),
-		BullModule.forRoot({
-			connection: {
-				port: Number.parseInt(process.env.REDIS_PORT!, 10),
-				host: process.env.REDIS_HOST
-			}
-		}),
+		GraphileWorkerModule.forRoot({
+      connectionString: process.env.DATABASE_URL,
+			 crontabFile: "./scraper/crontab"
+    }),
 		ScheduleModule.forRoot(),
 		ScraperModule,
 		CoursesModule,
