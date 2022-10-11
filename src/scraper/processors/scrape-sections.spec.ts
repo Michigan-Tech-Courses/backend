@@ -5,7 +5,10 @@ import {getAllSections} from '@mtucourses/scraper';
 import type {Course, Section} from '@prisma/client';
 import {LocationType} from '@prisma/client';
 import {COURSE} from 'test/test-data';
-import processJob from './scrape-sections';
+import {Test} from '@nestjs/testing';
+import {PrismaModule} from 'src/prisma/prisma.module';
+import {PrismaService} from 'src/prisma/prisma.service';
+import {ScrapeSectionsTask} from './scrape-sections';
 
 jest.mock('@mtucourses/scraper');
 const mockedSectionsScraper = mocked(getAllSections, true);
@@ -18,29 +21,6 @@ const mockSectionFindMany = jest.fn();
 const mockSectionCreate = jest.fn();
 const mockSectionFindFirst = jest.fn();
 const mockSectionUpdateMany = jest.fn();
-
-const mockedPrisma = jest.fn().mockImplementation(() => ({
-	$connect: jest.fn(),
-	$disconnect: jest.fn(),
-	course: {
-		upsert: mockCourseUpsert,
-		findMany: mockCourseFindMany,
-		findFirst: mockCourseFindFirst,
-		updateMany: mockCourseUpdateMany
-	},
-	section: {
-		findMany: mockSectionFindMany,
-		findFirst: mockSectionFindFirst,
-		create: mockSectionCreate,
-		updateMany: mockSectionUpdateMany
-	}
-}));
-
-jest.mock('@prisma/client', () => ({
-	/* eslint-disable-next-line */
-	...(jest.requireActual('@prisma/client') as object),
-	PrismaClient: mockedPrisma
-}));
 
 const SCRAPED_SECTION: ISection = {
 	cmp: '1',
@@ -132,12 +112,56 @@ const SCRAPED_COURSE_WITH_SECTION: ICourseOverview = {
 };
 
 describe('Courses and sections scrape processor', () => {
+	let task: ScrapeSectionsTask;
+
+	const mockedPrisma = {
+		$connect: jest.fn(),
+		$disconnect: jest.fn(),
+		course: {
+			upsert: mockCourseUpsert,
+			findMany: mockCourseFindMany,
+			findFirst: mockCourseFindFirst,
+			updateMany: mockCourseUpdateMany
+		},
+		section: {
+			findMany: mockSectionFindMany,
+			findFirst: mockSectionFindFirst,
+			create: mockSectionCreate,
+			updateMany: mockSectionUpdateMany
+		}
+	};
+
+	beforeEach(async () => {
+		const module = await Test.createTestingModule({
+			imports: [PrismaModule],
+			providers: [ScrapeSectionsTask]
+		})
+			.overrideProvider(PrismaService)
+			.useValue(mockedPrisma)
+			.compile();
+
+		task = module.get(ScrapeSectionsTask);
+	});
+
+	afterEach(() => {
+		mockCourseUpsert.mockClear();
+		mockCourseFindMany.mockClear();
+		mockCourseFindFirst.mockClear();
+		mockCourseUpdateMany.mockClear();
+		mockSectionFindMany.mockClear();
+		mockSectionCreate.mockClear();
+		mockSectionFindFirst.mockClear();
+		mockSectionUpdateMany.mockClear();
+
+		mockedSectionsScraper.mockClear();
+	});
+
 	it('runs without errors', async () => {
 		mockedSectionsScraper.mockResolvedValue([]);
 		mockCourseFindMany.mockResolvedValue([]);
 		mockSectionFindMany.mockResolvedValue([]);
 
-		await processJob(null as any);
+		await task.handler();
 	});
 
 	describe('Courses', () => {
@@ -153,7 +177,7 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseFindMany.mockResolvedValue([]);
 			mockSectionFindMany.mockResolvedValue([]);
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockCourseUpsert).toHaveBeenCalledTimes(1);
 
@@ -192,7 +216,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockCourseFindMany.mockResolvedValue([COURSE]);
 
-			await processJob(null as any);
+			await task.handler();
 
 			const expectedModel = {
 				year: expect.any(Number),
@@ -259,7 +283,7 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseFindFirst.mockResolvedValue(COURSE);
 			mockCourseUpsert.mockResolvedValue(COURSE);
 
-			await processJob(null as any);
+			await task.handler();
 
 			const expectedModel = {
 				year: expect.any(Number),
@@ -326,7 +350,7 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseFindFirst.mockResolvedValue(COURSE);
 			mockCourseUpsert.mockResolvedValue(COURSE);
 
-			await processJob(null as any);
+			await task.handler();
 
 			const expectedModel = {
 				year: expect.any(Number),
@@ -357,7 +381,7 @@ describe('Courses and sections scrape processor', () => {
 			mockedSectionsScraper.mockResolvedValue([]);
 			mockCourseFindMany.mockResolvedValue([COURSE]);
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockCourseUpdateMany.mock.calls[0][0]).toEqual({
 				data: {
@@ -390,7 +414,7 @@ describe('Courses and sections scrape processor', () => {
 			mockedSectionsScraper.mockResolvedValue([scrapedCourse]);
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
 
-			await processJob(null as any);
+			await task.handler();
 
 			const expectedModel = {
 				year: expect.any(Number),
@@ -436,7 +460,7 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
 			mockCourseFindFirst.mockResolvedValue(storedCourse);
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockCourseUpsert).toBeCalledTimes(0);
 		});
@@ -454,7 +478,7 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseFindMany.mockResolvedValue([storedCourse]);
 			mockCourseFindFirst.mockResolvedValue(storedCourse);
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockCourseUpdateMany).toBeCalledTimes(0);
 		});
@@ -472,7 +496,7 @@ describe('Courses and sections scrape processor', () => {
 			mockSectionCreate.mockResolvedValue({id: 'test-section-id'});
 			mockCourseUpsert.mockResolvedValue({id: 'test-course-id'});
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockSectionCreate).toHaveBeenCalledTimes(1);
 
@@ -532,7 +556,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockSectionFindFirst.mockResolvedValue(storedSection);
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockSectionUpdateMany.mock.calls[0][0]).toEqual({
 				data: {
@@ -562,7 +586,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockSectionFindMany.mockResolvedValue([{id: 'test-section-id'}]);
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockSectionUpdateMany.mock.calls[0][0]).toEqual({
 				data: {
@@ -608,7 +632,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockSectionFindFirst.mockResolvedValue(storedSection);
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockSectionUpdateMany.mock.calls[0][0]).toEqual({
 				data: {
@@ -663,7 +687,7 @@ describe('Courses and sections scrape processor', () => {
 
 			mockSectionFindFirst.mockResolvedValue(storedSection);
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockSectionUpdateMany).toBeCalledTimes(0);
 		});
@@ -700,22 +724,9 @@ describe('Courses and sections scrape processor', () => {
 
 			mockSectionFindFirst.mockResolvedValue(storedSection);
 
-			await processJob(null as any);
+			await task.handler();
 
 			expect(mockSectionUpdateMany).toBeCalledTimes(0);
 		});
-	});
-
-	afterEach(() => {
-		mockCourseUpsert.mockClear();
-		mockCourseFindMany.mockClear();
-		mockCourseFindFirst.mockClear();
-		mockCourseUpdateMany.mockClear();
-		mockSectionFindMany.mockClear();
-		mockSectionCreate.mockClear();
-		mockSectionFindFirst.mockClear();
-		mockSectionUpdateMany.mockClear();
-
-		mockedSectionsScraper.mockClear();
 	});
 });
