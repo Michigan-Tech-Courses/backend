@@ -1,4 +1,5 @@
-import {Course, Semester} from '@prisma/client';
+import type {Course} from '@prisma/client';
+import {Semester} from '@prisma/client';
 
 export const COURSE: Course = {
 	id: 'test-course-id',

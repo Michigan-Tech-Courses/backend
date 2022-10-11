@@ -1,5 +1,7 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {LocationType, Section, Semester} from '@prisma/client';
+import type {TestingModule} from '@nestjs/testing';
+import {Test} from '@nestjs/testing';
+import type {Section} from '@prisma/client';
+import {LocationType, Semester} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {SectionsController} from './sections.controller';
 import {SectionsModule} from './sections.module';

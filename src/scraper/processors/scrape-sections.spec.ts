@@ -1,5 +1,11 @@
 import {mocked} from 'ts-jest/utils';
-import {getAllSections, ICourseOverview, ISection} from '@mtucourses/scraper';
+import type {ICourseOverview, ISection} from '@mtucourses/scraper';
+import {getAllSections} from '@mtucourses/scraper';
+
+import type {Course, Section} from '@prisma/client';
+import {LocationType} from '@prisma/client';
+import {COURSE} from 'test/test-data';
+import processJob from './scrape-sections';
 
 jest.mock('@mtucourses/scraper');
 const mockedSectionsScraper = mocked(getAllSections, true);
@@ -36,10 +42,6 @@ jest.mock('@prisma/client', () => ({
 	PrismaClient: mockedPrisma
 }));
 
-import processJob from './scrape-sections';
-import {Course, LocationType, Section} from '@prisma/client';
-import {COURSE} from 'test/test-data';
-
 const SCRAPED_SECTION: ISection = {
 	cmp: '1',
 	creditRange: [
@@ -59,7 +61,7 @@ const SCRAPED_SECTION: ISection = {
 			]
 		}
 	],
-	fee: 10000,
+	fee: 10_000,
 	instructors: [
 		'Cyr'
 	],
@@ -87,7 +89,7 @@ const EXPECTED_PARSED_TIME = {
 					'MO',
 					'WE'
 				],
-				duration: 4500000,
+				duration: 4_500_000,
 				end: {
 					day: 11,
 					hour: 15,
@@ -244,7 +246,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 1,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4_500_000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.UNKNOWN,
 				buildingName: null,
 				room: null
@@ -311,7 +313,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4_500_000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.UNKNOWN,
 				buildingName: null,
 				room: null
@@ -466,7 +468,7 @@ describe('Courses and sections scrape processor', () => {
 			mockCourseFindMany.mockResolvedValue([]);
 			mockSectionFindFirst.mockResolvedValue(null);
 			mockSectionFindMany.mockResolvedValue([]);
-			mockCourseUpsert.mockImplementation(async ({create}: {create: Course}) => Promise.resolve(create));
+			mockCourseUpsert.mockImplementation(async ({create}: {create: Course}) => create);
 			mockSectionCreate.mockResolvedValue({id: 'test-section-id'});
 			mockCourseUpsert.mockResolvedValue({id: 'test-course-id'});
 
@@ -516,7 +518,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4_500_000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.UNKNOWN,
 				buildingName: null,
 				room: null
@@ -649,7 +651,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4_500_000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.UNKNOWN,
 				buildingName: null,
 				room: null
@@ -686,7 +688,7 @@ describe('Courses and sections scrape processor', () => {
 				fee: SCRAPED_SECTION.fee,
 				minCredits: 3,
 				maxCredits: 3,
-				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4500000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
+				time: {type: 'Schedule', rrules: [{type: 'Rule', config: {frequency: 'WEEKLY', duration: 4_500_000, byDayOfWeek: ['MO', 'WE'], start: {timezone: null, year: new Date().getFullYear() - 1, month: 8, day: 27, hour: 14, minute: 0, second: 0, millisecond: 0}, end: {timezone: null, year: new Date().getFullYear() - 1, month: 12, day: 11, hour: 15, minute: 15, second: 0, millisecond: 0}}}], exrules: [], rdates: {type: 'Dates', dates: []}, exdates: {type: 'Dates', dates: []}, timezone: null},
 				locationType: LocationType.PHYSICAL,
 				buildingName: 'Fisher Hall',
 				room: '0100'

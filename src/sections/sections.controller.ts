@@ -1,5 +1,5 @@
 import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors, Header} from '@nestjs/common';
-import {Prisma, Section} from '@prisma/client';
+import type {Prisma, Section} from '@prisma/client';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetSectionsParameters, FindFirstSectionParamters} from './types';
@@ -104,6 +104,6 @@ export class SectionsController {
 		const filteredCoursesWithSections = await this.prisma.course.findMany(courseParameters) as unknown as Array<{sections: Section[]}>;
 
 		// Hoist
-		return filteredCoursesWithSections.map(c => c.sections).flat();
+		return filteredCoursesWithSections.flatMap(c => c.sections);
 	}
 }

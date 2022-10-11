@@ -1,10 +1,11 @@
 import {mocked} from 'ts-jest/utils';
-import {Instructor} from '@prisma/client';
-import {getAllFaculty, IFaculty} from '@mtucourses/scraper';
-import {ScrapeInstructorsTask} from './scrape-instructors';
+import type {Instructor} from '@prisma/client';
+import type {IFaculty} from '@mtucourses/scraper';
+import {getAllFaculty} from '@mtucourses/scraper';
 import {Test} from '@nestjs/testing';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {PrismaModule} from 'src/prisma/prisma.module';
+import {ScrapeInstructorsTask} from './scrape-instructors';
 
 jest.mock('@mtucourses/scraper');
 const mockedFacultyScraper = mocked(getAllFaculty, true);

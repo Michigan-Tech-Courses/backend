@@ -1,10 +1,11 @@
 import {Logger} from '@nestjs/common';
-import {getAllTransferCourses, ITransferCourse} from '@mtucourses/scraper';
+import type {ITransferCourse} from '@mtucourses/scraper';
+import {getAllTransferCourses} from '@mtucourses/scraper';
 import prisma from 'src/lib/prisma-singleton';
 import {deleteByKey} from 'src/cache/store';
 import pThrottle from 'p-throttle';
-import {Except} from 'type-fest';
-import {Prisma, TransferCourse} from '@prisma/client';
+import type {Except} from 'type-fest';
+import type {Prisma, TransferCourse} from '@prisma/client';
 
 const processJob = async () => {
 	const logger = new Logger('Job: transfer courses scrape');

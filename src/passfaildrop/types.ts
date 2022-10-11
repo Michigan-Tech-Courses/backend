@@ -1,4 +1,4 @@
-import {Semester} from '@prisma/client';
+import type {Semester} from '@prisma/client';
 import {IsOptional} from 'class-validator';
 
 export class PutDto {
@@ -14,8 +14,8 @@ export class PutDto {
 
 export class GetAllParameters {
 	@IsOptional()
-	courseSubject!: string;
+		courseSubject!: string;
 
 	@IsOptional()
-	courseCrse!: string;
+		courseCrse!: string;
 }

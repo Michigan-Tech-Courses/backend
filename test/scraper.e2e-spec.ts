@@ -1,9 +1,9 @@
+import {promisify} from 'node:util';
 import {Test} from '@nestjs/testing';
-import {INestApplication} from '@nestjs/common';
+import type {INestApplication} from '@nestjs/common';
 import {ScraperService} from 'src/scraper/scraper.service';
 import {BullModule, getQueueToken} from '@codetheweb/nestjs-bull';
-import {Queue} from 'bullmq';
-import {promisify} from 'util';
+import type {Queue} from 'bullmq';
 import * as redis from 'redis';
 import delay from 'delay';
 

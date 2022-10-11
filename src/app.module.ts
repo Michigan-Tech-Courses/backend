@@ -1,6 +1,6 @@
 import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
-import { GraphileWorkerModule } from 'nestjs-graphile-worker';
+import {GraphileWorkerModule} from 'nestjs-graphile-worker';
 import {CacheModule} from 'src/cache/cache.module';
 import {ScheduleModule} from '@nestjs/schedule';
 import {ScraperModule} from './scraper/scraper.module';
@@ -18,9 +18,9 @@ import {InitHandler} from './init';
 		CacheModule,
 		ConfigModule.forRoot(),
 		GraphileWorkerModule.forRoot({
-      connectionString: process.env.DATABASE_URL,
-			 crontabFile: "./scraper/crontab"
-    }),
+			connectionString: process.env.DATABASE_URL,
+			 crontabFile: './scraper/crontab'
+		}),
 		ScheduleModule.forRoot(),
 		ScraperModule,
 		CoursesModule,

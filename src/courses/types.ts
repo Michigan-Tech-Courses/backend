@@ -8,18 +8,18 @@ export class GetCoursesParameters {
 	@Type(() => Date)
 	@IsOptional()
 	@ApiProperty({required: false, description: 'ISO DateTime string; only return instances that have been updated since this date.'})
-	updatedSince!: Date;
+		updatedSince!: Date;
 
 	@IsNumber()
 	@IsOptional()
 	@Type(() => Number)
 	@ApiProperty({required: false, description: 'filter courses by year'})
-	year!: number;
+		year!: number;
 
 	@IsIn(Object.values(Semester))
 	@IsOptional()
 	@ApiProperty({required: false, description: 'filter courses by semester'})
-	semester!: Semester;
+		semester!: Semester;
 }
 
 export class FindFirstCourseParameters {
@@ -27,20 +27,20 @@ export class FindFirstCourseParameters {
 	@IsOptional()
 	@Type(() => Number)
 	@ApiProperty({required: false, description: 'filter courses by year'})
-	year!: number;
+		year!: number;
 
 	@IsIn(Object.values(Semester))
 	@IsOptional()
 	@ApiProperty({required: false, description: 'filter courses by semester'})
-	semester!: Semester;
+		semester!: Semester;
 
 	@IsOptional()
 	@ApiProperty({required: false, description: 'crse'})
-	crse!: string;
+		crse!: string;
 
 	@IsOptional()
 	@ApiProperty({required: false, description: 'subject'})
-	subject!: string;
+		subject!: string;
 }
 
 export class GetUniqueCoursesParameters {
@@ -48,16 +48,16 @@ export class GetUniqueCoursesParameters {
 	@Type(() => Date)
 	@IsOptional()
 	@ApiProperty({required: false, description: 'ISO DateTime string; only return instances that have been updated since this date.'})
-	updatedSince!: Date;
+		updatedSince!: Date;
 
 	@IsNumber()
 	@Type(() => Number)
 	@IsOptional()
 	@ApiProperty({required: false, description: 'Return courses in and after this year'})
-	startYear!: number;
+		startYear!: number;
 
 	@IsIn(Object.values(Semester))
 	@IsOptional()
 	@ApiProperty({required: false, description: 'Filter by semester'})
-	semester!: Semester;
+		semester!: Semester;
 }

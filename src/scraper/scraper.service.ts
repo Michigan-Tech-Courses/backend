@@ -1,4 +1,5 @@
-import {Injectable, OnModuleInit} from '@nestjs/common';
+import type {OnModuleInit} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectQueue} from '@codetheweb/nestjs-bull';
 import {Queue} from 'bullmq';
 

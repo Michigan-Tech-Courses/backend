@@ -1,7 +1,8 @@
-import {CallHandler, ExecutionContext, Injectable, NestInterceptor} from '@nestjs/common';
+import type {CallHandler, ExecutionContext, NestInterceptor} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 // NestJS bug: https://stackoverflow.com/a/63984129/12638523
-// eslint-disable-next-line import/no-extraneous-dependencies
-import {FastifyReply} from 'fastify';
+
+import type {FastifyReply} from 'fastify';
 
 @Injectable()
 export class NoCacheUpdatedSinceInterceptor implements NestInterceptor {

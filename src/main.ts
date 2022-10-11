@@ -3,9 +3,11 @@
 import './lib/tracer';
 import {NestFactory} from '@nestjs/core';
 import {ValidationPipe} from '@nestjs/common';
-import {
-	FastifyAdapter,
+import type {
 	NestFastifyApplication
+} from '@nestjs/platform-fastify';
+import {
+	FastifyAdapter
 } from '@nestjs/platform-fastify';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import {AppModule} from './app.module';

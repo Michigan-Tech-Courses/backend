@@ -1,4 +1,5 @@
-import {Test, TestingModule} from '@nestjs/testing';
+import type {TestingModule} from '@nestjs/testing';
+import {Test} from '@nestjs/testing';
 import {Semester} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {COURSE} from 'test/test-data';

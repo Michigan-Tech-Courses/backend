@@ -1,14 +1,16 @@
-import {Job} from 'bullmq';
+import type {Job} from 'bullmq';
 import {Logger} from '@nestjs/common';
 import equal from 'deep-equal';
-import {Except} from 'type-fest';
+import type {Except} from 'type-fest';
 import arrDiff from 'arr-diff';
 import pThrottle from 'p-throttle';
 import prisma from 'src/lib/prisma-singleton';
-import {Section, Prisma} from '@prisma/client';
-import {getAllSections, ICourseOverview, ISection} from '@mtucourses/scraper';
+import type {Section, Prisma} from '@prisma/client';
+import type {ICourseOverview, ISection} from '@mtucourses/scraper';
+import {getAllSections} from '@mtucourses/scraper';
 import {CourseMap} from 'src/lib/course-map';
-import {IRuleOptions, Schedule} from 'src/lib/rschedule';
+import type {IRuleOptions} from 'src/lib/rschedule';
+import {Schedule} from 'src/lib/rschedule';
 import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src/lib/dates';
 import {deleteByKey} from 'src/cache/store';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
@@ -90,9 +92,7 @@ const getCreditsRangeFromCourse = (course: ICourseOverview): [number, number] =>
 	];
 };
 
-const areCreditRangesEqual = (firstRange: [number, number], secondRange: [number, number]) => {
-	return firstRange[0] === secondRange[0] && firstRange[1] === secondRange[1];
-};
+const areCreditRangesEqual = (firstRange: [number, number], secondRange: [number, number]) => firstRange[0] === secondRange[0] && firstRange[1] === secondRange[1];
 
 const processJob = async (_: Job) => {
 	const logger = new Logger('Job: course sections scrape');

@@ -1,18 +1,20 @@
 /* eslint-disable no-await-in-loop */
-import {Job} from 'bullmq';
+import type {Job} from 'bullmq';
 import {Logger} from '@nestjs/common';
 import pThrottle from 'p-throttle';
 import prisma from 'src/lib/prisma-singleton';
 import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
-import {ESemester, getSectionDetails, ISectionDetails} from '@mtucourses/scraper';
+import type {ISectionDetails} from '@mtucourses/scraper';
+import {ESemester, getSectionDetails} from '@mtucourses/scraper';
 import {dateToTerm, termToDate} from 'src/lib/dates';
 import {deleteByKey} from 'src/cache/store';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
 import parseLocation from 'src/lib/parse-location';
-import {Prisma, Section, Semester} from '@prisma/client';
+import type {Prisma, Section} from '@prisma/client';
+import {Semester} from '@prisma/client';
 
 const convertSemesters = (semesters: ESemester[]): Semester[] => {
 	const result: Semester[] = [];

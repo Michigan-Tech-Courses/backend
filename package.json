@@ -87,7 +87,7 @@
     "type-fest": "^1.0.1",
     "typescript": "^4.8.4",
     "webpack": "^5.50.0",
-    "xo": "^0.38.2"
+    "xo": "^0.52.4"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -148,7 +148,10 @@
           "argsIgnorePattern": "^_",
           "ignoreRestSiblings": true
         }
-      ]
+      ],
+      "@typescript-eslint/comma-dangle": "off",
+      "@typescript-eslint/naming-convention": "off",
+      "n/prefer-global/process": "off"
     }
   },
   "prisma": {

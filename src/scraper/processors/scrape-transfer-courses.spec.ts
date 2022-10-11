@@ -1,6 +1,10 @@
 import {mocked} from 'ts-jest/utils';
-import {getAllTransferCourses, ITransferCourse} from '@mtucourses/scraper';
-import {Except} from 'type-fest';
+import type {ITransferCourse} from '@mtucourses/scraper';
+import {getAllTransferCourses} from '@mtucourses/scraper';
+import type {Except} from 'type-fest';
+
+import type {TransferCourse} from '@prisma/client';
+import processJob from './scrape-transfer-courses';
 
 jest.mock('@mtucourses/scraper');
 const mockedTransferScraper = mocked(getAllTransferCourses, true);
@@ -24,9 +28,6 @@ const mockedPrisma = jest.fn().mockImplementation(() => ({
 jest.mock('@prisma/client', () => ({
 	PrismaClient: mockedPrisma
 }));
-
-import {TransferCourse} from '@prisma/client';
-import processJob from './scrape-transfer-courses';
 
 const SAMPLE_COURSE: ITransferCourse = {
 	from: {

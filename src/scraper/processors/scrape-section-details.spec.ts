@@ -1,5 +1,11 @@
 import {mocked} from 'ts-jest/utils';
-import {ESemester, getSectionDetails, ISectionDetails} from '@mtucourses/scraper';
+import type {ISectionDetails} from '@mtucourses/scraper';
+import {ESemester, getSectionDetails} from '@mtucourses/scraper';
+
+import type {Building, Course, Section} from '@prisma/client';
+import {LocationType, Semester} from '@prisma/client';
+import {COURSE} from 'test/test-data';
+import processJob from './scrape-section-details';
 
 // Scraper mock
 jest.mock('@mtucourses/scraper');
@@ -39,10 +45,6 @@ jest.mock('@prisma/client', () => ({
 	...(jest.requireActual('@prisma/client') as object),
 	PrismaClient: mockedPrisma
 }));
-
-import processJob from './scrape-section-details';
-import {Building, Course, LocationType, Section, Semester} from '@prisma/client';
-import {COURSE} from 'test/test-data';
 
 const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}>} = {
 	id: 'test-section-id',

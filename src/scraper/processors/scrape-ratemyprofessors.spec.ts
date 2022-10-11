@@ -1,10 +1,11 @@
 import {mocked} from 'ts-jest/utils';
-import ratings, {ITeacherFromSearch, ITeacherPage} from '@mtucourses/rate-my-professors';
+import type {ITeacherFromSearch, ITeacherPage} from '@mtucourses/rate-my-professors';
+import ratings from '@mtucourses/rate-my-professors';
 import {Test} from '@nestjs/testing';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {PrismaModule} from 'src/prisma/prisma.module';
+import type {Instructor} from '@prisma/client';
 import {ScrapeRateMyProfessorsTask} from './scrape-ratemyprofessors';
-import {Instructor} from '@prisma/client';
 
 jest.mock('@mtucourses/rate-my-professors');
 const mockedSearchSchool = mocked(ratings.searchSchool);

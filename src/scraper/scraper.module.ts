@@ -1,6 +1,7 @@
-import {Module, Injectable, MiddlewareConsumer, NestModule} from '@nestjs/common';
+import {join} from 'node:path';
+import type {MiddlewareConsumer, NestModule} from '@nestjs/common';
+import {Module, Injectable} from '@nestjs/common';
 import {BullModule, InjectQueue} from '@codetheweb/nestjs-bull';
-import {join} from 'path';
 import {Queue} from 'bullmq';
 import {createBullBoard} from '@bull-board/api';
 import {BullMQAdapter} from '@bull-board/api/bullMQAdapter';

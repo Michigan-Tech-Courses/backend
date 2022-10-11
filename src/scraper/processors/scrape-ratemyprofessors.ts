@@ -1,10 +1,11 @@
-import {Logger} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import pThrottle from 'p-throttle';
 import ratings from '@mtucourses/rate-my-professors';
 import equal from 'deep-equal';
 import remap from 'src/lib/remap';
-import {Instructor} from '@prisma/client';
+import type {Instructor} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
+import {Task, TaskHandler} from 'nestjs-graphile-worker';
 
 @Injectable()
 @Task('scrape-rate-my-professors')

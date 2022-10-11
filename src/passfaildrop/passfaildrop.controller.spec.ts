@@ -1,5 +1,7 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {PassFailDrop, Semester} from '@prisma/client';
+import type {TestingModule} from '@nestjs/testing';
+import {Test} from '@nestjs/testing';
+import type {PassFailDrop} from '@prisma/client';
+import {Semester} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {PassFailDropController} from './passfaildrop.controller';
 import {PassFailDropModule} from './passfaildrop.module';

@@ -1,5 +1,6 @@
-import {Test, TestingModule} from '@nestjs/testing';
-import {Instructor} from '@prisma/client';
+import type {TestingModule} from '@nestjs/testing';
+import {Test} from '@nestjs/testing';
+import type {Instructor} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {InstructorsController} from './instructors.controller';
 import {InstructorsModule} from './instructors.module';

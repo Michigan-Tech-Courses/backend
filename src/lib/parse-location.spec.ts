@@ -1,4 +1,5 @@
-import {Semester, LocationType, Building} from '@prisma/client';
+import type {Building} from '@prisma/client';
+import {Semester, LocationType} from '@prisma/client';
 import parseLocation from './parse-location';
 import sortSemesters from './sort-semesters';
 

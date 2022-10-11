@@ -1,4 +1,4 @@
-import {OnModuleInit} from '@nestjs/common';
+import type {OnModuleInit} from '@nestjs/common';
 import {deleteByKey} from './cache/store';
 
 const CACHE_KEYS = ['/courses', '/sections', '/instructors', '/passfaildrop'];

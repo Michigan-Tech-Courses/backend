@@ -1,5 +1,5 @@
 import {Semester} from '@prisma/client';
-import {RuleOption} from './rschedule';
+import type {RuleOption} from './rschedule';
 
 export const dateToTerm = (date: Date) => {
 	let semester: Semester = Semester.SPRING;

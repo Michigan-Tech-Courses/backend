@@ -1,4 +1,4 @@
-/* eslint-disable import/export */
+
 // eslint-disable-next-line import/no-unassigned-import
 import '@rschedule/standard-date-adapter/setup';
 // eslint-disable-next-line import/no-unassigned-import
