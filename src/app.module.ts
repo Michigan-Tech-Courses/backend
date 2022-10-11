@@ -3,7 +3,7 @@ import {ConfigModule} from '@nestjs/config';
 import {GraphileWorkerModule} from 'nestjs-graphile-worker';
 import {CacheModule} from 'src/cache/cache.module';
 import {ScheduleModule} from '@nestjs/schedule';
-import {ScraperModule} from './scraper/scraper.module';
+import {ScraperModule} from './tasks/tasks.module';
 import {InstructorsModule} from './instructors/instructors.module';
 import {CoursesModule} from './courses/courses.module';
 import {SectionsModule} from './sections/sections.module';
