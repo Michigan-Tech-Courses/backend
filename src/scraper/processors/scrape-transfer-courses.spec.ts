@@ -2,9 +2,11 @@ import {mocked} from 'ts-jest/utils';
 import type {ITransferCourse} from '@mtucourses/scraper';
 import {getAllTransferCourses} from '@mtucourses/scraper';
 import type {Except} from 'type-fest';
-
 import type {TransferCourse} from '@prisma/client';
-import processJob from './scrape-transfer-courses';
+import { Test } from '@nestjs/testing';
+import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ScrapeTransferCoursesTask } from './scrape-transfer-courses';
 
 jest.mock('@mtucourses/scraper');
 const mockedTransferScraper = mocked(getAllTransferCourses, true);
@@ -13,21 +15,6 @@ const mockTransferCourseUpsert = jest.fn();
 const mockTransferCourseFindUnique = jest.fn();
 const mockTransferCourseDeleteMany = jest.fn();
 const mockTransferCourseFindMany = jest.fn();
-
-const mockedPrisma = jest.fn().mockImplementation(() => ({
-	$connect: jest.fn(),
-	$disconnect: jest.fn(),
-	transferCourse: {
-		upsert: mockTransferCourseUpsert,
-		findUnique: mockTransferCourseFindUnique,
-		deleteMany: mockTransferCourseDeleteMany,
-		findMany: mockTransferCourseFindMany
-	}
-}));
-
-jest.mock('@prisma/client', () => ({
-	PrismaClient: mockedPrisma
-}));
 
 const SAMPLE_COURSE: ITransferCourse = {
 	from: {
@@ -58,11 +45,44 @@ const SAMPLE_SAVED_COURSE: Except<TransferCourse, 'id' | 'updatedAt'> = {
 };
 
 describe('Transfer course scrape processor', () => {
+	let task: ScrapeTransferCoursesTask;
+
+	const prismaMock = {
+		$connect: jest.fn(),
+		$disconnect: jest.fn(),
+		transferCourse: {
+			upsert: mockTransferCourseUpsert,
+			findUnique: mockTransferCourseFindUnique,
+			deleteMany: mockTransferCourseDeleteMany,
+			findMany: mockTransferCourseFindMany
+		}
+	}
+
+	beforeEach(async () => {
+		const module = await Test.createTestingModule({
+			imports: [PrismaModule],
+			providers: [ScrapeTransferCoursesTask]
+		})
+			.overrideProvider(PrismaService)
+			.useValue(prismaMock)
+			.compile();
+
+		task = module.get(ScrapeTransferCoursesTask);
+	});
+
+	afterEach(() => {
+		mockedTransferScraper.mockClear();
+		mockTransferCourseUpsert.mockClear();
+		mockTransferCourseFindUnique.mockClear();
+		mockTransferCourseDeleteMany.mockClear();
+		mockTransferCourseFindMany.mockClear();
+	});
+
 	it('runs without errors', async () => {
 		mockedTransferScraper.mockResolvedValue([]);
 		mockTransferCourseFindMany.mockResolvedValue([]);
 
-		await processJob();
+		await task.handler();
 	});
 
 	it('inserts results into the database', async () => {
@@ -71,7 +91,7 @@ describe('Transfer course scrape processor', () => {
 		mockTransferCourseFindMany.mockResolvedValue([]);
 		mockTransferCourseFindUnique.mockResolvedValue(null);
 
-		await processJob();
+		await task.handler();
 
 		expect(mockTransferCourseUpsert).toHaveBeenCalledWith({
 			create: SAMPLE_SAVED_COURSE,
@@ -85,7 +105,7 @@ describe('Transfer course scrape processor', () => {
 
 		mockTransferCourseFindUnique.mockResolvedValue({...SAMPLE_SAVED_COURSE, id: 'test-id'});
 
-		await processJob();
+		await task.handler();
 
 		expect(mockTransferCourseUpsert).toHaveBeenCalledTimes(0);
 	});
@@ -95,7 +115,7 @@ describe('Transfer course scrape processor', () => {
 
 		mockTransferCourseFindUnique.mockResolvedValue({...SAMPLE_SAVED_COURSE, title: 'A Different Title', id: 'test-id'});
 
-		await processJob();
+		await task.handler();
 
 		expect(mockTransferCourseUpsert).toHaveBeenCalledTimes(1);
 	});
@@ -108,7 +128,7 @@ describe('Transfer course scrape processor', () => {
 		mockTransferCourseFindMany.mockResolvedValue([savedCourse]);
 		mockTransferCourseFindUnique.mockResolvedValue(savedCourse);
 
-		await processJob();
+		await task.handler();
 
 		expect(mockTransferCourseDeleteMany).toHaveBeenCalledWith({
 			where: {
@@ -117,14 +137,5 @@ describe('Transfer course scrape processor', () => {
 				}
 			}
 		});
-	});
-
-	afterEach(() => {
-		mockedTransferScraper.mockClear();
-		mockedPrisma.mockClear();
-		mockTransferCourseUpsert.mockClear();
-		mockTransferCourseFindUnique.mockClear();
-		mockTransferCourseDeleteMany.mockClear();
-		mockTransferCourseFindMany.mockClear();
 	});
 });

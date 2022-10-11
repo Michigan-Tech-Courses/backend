@@ -1,20 +1,22 @@
-import {Logger} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import type {ITransferCourse} from '@mtucourses/scraper';
 import {getAllTransferCourses} from '@mtucourses/scraper';
-import prisma from 'src/lib/prisma-singleton';
-import {deleteByKey} from 'src/cache/store';
 import pThrottle from 'p-throttle';
 import type {Except} from 'type-fest';
 import type {Prisma, TransferCourse} from '@prisma/client';
+import { Task, TaskHandler } from 'nestjs-graphile-worker';
+import { PrismaService } from 'src/prisma/prisma.service';
 
-const processJob = async () => {
-	const logger = new Logger('Job: transfer courses scrape');
+@Injectable()
+@Task('scrape-transfer-courses')
+export class ScrapeTransferCoursesTask {
+	private readonly logger = new Logger(ScrapeTransferCoursesTask.name);
 
-	logger.log('Started processing...');
+	constructor(private readonly prisma: PrismaService) {}
 
-	await prisma.$connect();
-
-	const savedCourses = await prisma.transferCourse.findMany({select: {id: true}});
+	@TaskHandler()
+	async handler() {
+	const savedCourses = await this.prisma.transferCourse.findMany({select: {id: true}});
 	const seenCourses = new Map();
 
 	for (const savedCourse of savedCourses) {
@@ -33,7 +35,7 @@ const processJob = async () => {
 			}
 		};
 
-		const existingCourse = await prisma.transferCourse.findUnique({
+		const existingCourse = await this.prisma.transferCourse.findUnique({
 			where: uniqueWhere
 		});
 
@@ -70,7 +72,7 @@ const processJob = async () => {
 				title: course.to.title
 			};
 
-			await prisma.transferCourse.upsert({
+			await this.prisma.transferCourse.upsert({
 				where: uniqueWhere,
 				create: model,
 				update: model
@@ -92,17 +94,12 @@ const processJob = async () => {
 		}
 	}
 
-	await prisma.transferCourse.deleteMany({
+	await this.prisma.transferCourse.deleteMany({
 		where: {
 			id: {
 				in: unseenIds
 			}
 		}
 	});
-
-	logger.log('Finished processing');
-
-	await Promise.all([prisma.$disconnect(), deleteByKey('/transfer-courses')]);
+}
 };
-
-export default processJob;
