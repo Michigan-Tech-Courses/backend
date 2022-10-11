@@ -5,46 +5,14 @@ import {ESemester, getSectionDetails} from '@mtucourses/scraper';
 import type {Building, Course, Section} from '@prisma/client';
 import {LocationType, Semester} from '@prisma/client';
 import {COURSE} from 'test/test-data';
-import processJob from './scrape-section-details';
+import {Test} from '@nestjs/testing';
+import {PrismaModule} from 'src/prisma/prisma.module';
+import {PrismaService} from 'src/prisma/prisma.service';
+import {ScrapeSectionDetailsTask} from './scrape-section-details';
 
 // Scraper mock
 jest.mock('@mtucourses/scraper');
 const mockedSectionDetailScraper = mocked(getSectionDetails, true);
-
-// Prisma mocks
-const mockCourseUpdate = jest.fn();
-const mockSectionFindMany = jest.fn();
-const mockSectionUpdate = jest.fn();
-const mockQueryRaw = jest.fn();
-const mockInstructorCreate = jest.fn();
-const mockInstructorFindMany = jest.fn();
-const mockBuildingFindMany = jest.fn();
-
-const mockedPrisma = jest.fn().mockImplementation(() => ({
-	$connect: jest.fn(),
-	$disconnect: jest.fn(),
-	$queryRaw: mockQueryRaw,
-	course: {
-		update: mockCourseUpdate
-	},
-	section: {
-		findMany: mockSectionFindMany,
-		update: mockSectionUpdate
-	},
-	instructor: {
-		create: mockInstructorCreate,
-		findMany: mockInstructorFindMany
-	},
-	building: {
-		findMany: mockBuildingFindMany
-	}
-}));
-
-jest.mock('@prisma/client', () => ({
-	/* eslint-disable-next-line */
-	...(jest.requireActual('@prisma/client') as object),
-	PrismaClient: mockedPrisma
-}));
 
 const SAMPLE_SECTION: Section & {course: Course; instructors: Array<{id: number}>} = {
 	id: 'test-section-id',
@@ -93,30 +61,70 @@ const SAMPLE_BUILDING2: Building = {
 };
 
 describe('Section details scrape processor', () => {
-	beforeEach(() => {
-		mockBuildingFindMany.mockResolvedValueOnce([SAMPLE_BUILDING1, SAMPLE_BUILDING2]);
+	let task: ScrapeSectionDetailsTask;
+
+	const prismaMock = {
+		$queryRaw: jest.fn(),
+		course: {
+			update: jest.fn()
+		},
+		section: {
+			findMany: jest.fn(),
+			update: jest.fn()
+		},
+		instructor: {
+			create: jest.fn(),
+			findMany: jest.fn()
+		},
+		building: {
+			findMany: jest.fn()
+		}
+	};
+
+	beforeEach(async () => {
+		prismaMock.building.findMany.mockResolvedValueOnce([SAMPLE_BUILDING1, SAMPLE_BUILDING2]);
+
+		const module = await Test.createTestingModule({
+			imports: [PrismaModule],
+			providers: [ScrapeSectionDetailsTask]
+		})
+			.overrideProvider(PrismaService)
+			.useValue(prismaMock)
+			.compile();
+
+		task = module.get(ScrapeSectionDetailsTask);
+	});
+
+	afterEach(() => {
+		prismaMock.$queryRaw.mockClear();
+		prismaMock.course.update.mockClear();
+		prismaMock.section.findMany.mockClear();
+		prismaMock.section.update.mockClear();
+		prismaMock.instructor.create.mockClear();
+		prismaMock.instructor.findMany.mockClear();
+		prismaMock.building.findMany.mockClear();
 	});
 
 	it('runs without errors', async () => {
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
-		await processJob(null as any);
+		await task.handler();
 	});
 
 	it('updates location', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			location: 'Online Instruction'
 		});
 
-		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
+		prismaMock.instructor.findMany.mockResolvedValue([{id: 1}]);
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockSectionUpdate.mock.calls[0][0]).toEqual({
+		expect(prismaMock.section.update.mock.calls[0][0]).toEqual({
 			where: {
 				id: SAMPLE_SECTION.id
 			},
@@ -131,19 +139,19 @@ describe('Section details scrape processor', () => {
 	});
 
 	it('updates location (2)', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			location: 'Rekhi 0200'
 		});
 
-		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
+		prismaMock.instructor.findMany.mockResolvedValue([{id: 1}]);
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockSectionUpdate.mock.calls[0][0]).toEqual({
+		expect(prismaMock.section.update.mock.calls[0][0]).toEqual({
 			where: {
 				id: SAMPLE_SECTION.id
 			},
@@ -160,19 +168,19 @@ describe('Section details scrape processor', () => {
 	});
 
 	it('updates instructors', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			instructors: ['Leo Ureel']
 		});
 
-		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
+		prismaMock.instructor.findMany.mockResolvedValue([{id: 1}]);
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockSectionUpdate.mock.calls[0][0]).toEqual({
+		expect(prismaMock.section.update.mock.calls[0][0]).toEqual({
 			where: {
 				id: SAMPLE_SECTION.id
 			},
@@ -190,7 +198,7 @@ describe('Section details scrape processor', () => {
 	});
 
 	it('doesn\'t update instructors if unchanged', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([
+		prismaMock.section.findMany.mockResolvedValueOnce([
 			{
 				...SAMPLE_SECTION,
 				instructors: [{
@@ -198,22 +206,22 @@ describe('Section details scrape processor', () => {
 				}]
 			}
 		]);
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			instructors: ['Leo Ureel']
 		});
 
-		mockInstructorFindMany.mockResolvedValue([{id: 1}]);
+		prismaMock.instructor.findMany.mockResolvedValue([{id: 1}]);
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockSectionUpdate).toBeCalledTimes(0);
+		expect(prismaMock.section.update).toBeCalledTimes(0);
 	});
 
 	it('disconnects removed instructor', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([
+		prismaMock.section.findMany.mockResolvedValueOnce([
 			{
 				...SAMPLE_SECTION,
 				instructors: [{
@@ -221,15 +229,15 @@ describe('Section details scrape processor', () => {
 				}]
 			}
 		]);
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
 
-		mockInstructorFindMany.mockResolvedValue([]);
+		prismaMock.instructor.findMany.mockResolvedValue([]);
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockSectionUpdate.mock.calls[0][0]).toEqual({
+		expect(prismaMock.section.update.mock.calls[0][0]).toEqual({
 			where: {
 				id: SAMPLE_SECTION.id
 			},
@@ -247,14 +255,14 @@ describe('Section details scrape processor', () => {
 	});
 
 	it('updates course description', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue(SAMPLE_SCRAPED_SECTION);
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
+		expect(prismaMock.course.update.mock.calls[0][0]).toEqual({
 			where: expect.any(Object),
 			data: {
 				description: SAMPLE_SCRAPED_SECTION.description,
@@ -265,8 +273,8 @@ describe('Section details scrape processor', () => {
 	});
 
 	it('doesn\'t update course description if unchanged', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
@@ -274,9 +282,9 @@ describe('Section details scrape processor', () => {
 			prereqs: COURSE.prereqs
 		});
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockCourseUpdate).toHaveBeenCalledTimes(0);
+		expect(prismaMock.section.update).toHaveBeenCalledTimes(0);
 	});
 
 	it('updates course prereqs', async () => {
@@ -288,17 +296,17 @@ describe('Section details scrape processor', () => {
 			}
 		};
 
-		mockSectionFindMany.mockResolvedValueOnce([storedSection]);
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValueOnce([storedSection]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			description: ''
 		});
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
+		expect(prismaMock.course.update.mock.calls[0][0]).toEqual({
 			where: expect.any(Object),
 			data: {
 				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
@@ -309,17 +317,17 @@ describe('Section details scrape processor', () => {
 	});
 
 	it('updates course offered semesters', async () => {
-		mockSectionFindMany.mockResolvedValueOnce([SAMPLE_SECTION]);
-		mockSectionFindMany.mockResolvedValue([]);
+		prismaMock.section.findMany.mockResolvedValueOnce([SAMPLE_SECTION]);
+		prismaMock.section.findMany.mockResolvedValue([]);
 
 		mockedSectionDetailScraper.mockResolvedValue({
 			...SAMPLE_SCRAPED_SECTION,
 			semestersOffered: [ESemester.fall]
 		});
 
-		await processJob(null as any);
+		await task.handler();
 
-		expect(mockCourseUpdate.mock.calls[0][0]).toEqual({
+		expect(prismaMock.course.update.mock.calls[0][0]).toEqual({
 			where: expect.any(Object),
 			data: {
 				prereqs: SAMPLE_SCRAPED_SECTION.prereqs,
@@ -327,15 +335,5 @@ describe('Section details scrape processor', () => {
 				description: SAMPLE_SCRAPED_SECTION.description
 			}
 		});
-	});
-
-	afterEach(() => {
-		mockCourseUpdate.mockClear();
-		mockSectionFindMany.mockClear();
-		mockSectionUpdate.mockClear();
-		mockQueryRaw.mockClear();
-		mockInstructorCreate.mockClear();
-		mockInstructorFindMany.mockClear();
-		mockedSectionDetailScraper.mockClear();
 	});
 });
