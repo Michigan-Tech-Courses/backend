@@ -1,22 +1,22 @@
 import {Injectable, Logger} from '@nestjs/common';
 import pThrottle from 'p-throttle';
-import ratings from '@mtucourses/rate-my-professors';
 import equal from 'deep-equal';
 import remap from 'src/lib/remap';
 import type {Instructor} from '@prisma/client';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
+import {FetcherService} from '~/fetcher/fetcher.service';
 
 @Injectable()
 @Task('scrape-rate-my-professors')
 export class ScrapeRateMyProfessorsTask {
 	private readonly logger = new Logger(ScrapeRateMyProfessorsTask.name);
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
 	async handler() {
-		const schools = await ratings.searchSchool('Michigan Technological University');
+		const schools = await this.fetcher.rateMyProfessors.searchSchool('Michigan Technological University');
 
 		if (schools.length === 0) {
 			throw new Error('School ID could not be resolved.');
@@ -30,10 +30,10 @@ export class ScrapeRateMyProfessorsTask {
 			const firstName = nameFragments[0];
 			const lastName = nameFragments[nameFragments.length - 1];
 
-			const results = await ratings.searchTeacher(`${firstName} ${lastName}`, schools[0].id);
+			const results = await this.fetcher.rateMyProfessors.searchTeacher(`${firstName} ${lastName}`, schools[0].id);
 
 			if (results.length > 0) {
-				const rmp = await ratings.getTeacher(results[0].id);
+				const rmp = await this.fetcher.rateMyProfessors.getTeacher(results[0].id);
 
 				const storedRating = {
 					averageDifficultyRating: instructor.averageDifficultyRating,
