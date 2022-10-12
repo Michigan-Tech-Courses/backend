@@ -10,6 +10,7 @@ import {PassFailDropModule} from './passfaildrop/passfaildrop.module';
 import {SemestersModule} from './semesters/semesters.module';
 import {BuildingsModule} from './buildings/buildings.module';
 import {TransferCoursesModule} from './transfer-courses/transfer-courses.module';
+import {crontab} from './tasks/crontab';
 
 @Module({
 	imports: [
@@ -18,7 +19,7 @@ import {TransferCoursesModule} from './transfer-courses/transfer-courses.module'
 		GraphileWorkerModule.forRootAsync({
 			useFactory: () => ({
 				connectionString: process.env.DATABASE_URL,
-				crontabFile: './scraper/crontab'
+				crontab
 			})
 		}),
 		TasksModule,
