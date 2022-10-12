@@ -3,10 +3,10 @@ import type {ITransferCourse} from '@mtucourses/scraper';
 import {getAllTransferCourses} from '@mtucourses/scraper';
 import type {Except} from 'type-fest';
 import type {TransferCourse} from '@prisma/client';
-import { Test } from '@nestjs/testing';
-import { PrismaModule } from 'src/prisma/prisma.module';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { ScrapeTransferCoursesTask } from './scrape-transfer-courses';
+import {Test} from '@nestjs/testing';
+import {PrismaModule} from 'src/prisma/prisma.module';
+import {PrismaService} from 'src/prisma/prisma.service';
+import {ScrapeTransferCoursesTask} from './scrape-transfer-courses';
 
 jest.mock('@mtucourses/scraper');
 const mockedTransferScraper = mocked(getAllTransferCourses, true);
@@ -56,7 +56,7 @@ describe('Transfer course scrape processor', () => {
 			deleteMany: mockTransferCourseDeleteMany,
 			findMany: mockTransferCourseFindMany
 		}
-	}
+	};
 
 	beforeEach(async () => {
 		const module = await Test.createTestingModule({

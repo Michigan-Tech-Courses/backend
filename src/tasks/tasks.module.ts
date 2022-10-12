@@ -1,10 +1,10 @@
 import {Module} from '@nestjs/common';
-import { PrismaModule } from 'src/prisma/prisma.module';
-import { ScrapeInstructorsTask } from './scrape-instructors';
-import { ScrapeRateMyProfessorsTask } from './scrape-ratemyprofessors';
-import { ScrapeSectionDetailsTask } from './scrape-section-details';
-import { ScrapeSectionsTask } from './scrape-sections';
-import { ScrapeTransferCoursesTask } from './scrape-transfer-courses';
+import {PrismaModule} from 'src/prisma/prisma.module';
+import {ScrapeInstructorsTask} from './scrape-instructors';
+import {ScrapeRateMyProfessorsTask} from './scrape-ratemyprofessors';
+import {ScrapeSectionDetailsTask} from './scrape-section-details';
+import {ScrapeSectionsTask} from './scrape-sections';
+import {ScrapeTransferCoursesTask} from './scrape-transfer-courses';
 
 @Module({
 	imports: [

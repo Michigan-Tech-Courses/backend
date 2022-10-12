@@ -10,8 +10,8 @@ import {
 	FastifyAdapter
 } from '@nestjs/platform-fastify';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
+import {WorkerService} from 'nestjs-graphile-worker';
 import {AppModule} from './app.module';
-import { WorkerService } from 'nestjs-graphile-worker';
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());

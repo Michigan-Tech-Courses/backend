@@ -1,21 +1,21 @@
 import {Injectable, Logger} from '@nestjs/common';
 import type {IFaculty} from '@mtucourses/scraper';
-import {getAllFaculty} from '@mtucourses/scraper';
 import pThrottle from 'p-throttle';
 import equal from 'deep-equal';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
 import {PrismaService} from 'src/prisma/prisma.service';
+import {FetcherService} from 'src/fetcher/fetcher.service';
 
 @Injectable()
 @Task('scrape-instructors')
 export class ScrapeInstructorsTask {
 	private readonly logger = new Logger(ScrapeInstructorsTask.name);
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
 	async handler() {
-		const faculty = await getAllFaculty();
+		const faculty = await this.fetcher.getAllFaculty();
 
 		this.logger.log('Finished scraping website');
 
