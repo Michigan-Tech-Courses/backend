@@ -3,7 +3,7 @@ import {PrismaClient} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const BUILDINGS: Building[] = [
+export const BUILDINGS: Building[] = [
 	{
 		name: 'Academic Offices Building',
 		shortName: 'Academic Offices',

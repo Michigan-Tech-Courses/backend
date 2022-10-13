@@ -4,7 +4,7 @@ import pThrottle from 'p-throttle';
 import equal from 'deep-equal';
 import arrDiff from 'arr-diff';
 import type {ISectionDetails} from '@mtucourses/scraper';
-import {ESemester, getSectionDetails} from '@mtucourses/scraper';
+import {ESemester} from '@mtucourses/scraper';
 import {dateToTerm, termToDate} from 'src/lib/dates';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime';
 import sortByNullValues from 'src/lib/sort-by-null-values';
@@ -14,22 +14,23 @@ import type {Prisma, Section} from '@prisma/client';
 import {Semester} from '@prisma/client';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
 import {PrismaService} from 'src/prisma/prisma.service';
+import {FetcherService} from '~/fetcher/fetcher.service';
 
 @Injectable()
 @Task('scrape-section-details')
 export class ScrapeSectionDetailsTask {
 	private readonly logger = new Logger(ScrapeSectionDetailsTask.name);
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
-	async handler() {
+	async handler(payload: {terms?: string[]} = {}) {
 		let sectionsToProcess = [];
 		let numberOfSectionsProcessed = 0;
 
-		const terms = await getTermsToProcess();
+		const terms = payload.terms?.map(termString => new Date(termString)) ?? await getTermsToProcess();
 
-		const throttledGetSectionDetails = pThrottle({limit: 2, interval: 100})(getSectionDetails);
+		const throttledGetSectionDetails = pThrottle({limit: 2, interval: 100})(this.fetcher.getSectionDetails.bind(this.fetcher));
 
 		const allBuildings = await this.prisma.building.findMany();
 
@@ -78,8 +79,8 @@ export class ScrapeSectionDetailsTask {
 					});
 				} catch (error: unknown) {
 					if ((error as Error).message === 'Course not found') {
-						console.log(`Did not find ${section.course.id}: ${JSON.stringify(section.course)}`);
-						console.log('It should be cleaned up automatically on the next course scrape.');
+						this.logger.log(`Did not find ${section.course.id}: ${JSON.stringify(section.course)}`);
+						this.logger.log('It should be cleaned up automatically on the next course scrape.');
 						return;
 					}
 

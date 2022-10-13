@@ -1,5 +1,6 @@
 import {Test} from '@nestjs/testing';
 import type {Type} from '@nestjs/common';
+import type {GetTestDatabaseOptions} from './get-test-database';
 import {getTestDatabase} from './get-test-database';
 import {FakeFetcherService} from './fetcher-fake';
 import {FetcherModule} from '~/fetcher/fetcher.module';
@@ -11,12 +12,14 @@ type Task = {
 	handler(): Promise<void>;
 };
 
+type UnwrapNestType<T> = T extends Type<infer U> ? U : never;
+
 /**
  * Get a test fixture for the provided task.
  * Tests must be run in serial because Prisma relies on an environment variable.
  */
-export const getTestTask = async <T extends Type<Task>>(taskService: T) => {
-	const {connectionString} = await getTestDatabase();
+export const getTestTask = async <T extends Type<Task>>(taskService: T, seedOptions: GetTestDatabaseOptions = {}) => {
+	const {connectionString} = await getTestDatabase(seedOptions);
 	process.env.DATABASE_URL = connectionString;
 
 	const fetcherFake = new FakeFetcherService();
@@ -29,7 +32,7 @@ export const getTestTask = async <T extends Type<Task>>(taskService: T) => {
 		.useValue(fetcherFake)
 		.compile();
 
-	const task = module.get(taskService);
+	const task: UnwrapNestType<T> = module.get(taskService);
 	const prisma = module.get(PrismaService);
 
 	return {
