@@ -37,16 +37,9 @@ test.serial('updates location to online', async t => {
 		seedSections: true,
 	});
 
-	fetcherFake.courses = fetcherFake.courses.map(c => ({
-		...c,
-		sectionDetails: c.sectionDetails.map(s => ({
-			...s,
-			extSectionDetails: {
-				...s.extSectionDetails,
-				location: 'Online Instruction',
-			}
-		}))
-	}));
+	fetcherFake.putFirstSectionDetails({
+		location: 'Online Instruction'
+	});
 
 	await task.handler({
 		terms: [getTermFromFake()],
@@ -78,16 +71,9 @@ test.serial('updates room', async t => {
 	t.is(section.room, course.extSections[0].location?.split('Fisher Hall ')[1] ?? '');
 
 	// Update room
-	fetcherFake.courses = fetcherFake.courses.map(c => ({
-		...c,
-		sectionDetails: c.sectionDetails.map(s => ({
-			...s,
-			extSectionDetails: {
-				...s.extSectionDetails,
-				location: 'Fisher Hall 123',
-			}
-		}))
-	}));
+	fetcherFake.putFirstSectionDetails({
+		location: 'Fisher Hall 123'
+	});
 
 	await task.handler({
 		terms: [getTermFromFake()],
@@ -123,16 +109,9 @@ test.serial('updates instructor', async t => {
 	});
 
 	// Update instructor
-	fetcherFake.courses = fetcherFake.courses.map(c => ({
-		...c,
-		sectionDetails: c.sectionDetails.map(s => ({
-			...s,
-			extSectionDetails: {
-				...s.extSectionDetails,
-				instructors: ['Leo Ureel'],
-			}
-		}))
-	}));
+	fetcherFake.putFirstSectionDetails({
+		instructors: ['Leo Ureel']
+	});
 
 	await task.handler({
 		terms: [getTermFromFake()],
@@ -170,16 +149,9 @@ test.serial('disconnects removed instructor', async t => {
 	});
 
 	// Remove instructor
-	fetcherFake.courses = fetcherFake.courses.map(c => ({
-		...c,
-		sectionDetails: c.sectionDetails.map(s => ({
-			...s,
-			extSectionDetails: {
-				...s.extSectionDetails,
-				instructors: [],
-			}
-		}))
-	}));
+	fetcherFake.putFirstSectionDetails({
+		instructors: []
+	});
 
 	await task.handler({
 		terms: [getTermFromFake()],
@@ -211,16 +183,9 @@ test.serial('updates course description', async t => {
 	t.is(course.description, extCourse.sectionDetails[0].extSectionDetails.description);
 
 	// Update description
-	fetcherFake.courses = fetcherFake.courses.map(c => ({
-		...c,
-		sectionDetails: c.sectionDetails.map(s => ({
-			...s,
-			extSectionDetails: {
-				...s.extSectionDetails,
-				description: 'Updated description'
-			}
-		}))
-	}));
+	fetcherFake.putFirstSectionDetails({
+		description: 'Updated description'
+	});
 
 	await task.handler({
 		terms: [getTermFromFake()],
@@ -243,16 +208,9 @@ test.serial('updates course offered semesters', async t => {
 	});
 
 	// Update offered semesters
-	fetcherFake.courses = fetcherFake.courses.map(c => ({
-		...c,
-		sectionDetails: c.sectionDetails.map(s => ({
-			...s,
-			extSectionDetails: {
-				...s.extSectionDetails,
-				semestersOffered: [ESemester.fall, ESemester.spring, ESemester.summer],
-			}
-		}))
-	}));
+	fetcherFake.putFirstSectionDetails({
+		semestersOffered: [ESemester.fall, ESemester.spring, ESemester.summer]
+	});
 
 	await task.handler({
 		terms: [getTermFromFake()],
@@ -282,16 +240,9 @@ test.serial('updates course prereqs', async t => {
 	t.is(course.prereqs, null);
 
 	// Update prereqs
-	fetcherFake.courses = fetcherFake.courses.map(c => ({
-		...c,
-		sectionDetails: c.sectionDetails.map(s => ({
-			...s,
-			extSectionDetails: {
-				...s.extSectionDetails,
-				prereqs: 'Updated prereqs'
-			}
-		}))
-	}));
+	fetcherFake.putFirstSectionDetails({
+		prereqs: 'Updated prereqs'
+	});
 
 	await task.handler({
 		terms: [getTermFromFake()],

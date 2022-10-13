@@ -148,4 +148,29 @@ export class FakeFetcherService implements AbstractFetcherService {
 
 		return section.extSectionDetails;
 	}
+
+	putFirstSectionDetails(updatedSectionDetails: Partial<ISectionDetails>) {
+		const course = this.courses[0];
+
+		if (!course) {
+			throw new Error('Course not found.');
+		}
+
+		this.courses = this.courses.map(c => {
+			if (c === course) {
+				return {
+					...c,
+					sectionDetails: [{
+						...c.sectionDetails[0],
+						extSectionDetails: {
+							...c.sectionDetails[0].extSectionDetails,
+							...updatedSectionDetails
+						}
+					}]
+				};
+			}
+
+			return c;
+		});
+	}
 }
