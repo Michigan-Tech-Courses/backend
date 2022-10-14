@@ -10,6 +10,7 @@ export abstract class RateMyProfessorsFetcher {
 export abstract class AbstractFetcherService {
 	abstract readonly rateMyProfessors: RateMyProfessorsFetcher;
 	abstract getAllFaculty(): ReturnType<typeof scraper.getAllFaculty>;
+	abstract getAllSections(term: Date): ReturnType<typeof scraper.getAllSections>;
 	abstract getSectionDetails(options: Parameters<typeof scraper.getSectionDetails>[0]): ReturnType<typeof scraper.getSectionDetails>;
 }
 
@@ -18,6 +19,10 @@ export class FetcherService implements AbstractFetcherService {
 
 	async getAllFaculty() {
 		return scraper.getAllFaculty();
+	}
+
+	async getAllSections(term: Date) {
+		return scraper.getAllSections(term);
 	}
 
 	async getSectionDetails(options: Parameters<typeof scraper.getSectionDetails>[0]) {

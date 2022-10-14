@@ -22,6 +22,9 @@ export const getTestDatabase = getTestPostgresDatabaseFactory<GetTestDatabaseOpt
 
 		const fakeFetcher = new FakeFetcherService();
 
+		// Force this hook to run in serial since we rely on an environment variable
+		await pool.query('SELECT pg_advisory_lock(1);');
+
 		process.env.DATABASE_URL = connectionString;
 		const prisma = new PrismaClient();
 
@@ -70,5 +73,9 @@ export const getTestDatabase = getTestPostgresDatabaseFactory<GetTestDatabaseOpt
 				}
 			}));
 		}
+
+		await prisma.$disconnect();
+
+		await pool.query(`SELECT pg_advisory_unlock_all()`);
 	}
 });

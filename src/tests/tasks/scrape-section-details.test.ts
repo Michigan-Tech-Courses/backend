@@ -1,18 +1,9 @@
 import {ESemester} from '@mtucourses/scraper';
 import {LocationType, Semester} from '@prisma/client';
 import test from 'ava';
-import {FakeFetcherService} from '../fixtures/fetcher-fake';
 import {getTestTask} from '../fixtures/get-test-task';
-import {termToDate} from '~/lib/dates';
 import {ScrapeSectionDetailsTask} from '~/tasks/scrape-section-details';
-
-const getTermFromFake = () => {
-	const fake = new FakeFetcherService();
-	return termToDate({
-		year: fake.courses[0].year,
-		semester: fake.courses[0].semester
-	}).toISOString();
-};
+import { getFirstTermFromFake } from '../fixtures/utils';
 
 test.serial('scrapes successfully', async t => {
 	const {task} = await getTestTask(ScrapeSectionDetailsTask, {
@@ -23,7 +14,7 @@ test.serial('scrapes successfully', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	t.pass();
@@ -42,7 +33,7 @@ test.serial('updates location to online', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const section = await prisma.section.findFirstOrThrow();
@@ -63,7 +54,7 @@ test.serial('updates room', async t => {
 	const [course] = fetcherFake.courses;
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const section = await prisma.section.findFirstOrThrow();
@@ -76,7 +67,7 @@ test.serial('updates room', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const updatedSection = await prisma.section.findFirstOrThrow();
@@ -95,7 +86,7 @@ test.serial('updates instructor', async t => {
 	const [course] = fetcherFake.courses;
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const section = await prisma.section.findFirstOrThrow({
@@ -114,7 +105,7 @@ test.serial('updates instructor', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const updatedSection = await prisma.section.findFirstOrThrow({
@@ -145,7 +136,7 @@ test.serial('disconnects removed instructor', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	// Remove instructor
@@ -154,7 +145,7 @@ test.serial('disconnects removed instructor', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const updatedSection = await prisma.section.findFirstOrThrow({
@@ -176,7 +167,7 @@ test.serial('updates course description', async t => {
 	const [extCourse] = fetcherFake.courses;
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const course = await prisma.course.findFirstOrThrow();
@@ -188,7 +179,7 @@ test.serial('updates course description', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const updatedCourse = await prisma.course.findFirstOrThrow();
@@ -204,7 +195,7 @@ test.serial('updates course offered semesters', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	// Update offered semesters
@@ -213,7 +204,7 @@ test.serial('updates course offered semesters', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const updatedCourse = await prisma.course.findFirstOrThrow();
@@ -233,7 +224,7 @@ test.serial('updates course prereqs', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const course = await prisma.course.findFirstOrThrow();
@@ -245,7 +236,7 @@ test.serial('updates course prereqs', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const updatedCourse = await prisma.course.findFirstOrThrow();
@@ -261,13 +252,13 @@ test.serial('doesn\'t update if unchanged', async t => {
 	});
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const section = await prisma.section.findFirstOrThrow();
 
 	await task.handler({
-		terms: [getTermFromFake()],
+		terms: [getFirstTermFromFake()],
 	});
 
 	const updatedSection = await prisma.section.findFirstOrThrow();

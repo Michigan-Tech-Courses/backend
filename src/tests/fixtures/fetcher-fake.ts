@@ -7,7 +7,7 @@ import type {Except} from 'type-fest';
 import type {AbstractFetcherService, RateMyProfessorsFetcher} from '~/fetcher/fetcher.service';
 import {dateToTerm} from '~/lib/dates';
 
-const instructor: IFaculty = {
+const getInstructor = (): IFaculty => ({
 	name: 'Gorkem Asilioglu',
 	departments: ['Computer Science'],
 	email: 'galolu@mtu.edu',
@@ -17,16 +17,16 @@ const instructor: IFaculty = {
 	interests: [],
 	occupations: [],
 	photoURL: null
-};
+});
 
-const school: ISchoolFromSearch = {
+const getSchool = (): ISchoolFromSearch => ({
 	id: 'mtu',
 	name: 'Michigan Technological University',
 	city: 'Houghton',
 	state: 'MI',
-};
+});
 
-const teacherPage: ITeacherPage = {
+const getTeacherPage = (): ITeacherPage => ({
 	id: 'gorkem-asilioglu',
 	firstName: 'Gorkem',
 	lastName: 'Asilioglu',
@@ -35,14 +35,14 @@ const teacherPage: ITeacherPage = {
 	numRatings: 10,
 	department: 'CS',
 	school: {
-		id: school.id,
-		name: school.name,
-		city: school.city,
-		state: school.state
+		id: getSchool().id,
+		name: getSchool().name,
+		city: getSchool().city,
+		state: getSchool().state
 	}
-};
+});
 
-const section: ISection = {
+const getSection = (): ISection => ({
 	crn: '12345',
 	section: '0A',
 	cmp: '1',
@@ -50,12 +50,23 @@ const section: ISection = {
 	seats: 100,
 	seatsTaken: 30,
 	seatsAvailable: 70,
-	instructors: [instructor.name],
+	instructors: [getInstructor.name],
 	location: 'Fisher Hall 121',
-	fee: 0,
-	// Todo: add schedules
-	schedules: []
-};
+	fee: 10_000,
+	schedules: [
+		{
+			dateRange: [
+				'08/27',
+				'12/11'
+			],
+			days: 'MW',
+			timeRange: [
+				'02:00 pm',
+				'03:15 pm'
+			]
+		}
+	]
+});
 
 type CourseWithSectionDetailsAndTerm = {
 	extCourse: Except<ICourseOverview, 'sections'>;
@@ -65,7 +76,7 @@ type CourseWithSectionDetailsAndTerm = {
 	semester: Semester;
 };
 
-const courseWithSectionDetailsAndTerm: CourseWithSectionDetailsAndTerm = {
+const getCourseWithSectionDetailsAndTerm =(): CourseWithSectionDetailsAndTerm =>  ({
 	year: 2000,
 	semester: Semester.FALL,
 	extCourse: {
@@ -73,24 +84,24 @@ const courseWithSectionDetailsAndTerm: CourseWithSectionDetailsAndTerm = {
 		crse: '1110',
 		title: 'Intro to Programming',
 	},
-	extSections: [section],
+	extSections: [getSection()],
 	sectionDetails: [{
-		crn: section.crn,
+		crn: getSection().crn,
 		extSectionDetails: {
 			title: 'Intro to Programming',
 			description: 'An introduction to programming',
 			prereqs: null,
 			semestersOffered: [ESemester.fall],
-			instructors: section.instructors,
-			location: section.location ?? '',
-			credits: section.creditRange[0]
+			instructors: getSection().instructors,
+			location: getSection().location ?? '',
+			credits: getSection().creditRange[0]
 		}
 	}]
-};
+});
 
 export class RateMyProfessorsFake implements RateMyProfessorsFetcher {
-	schools = [school];
-	teachers = [teacherPage];
+	schools = [getSchool()];
+	teachers = [getTeacherPage()];
 
 	async searchSchool(query: string) {
 		return this.schools.filter(school => school.name.toLowerCase().includes(query.toLowerCase()));
@@ -124,11 +135,22 @@ export class RateMyProfessorsFake implements RateMyProfessorsFetcher {
 export class FakeFetcherService implements AbstractFetcherService {
 	readonly rateMyProfessors = new RateMyProfessorsFake();
 
-	instructors = [instructor];
-	courses = [courseWithSectionDetailsAndTerm];
+	instructors = [getInstructor()];
+	courses = [getCourseWithSectionDetailsAndTerm()];
 
 	async getAllFaculty() {
 		return this.instructors;
+	}
+
+	async getAllSections(term: Date){
+		const {year, semester} = dateToTerm(term);
+
+		const courses = this.courses.filter(course => course.year === year && course.semester === semester);
+
+		return courses.map(course => ({
+			...course.extCourse,
+			sections: course.extSections
+		}))
 	}
 
 	async getSectionDetails(options: Parameters<typeof scraper.getSectionDetails>[0]): Promise<ISectionDetails> {
@@ -147,6 +169,20 @@ export class FakeFetcherService implements AbstractFetcherService {
 		}
 
 		return section.extSectionDetails;
+	}
+
+	putFirstCourse(updatedCourse: Partial<ICourseOverview>) {
+		this.courses[0].extCourse = {
+			...this.courses[0].extCourse,
+			...updatedCourse
+		};
+	}
+
+	putFirstSection(updatedSection: Partial<ISection>) {
+		this.courses[0].extSections[0] = {
+			...this.courses[0].extSections[0],
+			...updatedSection
+		};
 	}
 
 	putFirstSectionDetails(updatedSectionDetails: Partial<ISectionDetails>) {

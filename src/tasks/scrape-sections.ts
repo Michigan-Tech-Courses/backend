@@ -5,7 +5,6 @@ import arrDiff from 'arr-diff';
 import pThrottle from 'p-throttle';
 import type {Section, Prisma} from '@prisma/client';
 import type {ICourseOverview, ISection} from '@mtucourses/scraper';
-import {getAllSections} from '@mtucourses/scraper';
 import {CourseMap} from 'src/lib/course-map';
 import type {IRuleOptions} from 'src/lib/rschedule';
 import {Schedule} from 'src/lib/rschedule';
@@ -13,6 +12,7 @@ import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src
 import getTermsToProcess from 'src/lib/get-terms-to-process';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
 import {PrismaService} from 'src/prisma/prisma.service';
+import { FetcherService } from '~/fetcher/fetcher.service';
 
 type ModifiableSection = Except<Section, 'id' | 'updatedAt' | 'deletedAt' | 'courseId' | 'buildingName' | 'locationType' | 'room'>;
 
@@ -98,15 +98,22 @@ const areCreditRangesEqual = (firstRange: [number, number], secondRange: [number
 export class ScrapeSectionsTask {
 	private readonly logger = new Logger(ScrapeSectionsTask.name);
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
-	async handler() {
-		const processTerm = pThrottle({limit: 3, interval: 100})(async (term: Date) => {
-			const {semester, year} = dateToTerm(term);
+	async handler(payload: {terms?: string[]} = {}) {
+		const terms = payload.terms?.map(termString => new Date(termString)) ?? await getTermsToProcess();
+
+		const processTerm = pThrottle({limit: 3, interval: 100})(this.processTerm.bind(this));
+
+		await Promise.all(terms.map(async term => processTerm(term)));
+	}
+
+	private async processTerm(term: Date) {
+		const {semester, year} = dateToTerm(term);
 			// Scrape courses for this term and get stored courses
 			const [courses, storedCourses] = await Promise.all([
-				getAllSections(term),
+				this.fetcher.getAllSections(term),
 				this.prisma.course.findMany({
 					where: {
 						semester,
@@ -288,10 +295,5 @@ export class ScrapeSectionsTask {
 					}
 				});
 			}
-		});
-
-		// For all terms
-		const terms = await getTermsToProcess();
-		await Promise.all(terms.map(async term => processTerm(term)));
 	}
 }
