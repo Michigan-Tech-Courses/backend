@@ -96,6 +96,8 @@ export class CoursesController {
 						updatedAt: {
 							gt: parameters.updatedSince
 						},
+					},
+					{
 						deletedAt: {
 							gt: parameters.updatedSince
 						}
