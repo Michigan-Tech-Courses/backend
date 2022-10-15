@@ -1,19 +1,19 @@
 import {ESemester} from '@mtucourses/scraper';
 import {LocationType, Semester} from '@prisma/client';
 import test from 'ava';
-import {getTestTask} from '../fixtures/get-test-task';
+import {getTestService} from '../fixtures/get-test-service';
 import {getFirstTermFromFake} from '../fixtures/utils';
 import {ScrapeSectionDetailsTask} from '~/tasks/scrape-section-details';
 
 test.serial('scrapes successfully', async t => {
-	const {task} = await getTestTask(ScrapeSectionDetailsTask, {
+	const {service} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,
 		seedInstructors: true,
 		seedCourses: true,
 		seedSections: true,
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -21,7 +21,7 @@ test.serial('scrapes successfully', async t => {
 });
 
 test.serial('updates location to online', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeSectionDetailsTask, {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,
 		seedInstructors: true,
 		seedCourses: true,
@@ -32,7 +32,7 @@ test.serial('updates location to online', async t => {
 		location: 'Online Instruction'
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -44,7 +44,7 @@ test.serial('updates location to online', async t => {
 });
 
 test.serial('updates room', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeSectionDetailsTask, {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,
 		seedInstructors: true,
 		seedCourses: true,
@@ -53,7 +53,7 @@ test.serial('updates room', async t => {
 
 	const [course] = fetcherFake.courses;
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -66,7 +66,7 @@ test.serial('updates room', async t => {
 		location: 'Fisher Hall 123'
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -76,7 +76,7 @@ test.serial('updates room', async t => {
 });
 
 test.serial('updates instructor', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeSectionDetailsTask, {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,
 		seedInstructors: true,
 		seedCourses: true,
@@ -85,7 +85,7 @@ test.serial('updates instructor', async t => {
 
 	const [course] = fetcherFake.courses;
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -104,7 +104,7 @@ test.serial('updates instructor', async t => {
 		instructors: ['Leo Ureel']
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -128,14 +128,14 @@ test.serial('updates instructor', async t => {
 });
 
 test.serial('disconnects removed instructor', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeSectionDetailsTask, {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,
 		seedInstructors: true,
 		seedCourses: true,
 		seedSections: true,
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -144,7 +144,7 @@ test.serial('disconnects removed instructor', async t => {
 		instructors: []
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -157,7 +157,7 @@ test.serial('disconnects removed instructor', async t => {
 });
 
 test.serial('updates course description', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeSectionDetailsTask, {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,
 		seedInstructors: true,
 		seedCourses: true,
@@ -166,7 +166,7 @@ test.serial('updates course description', async t => {
 
 	const [extCourse] = fetcherFake.courses;
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -178,7 +178,7 @@ test.serial('updates course description', async t => {
 		description: 'Updated description'
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -187,14 +187,14 @@ test.serial('updates course description', async t => {
 });
 
 test.serial('updates course offered semesters', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeSectionDetailsTask, {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,
 		seedInstructors: true,
 		seedCourses: true,
 		seedSections: true,
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -203,7 +203,7 @@ test.serial('updates course offered semesters', async t => {
 		semestersOffered: [ESemester.fall, ESemester.spring, ESemester.summer]
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -216,14 +216,14 @@ test.serial('updates course offered semesters', async t => {
 });
 
 test.serial('updates course prereqs', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeSectionDetailsTask, {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,
 		seedInstructors: true,
 		seedCourses: true,
 		seedSections: true,
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -235,7 +235,7 @@ test.serial('updates course prereqs', async t => {
 		prereqs: 'Updated prereqs'
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -244,20 +244,20 @@ test.serial('updates course prereqs', async t => {
 });
 
 test.serial('doesn\'t update if unchanged', async t => {
-	const {prisma, task} = await getTestTask(ScrapeSectionDetailsTask, {
+	const {prisma, service} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,
 		seedInstructors: true,
 		seedCourses: true,
 		seedSections: true,
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
 	const section = await prisma.section.findFirstOrThrow();
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 

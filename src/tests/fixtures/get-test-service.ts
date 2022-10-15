@@ -7,36 +7,33 @@ import {FetcherModule} from '~/fetcher/fetcher.module';
 import {FetcherService} from '~/fetcher/fetcher.service';
 import {PrismaModule} from '~/prisma/prisma.module';
 import {PrismaService} from '~/prisma/prisma.service';
-
-type Task = {
-	handler(): Promise<void>;
-};
+import {CacheModule} from '~/cache/cache.module';
 
 type UnwrapNestType<T> = T extends Type<infer U> ? U : never;
 
 /**
- * Get a test fixture for the provided task.
+ * Get a test fixture for the provided service.
  * Tests must be run in serial because Prisma relies on an environment variable.
  */
-export const getTestTask = async <T extends Type<Task>>(taskService: T, seedOptions: GetTestDatabaseOptions = {}) => {
+export const getTestService = async <T extends Type>(service: T, seedOptions: GetTestDatabaseOptions = {}) => {
 	const {connectionString} = await getTestDatabase(seedOptions);
 	process.env.DATABASE_URL = connectionString;
 
 	const fetcherFake = new FakeFetcherService();
 
 	const module = await Test.createTestingModule({
-		imports: [FetcherModule, PrismaModule],
-		providers: [taskService]
+		imports: [FetcherModule, PrismaModule, CacheModule],
+		providers: [service]
 	})
 		.overrideProvider(FetcherService)
 		.useValue(fetcherFake)
 		.compile();
 
-	const task: UnwrapNestType<T> = module.get(taskService);
+	const compiledService: UnwrapNestType<T> = module.get(service);
 	const prisma = module.get(PrismaService);
 
 	return {
-		task,
+		service: compiledService,
 		fetcherFake,
 		prisma
 	};

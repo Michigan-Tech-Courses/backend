@@ -1,16 +1,16 @@
 import test from 'ava';
 import {ScrapeSectionsTask} from '~/tasks/scrape-sections';
-import {getTestTask} from '~/tests/fixtures/get-test-task';
+import {getTestService} from '~/tests/fixtures/get-test-service';
 import {getFirstTermFromFake} from '~/tests/fixtures/utils';
 
 test.serial('inserts a new section', async t => {
-	const {task, prisma, fetcherFake} = await getTestTask(ScrapeSectionsTask, {
+	const {service, prisma, fetcherFake} = await getTestService(ScrapeSectionsTask, {
 		seedCourses: true,
 	});
 
 	t.is(await prisma.section.count(), 0);
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -34,9 +34,9 @@ test.serial('inserts a new section', async t => {
 });
 
 test.serial('updates an existing section', async t => {
-	const {task, prisma, fetcherFake} = await getTestTask(ScrapeSectionsTask);
+	const {service, prisma, fetcherFake} = await getTestService(ScrapeSectionsTask);
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -45,7 +45,7 @@ test.serial('updates an existing section', async t => {
 		seatsAvailable: 1000,
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -56,14 +56,14 @@ test.serial('updates an existing section', async t => {
 });
 
 test.serial('deletes a section that doesn\'t exist anymore', async t => {
-	const {task, prisma, fetcherFake} = await getTestTask(ScrapeSectionsTask, {
+	const {service, prisma, fetcherFake} = await getTestService(ScrapeSectionsTask, {
 		seedCourses: true,
 		seedSections: true,
 	});
 
 	fetcherFake.courses[0].extSections = [];
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -71,7 +71,7 @@ test.serial('deletes a section that doesn\'t exist anymore', async t => {
 });
 
 test.serial('adds back a section that was deleted', async t => {
-	const {task, prisma, fetcherFake} = await getTestTask(ScrapeSectionsTask, {
+	const {service, prisma, fetcherFake} = await getTestService(ScrapeSectionsTask, {
 		seedCourses: true,
 		seedSections: true,
 	});
@@ -80,7 +80,7 @@ test.serial('adds back a section that was deleted', async t => {
 
 	fetcherFake.courses[0].extSections = [];
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -91,7 +91,7 @@ test.serial('adds back a section that was deleted', async t => {
 		extSection
 	];
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -99,18 +99,18 @@ test.serial('adds back a section that was deleted', async t => {
 });
 
 test.serial('doesn\'t update a section if nothing changed', async t => {
-	const {task, prisma, fetcherFake} = await getTestTask(ScrapeSectionsTask, {
+	const {service, prisma} = await getTestService(ScrapeSectionsTask, {
 		seedCourses: true,
 		seedSections: true,
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
 	const section = await prisma.section.findFirstOrThrow();
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
@@ -120,7 +120,7 @@ test.serial('doesn\'t update a section if nothing changed', async t => {
 });
 
 test.serial('never modifies a section\'s location', async t => {
-	const {task, prisma} = await getTestTask(ScrapeSectionsTask, {
+	const {service, prisma} = await getTestService(ScrapeSectionsTask, {
 		seedBuildings: true,
 		seedCourses: true,
 		seedSections: true,
@@ -133,7 +133,7 @@ test.serial('never modifies a section\'s location', async t => {
 		}
 	});
 
-	await task.handler({
+	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 

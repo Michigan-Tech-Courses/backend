@@ -1,11 +1,11 @@
 import test from 'ava';
-import {getTestTask} from '../fixtures/get-test-task';
+import {getTestService} from '../fixtures/get-test-service';
 import {ScrapeTransferCoursesTask} from '~/tasks/scrape-transfer-courses';
 
 test.serial('scrapes successfully', async t => {
-	const {task, prisma, fetcherFake} = await getTestTask(ScrapeTransferCoursesTask);
+	const {service, prisma, fetcherFake} = await getTestService(ScrapeTransferCoursesTask);
 
-	await task.handler();
+	await service.handler();
 
 	const [extTransferCourse] = fetcherFake.transferCourses;
 
@@ -25,26 +25,26 @@ test.serial('scrapes successfully', async t => {
 });
 
 test.serial('doesn\'t update if nothing changed', async t => {
-	const {task, prisma} = await getTestTask(ScrapeTransferCoursesTask);
+	const {service, prisma} = await getTestService(ScrapeTransferCoursesTask);
 
-	await task.handler();
+	await service.handler();
 	const transferCourse = await prisma.transferCourse.findFirstOrThrow();
 
-	await task.handler();
+	await service.handler();
 	const transferCourse2 = await prisma.transferCourse.findFirstOrThrow();
 
 	t.is(transferCourse.updatedAt.getTime(), transferCourse2.updatedAt.getTime());
 });
 
 test.serial('updates if not equal', async t => {
-	const {task, prisma, fetcherFake} = await getTestTask(ScrapeTransferCoursesTask);
+	const {service, prisma, fetcherFake} = await getTestService(ScrapeTransferCoursesTask);
 
-	await task.handler();
+	await service.handler();
 	const transferCourse = await prisma.transferCourse.findFirstOrThrow();
 
 	fetcherFake.transferCourses[0].to.title = 'foo bar';
 
-	await task.handler();
+	await service.handler();
 	const updatedTransferCourse = await prisma.transferCourse.findFirstOrThrow();
 
 	t.not(transferCourse.updatedAt.getTime(), updatedTransferCourse.updatedAt.getTime());
@@ -52,13 +52,13 @@ test.serial('updates if not equal', async t => {
 });
 
 test.serial('deletes stale transfer courses', async t => {
-	const {task, prisma, fetcherFake} = await getTestTask(ScrapeTransferCoursesTask);
+	const {service, prisma, fetcherFake} = await getTestService(ScrapeTransferCoursesTask);
 
-	await task.handler();
+	await service.handler();
 	t.is(await prisma.transferCourse.count(), 1);
 
 	fetcherFake.transferCourses = [];
 
-	await task.handler();
+	await service.handler();
 	t.is(await prisma.transferCourse.count(), 0);
 });

@@ -1,32 +1,32 @@
 import test from 'ava';
-import {getTestTask} from '../fixtures/get-test-task';
+import {getTestService} from '../fixtures/get-test-service';
 import {ScrapeInstructorsTask} from '~/tasks/scrape-instructors';
 
 test.serial('scrapes successfully', async t => {
-	const {prisma, task} = await getTestTask(ScrapeInstructorsTask);
+	const {prisma, service} = await getTestService(ScrapeInstructorsTask);
 
-	await task.handler();
+	await service.handler();
 
 	const instructors = await prisma.instructor.findMany();
 	t.is(instructors.length, 1);
 });
 
 test.serial('does not update if unchanged', async t => {
-	const {prisma, task} = await getTestTask(ScrapeInstructorsTask);
+	const {prisma, service} = await getTestService(ScrapeInstructorsTask);
 
-	await task.handler();
+	await service.handler();
 
 	const instructor = await prisma.instructor.findFirstOrThrow();
 
-	await task.handler();
+	await service.handler();
 
 	t.is(instructor.updatedAt.getTime(), (await prisma.instructor.findFirstOrThrow()).updatedAt.getTime());
 });
 
 test.serial('updates if changed', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeInstructorsTask);
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeInstructorsTask);
 
-	await task.handler();
+	await service.handler();
 
 	const instructor = await prisma.instructor.findFirstOrThrow();
 
@@ -35,7 +35,7 @@ test.serial('updates if changed', async t => {
 		photoURL: 'http://url-to-new-photo'
 	}));
 
-	await task.handler();
+	await service.handler();
 
 	t.not(instructor.updatedAt.getTime(), (await prisma.instructor.findFirstOrThrow()).updatedAt.getTime());
 });

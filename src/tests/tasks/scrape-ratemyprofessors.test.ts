@@ -1,7 +1,7 @@
 import type {PrismaClient} from '@prisma/client';
 import test from 'ava';
 import type {FakeFetcherService} from '../fixtures/fetcher-fake';
-import {getTestTask} from '../fixtures/get-test-task';
+import {getTestService} from '../fixtures/get-test-service';
 import {ScrapeRateMyProfessorsTask} from '~/tasks/scrape-ratemyprofessors';
 
 const seedInstructor = async (prisma: PrismaClient, fetcherFake: FakeFetcherService) => {
@@ -13,11 +13,11 @@ const seedInstructor = async (prisma: PrismaClient, fetcherFake: FakeFetcherServ
 };
 
 test.serial('scrapes successfully', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeRateMyProfessorsTask);
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeRateMyProfessorsTask);
 
 	await seedInstructor(prisma, fetcherFake);
 
-	await task.handler();
+	await service.handler();
 
 	const updatedInstructor = await prisma.instructor.findFirstOrThrow();
 
@@ -27,10 +27,10 @@ test.serial('scrapes successfully', async t => {
 });
 
 test.serial('updates if changed', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeRateMyProfessorsTask);
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeRateMyProfessorsTask);
 	await seedInstructor(prisma, fetcherFake);
 
-	await task.handler();
+	await service.handler();
 	const originalInstructor = await prisma.instructor.findFirstOrThrow();
 
 	fetcherFake.rateMyProfessors.teachers = fetcherFake.rateMyProfessors.teachers.map(i => ({
@@ -40,7 +40,7 @@ test.serial('updates if changed', async t => {
 		numRatings: 1
 	}));
 
-	await task.handler();
+	await service.handler();
 	const updatedInstructor = await prisma.instructor.findFirstOrThrow();
 
 	t.not(originalInstructor.updatedAt.getTime(), updatedInstructor.updatedAt.getTime());
@@ -51,13 +51,13 @@ test.serial('updates if changed', async t => {
 });
 
 test.serial('doesn\'t update if unchanged', async t => {
-	const {prisma, task, fetcherFake} = await getTestTask(ScrapeRateMyProfessorsTask);
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeRateMyProfessorsTask);
 	await seedInstructor(prisma, fetcherFake);
 
-	await task.handler();
+	await service.handler();
 	const originalInstructor = await prisma.instructor.findFirstOrThrow();
 
-	await task.handler();
+	await service.handler();
 	const updatedInstructor = await prisma.instructor.findFirstOrThrow();
 
 	t.is(originalInstructor.updatedAt.getTime(), updatedInstructor.updatedAt.getTime());
