@@ -66,7 +66,7 @@ const getSection = (): ISection => ({
 	seats: 100,
 	seatsTaken: 30,
 	seatsAvailable: 70,
-	instructors: [getInstructor.name],
+	instructors: [getInstructor().name],
 	location: 'Fisher Hall 121',
 	fee: 10_000,
 	schedules: [
