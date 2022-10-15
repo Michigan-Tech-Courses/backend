@@ -76,6 +76,6 @@ export const getTestDatabase = getTestPostgresDatabaseFactory<GetTestDatabaseOpt
 
 		await prisma.$disconnect();
 
-		await pool.query(`SELECT pg_advisory_unlock_all()`);
+		await pool.query('SELECT pg_advisory_unlock_all()');
 	}
 });

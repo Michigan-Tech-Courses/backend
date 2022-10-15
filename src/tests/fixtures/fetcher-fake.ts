@@ -1,11 +1,27 @@
 import type {ISchoolFromSearch, ITeacherPage} from '@mtucourses/rate-my-professors';
-import type {ICourseOverview, IFaculty, ISection, ISectionDetails} from '@mtucourses/scraper';
+import type {ICourseOverview, IFaculty, ISection, ISectionDetails, ITransferCourse} from '@mtucourses/scraper';
 import {ESemester} from '@mtucourses/scraper';
 import type scraper from '@mtucourses/scraper';
 import {Semester} from '@prisma/client';
 import type {Except} from 'type-fest';
 import type {AbstractFetcherService, RateMyProfessorsFetcher} from '~/fetcher/fetcher.service';
 import {dateToTerm} from '~/lib/dates';
+
+const getTransferCourse = (): ITransferCourse => ({
+	from: {
+		college: 'UNIV OF ALABAMA HUNTSVILLE',
+		state: 'AL',
+		credits: 3,
+		crse: '100',
+		subject: 'MU'
+	},
+	to: {
+		credits: 3,
+		crse: '1000',
+		subject: 'MUS',
+		title: 'Music Appreciation'
+	}
+});
 
 const getInstructor = (): IFaculty => ({
 	name: 'Gorkem Asilioglu',
@@ -76,7 +92,7 @@ type CourseWithSectionDetailsAndTerm = {
 	semester: Semester;
 };
 
-const getCourseWithSectionDetailsAndTerm =(): CourseWithSectionDetailsAndTerm =>  ({
+const getCourseWithSectionDetailsAndTerm = (): CourseWithSectionDetailsAndTerm => ({
 	year: 2000,
 	semester: Semester.FALL,
 	extCourse: {
@@ -137,12 +153,13 @@ export class FakeFetcherService implements AbstractFetcherService {
 
 	instructors = [getInstructor()];
 	courses = [getCourseWithSectionDetailsAndTerm()];
+	transferCourses = [getTransferCourse()];
 
 	async getAllFaculty() {
 		return this.instructors;
 	}
 
-	async getAllSections(term: Date){
+	async getAllSections(term: Date) {
 		const {year, semester} = dateToTerm(term);
 
 		const courses = this.courses.filter(course => course.year === year && course.semester === semester);
@@ -150,7 +167,7 @@ export class FakeFetcherService implements AbstractFetcherService {
 		return courses.map(course => ({
 			...course.extCourse,
 			sections: course.extSections
-		}))
+		}));
 	}
 
 	async getSectionDetails(options: Parameters<typeof scraper.getSectionDetails>[0]): Promise<ISectionDetails> {
@@ -169,6 +186,10 @@ export class FakeFetcherService implements AbstractFetcherService {
 		}
 
 		return section.extSectionDetails;
+	}
+
+	async getAllTransferCourses(): Promise<ITransferCourse[]> {
+		return this.transferCourses;
 	}
 
 	putFirstCourse(updatedCourse: Partial<ICourseOverview>) {

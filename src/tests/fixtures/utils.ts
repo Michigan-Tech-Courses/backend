@@ -1,5 +1,5 @@
-import { termToDate } from "~/lib/dates";
-import { FakeFetcherService } from "./fetcher-fake";
+import {FakeFetcherService} from './fetcher-fake';
+import {termToDate} from '~/lib/dates';
 
 export const getFirstTermFromFake = () => {
 	const fake = new FakeFetcherService();

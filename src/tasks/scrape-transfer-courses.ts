@@ -1,18 +1,18 @@
 import {Injectable, Logger} from '@nestjs/common';
 import type {ITransferCourse} from '@mtucourses/scraper';
-import {getAllTransferCourses} from '@mtucourses/scraper';
 import pThrottle from 'p-throttle';
 import type {Except} from 'type-fest';
 import type {Prisma, TransferCourse} from '@prisma/client';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
 import {PrismaService} from 'src/prisma/prisma.service';
+import {FetcherService} from '~/fetcher/fetcher.service';
 
 @Injectable()
 @Task('scrape-transfer-courses')
 export class ScrapeTransferCoursesTask {
 	private readonly logger = new Logger(ScrapeTransferCoursesTask.name);
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
 	async handler() {
@@ -82,7 +82,7 @@ export class ScrapeTransferCoursesTask {
 
 		const throttledProcessCourse = pThrottle({interval: 128, limit: 2})(processCourse);
 
-		const courses = await getAllTransferCourses();
+		const courses = await this.fetcher.getAllTransferCourses();
 
 		await Promise.all(courses.map(async course => throttledProcessCourse(course)));
 

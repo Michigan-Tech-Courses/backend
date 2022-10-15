@@ -2,8 +2,8 @@ import {ESemester} from '@mtucourses/scraper';
 import {LocationType, Semester} from '@prisma/client';
 import test from 'ava';
 import {getTestTask} from '../fixtures/get-test-task';
+import {getFirstTermFromFake} from '../fixtures/utils';
 import {ScrapeSectionDetailsTask} from '~/tasks/scrape-section-details';
-import { getFirstTermFromFake } from '../fixtures/utils';
 
 test.serial('scrapes successfully', async t => {
 	const {task} = await getTestTask(ScrapeSectionDetailsTask, {

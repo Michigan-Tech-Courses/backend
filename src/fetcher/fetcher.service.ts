@@ -12,6 +12,7 @@ export abstract class AbstractFetcherService {
 	abstract getAllFaculty(): ReturnType<typeof scraper.getAllFaculty>;
 	abstract getAllSections(term: Date): ReturnType<typeof scraper.getAllSections>;
 	abstract getSectionDetails(options: Parameters<typeof scraper.getSectionDetails>[0]): ReturnType<typeof scraper.getSectionDetails>;
+	abstract getAllTransferCourses(): ReturnType<typeof scraper.getAllTransferCourses>;
 }
 
 export class FetcherService implements AbstractFetcherService {
@@ -27,5 +28,9 @@ export class FetcherService implements AbstractFetcherService {
 
 	async getSectionDetails(options: Parameters<typeof scraper.getSectionDetails>[0]) {
 		return scraper.getSectionDetails(options);
+	}
+
+	async getAllTransferCourses() {
+		return scraper.getAllTransferCourses();
 	}
 }
