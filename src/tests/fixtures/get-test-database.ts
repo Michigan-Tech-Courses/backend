@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import glob from 'glob';
 import {getTestPostgresDatabaseFactory} from 'ava-postgres';
 import {PrismaClient} from '@prisma/client';
-import {BUILDINGS} from '../../../prisma/seed';
+import {BUILDINGS} from '../../../prisma/seed-data';
 import {FakeFetcherService} from './fetcher-fake';
 
 export type GetTestDatabaseOptions = {
