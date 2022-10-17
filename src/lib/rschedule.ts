@@ -9,4 +9,3 @@ export * from '@rschedule/core/generators';
 // ¯\_(ツ)_/¯
 export * from '@rschedule/json-tools/Schedule';
 export * from '@rschedule/standard-date-adapter';
-/* eslint-enable import/export */

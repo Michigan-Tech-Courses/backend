@@ -17,6 +17,7 @@ export const getTestDatabase = getTestPostgresDatabaseFactory<GetTestDatabaseOpt
 		const files = glob.sync('prisma/migrations/**/*.sql');
 
 		for (const file of files) {
+			// eslint-disable-next-line no-await-in-loop
 			await pool.query(await fs.readFile(file, 'utf8'));
 		}
 

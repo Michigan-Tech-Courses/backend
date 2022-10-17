@@ -65,55 +65,53 @@ test.serial('filter by semester & year', async t => {
 
 	await prisma.course.create({
 		data:
-      {
-      	year: 2001,
-      	semester: Semester.FALL,
-      	subject: 'TEST',
-      	crse: '100',
-      	title: 'Test Course 1',
-      	sections: {
-      		create: {
-      			crn: '10001',
-      			section: 'A',
-      			cmp: '1',
-      			minCredits: 0,
-      			maxCredits: 3,
-      			time: {},
-      			totalSeats: 10,
-      			takenSeats: 5,
-      			availableSeats: 5,
-      			fee: 0,
-      		}
-      	}
-      }
+			{
+				year: 2001,
+				semester: Semester.FALL,
+				subject: 'TEST',
+				crse: '100',
+				title: 'Test Course 1',
+				sections: {
+					create: {
+						crn: '10001',
+						section: 'A',
+						cmp: '1',
+						minCredits: 0,
+						maxCredits: 3,
+						time: {},
+						totalSeats: 10,
+						takenSeats: 5,
+						availableSeats: 5,
+						fee: 0,
+					}
+				}
+			}
 	});
 
 	await prisma.course.create({
 		data:
-      {
-      	year: 2000,
-      	semester: Semester.SUMMER,
-      	subject: 'TEST',
-      	crse: '100',
-      	title: 'Test Course 1',
-      	sections: {
-      		create: {
-      			crn: '10001',
-      			section: 'A',
-      			cmp: '1',
-      			minCredits: 0,
-      			maxCredits: 3,
-      			time: {},
-      			totalSeats: 10,
-      			takenSeats: 5,
-      			availableSeats: 5,
-      			fee: 0,
-      		}
-      	}
-      }
+			{
+				year: 2000,
+				semester: Semester.SUMMER,
+				subject: 'TEST',
+				crse: '100',
+				title: 'Test Course 1',
+				sections: {
+					create: {
+						crn: '10001',
+						section: 'A',
+						cmp: '1',
+						minCredits: 0,
+						maxCredits: 3,
+						time: {},
+						totalSeats: 10,
+						takenSeats: 5,
+						availableSeats: 5,
+						fee: 0,
+					}
+				}
+			}
 	});
-
-	const now = new Date();
 
 	t.is((await service.getSections({year, semester} as any)).length, 1);
 });
