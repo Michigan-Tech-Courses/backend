@@ -11,13 +11,21 @@ import {CacheModule} from '~/cache/cache.module';
 
 type UnwrapNestType<T> = T extends Type<infer U> ? U : never;
 
+type Options = {
+	shouldInjectDatabaseUrl?: boolean;
+} & GetTestDatabaseOptions;
+
 /**
  * Get a test fixture for the provided service.
  * Tests must be run in serial because Prisma relies on an environment variable.
  */
-export const getTestService = async <T extends Type>(service: T, seedOptions: GetTestDatabaseOptions = {}) => {
+export const getTestService = async <T extends Type>(service: T, options: Options = {}) => {
+	const {shouldInjectDatabaseUrl, ...seedOptions} = options;
 	const {connectionString} = await getTestDatabase(seedOptions);
-	process.env.DATABASE_URL = connectionString;
+
+	if (shouldInjectDatabaseUrl ?? true) {
+		process.env.DATABASE_URL = connectionString;
+	}
 
 	const fetcherFake = new FakeFetcherService();
 
