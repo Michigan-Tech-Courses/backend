@@ -22,3 +22,10 @@ app = "courses-api"
 [[services.ports]]
   handlers = ["tls"]
   port = 443
+
+[[services.http_checks]]
+  interval = 1000
+  grace_period = "10s"
+  method = "get"
+  path = "/health"
+  protocol = "http"

@@ -4,34 +4,13 @@ WORKDIR /usr/app
 
 COPY package.json ./
 COPY yarn.lock ./
-COPY prisma .
 
-# Make directory structure for seed file
-RUN mkdir prisma
-COPY prisma/seed.ts prisma/seed.ts
-
-# Install prod dependencies
-RUN yarn install --prod --frozen-lockfile
-
-# Dependencies
-FROM base AS dependencies
-
-# Install dev dependencies
 RUN yarn install --frozen-lockfile
 
 # Build app
-FROM dependencies AS builder
-
 COPY . .
 
-RUN yarn build
-
-# Only copy essentials
-FROM base AS prod
-
-RUN yarn prisma generate
-
-COPY --from=builder /usr/app/dist dist
+RUN yarn prisma generate && yarn build
 
 ENV NODE_ENV=production
 

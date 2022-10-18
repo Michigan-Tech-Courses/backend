@@ -17,6 +17,6 @@ jobs:
 
       - name: Deploy to Fly
         run: |
-          flyctl deploy -a courses-api
+          flyctl deploy -c fly/api.toml --strategy bluegreen
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
