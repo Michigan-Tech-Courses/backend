@@ -1,4 +1,4 @@
-import scraper from '@mtucourses/scraper';
+import * as scraper from '@mtucourses/scraper';
 import ratings from '@mtucourses/rate-my-professors';
 
 export abstract class RateMyProfessorsFetcher {

@@ -5,10 +5,12 @@ import {ScrapeRateMyProfessorsTask} from './scrape-ratemyprofessors';
 import {ScrapeSectionDetailsTask} from './scrape-section-details';
 import {ScrapeSectionsTask} from './scrape-sections';
 import {ScrapeTransferCoursesTask} from './scrape-transfer-courses';
+import {FetcherModule} from '~/fetcher/fetcher.module';
 
 @Module({
 	imports: [
 		PrismaModule,
+		FetcherModule,
 	],
 	controllers: [],
 	providers: [
