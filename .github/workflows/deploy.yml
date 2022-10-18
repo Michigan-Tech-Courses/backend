@@ -1,107 +1,22 @@
-name: Deploy
-
+name: Deploy to Fly.io
 on:
   push:
-    branches:
-    - main
-
+    branches: ["main"]
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    name: Deploy to Fly.io
+    runs-on: ubuntu-20.04
+    concurrency: fly-deploy
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Set context
-        uses: azure/k8s-set-context@v1
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Wait on lint
-        uses: lewagon/wait-on-check-action@v0.2
-        with:
-          ref: ${{ github.sha }}
-          check-name: lint
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: Wait on tests
-        uses: lewagon/wait-on-check-action@v0.2
-        with:
-          ref: ${{ github.sha }}
-          check-name: test
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: Wait on image
-        uses: lewagon/wait-on-check-action@v0.2
-        with:
-          ref: ${{ github.sha }}
-          check-name: build-image
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: Don't allow concurrent deploys
-        uses: softprops/turnstyle@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Add Postgres values
+      - name: Deploy to Fly
         run: |
-          cat <<EOT >> infrastructure/overlays/prod/values/postgres.env
-          POSTGRES_DB=$POSTGRES_DB
-          POSTGRES_USER=$POSTGRES_USER
-          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-          POSTGRES_URL=$POSTGRES_URL
-          PGBOUNCER_TO_POSTGRES_URL=$PGBOUNCER_TO_POSTGRES_URL
-          DIRECT_TO_POSTGRES_URL=$DIRECT_TO_POSTGRES_URL
-          AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-          AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-          AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
-          AWS_ENDPOINT=$AWS_ENDPOINT
-          S3_BACKUP_PATH=$S3_BACKUP_PATH
-          EOT
+          flyctl deploy -a courses-api
         env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-          PGBOUNCER_TO_POSTGRES_URL: ${{ secrets.PGBOUNCER_TO_POSTGRES_URL }}
-          DIRECT_TO_POSTGRES_URL: ${{ secrets.DIRECT_TO_POSTGRES_URL }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_ENDPOINT: ${{ secrets.AWS_ENDPOINT }}
-          S3_BACKUP_PATH: ${{ secrets.S3_BACKUP_PATH }}
-
-      - name: Add Thumbor values
-        run: |
-          cat <<EOT >> infrastructure/overlays/prod/values/thumbor.env
-          THUMBOR_SECURITY_KEY=$THUMBOR_SECURITY_KEY
-          EOT
-        env:
-          THUMBOR_SECURITY_KEY: ${{ secrets.THUMBOR_SECURITY_KEY }}
-
-      - name: Add application values
-        run: |
-          cat <<EOT >> infrastructure/overlays/prod/values/application.env
-          AUTH_TOKEN=$AUTH_TOKEN
-          ENDPOINT=$ENDPOINT
-          EOT
-        env:
-          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
-          ENDPOINT: ${{ secrets.ENDPOINT }}
-
-      - name: Kustomize
-        run: kustomize build infrastructure/overlays/prod > kustomized.yaml
-
-      - name: Deploy
-        uses: Azure/k8s-deploy@v1.3
-        with:
-          manifests: |
-              kustomized.yaml
-          images: 'registry.michigantechcourses.com/backend:${{ github.sha }}'
-          imagepullsecrets: |
-            regcred
-          kubectl-version: 'latest'
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
