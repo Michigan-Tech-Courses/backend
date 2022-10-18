@@ -8,12 +8,14 @@ export class HealthController {
 
 	@Get()
 	async getHealth() {
-		const [databaseIsReachable] = await Promise.all([
+		const [isDatabaseReachable, arePendingJobs] = await Promise.all([
 			this.canConnectToDatabase(),
+			this.arePendingJobs()
 		]);
 
 		return {
-			databaseIsReachable,
+			database: this.boolStatusToStr(isDatabaseReachable),
+			jobQueue: this.boolStatusToStr(!arePendingJobs)
 		};
 	}
 
@@ -24,5 +26,27 @@ export class HealthController {
 		} catch {
 			return false;
 		}
+	}
+
+	private async arePendingJobs() {
+		try {
+			const [{pending_jobs}] = await this.prisma.$queryRaw<Array<{pending_jobs: number}>>`
+        SELECT COUNT(*) AS pending_jobs
+        FROM "graphile_worker"."jobs"
+        WHERE
+          locked_at IS NULL AND
+          run_at <= NOW() AND
+          created_at <= NOW() - INTERVAL '1 minute' AND
+          attempts = 0
+      `;
+
+			return pending_jobs > 0;
+		} catch {
+			return false;
+		}
+	}
+
+	private boolStatusToStr(status: boolean) {
+		return status ? 'healthy' : 'degraded';
 	}
 }

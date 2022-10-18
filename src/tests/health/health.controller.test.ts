@@ -8,7 +8,8 @@ test.serial('healthy', async t => {
 	const health = await service.getHealth();
 
 	t.deepEqual(health, {
-		databaseIsReachable: true
+		database: 'healthy',
+		jobQueue: 'healthy'
 	});
 });
 
@@ -22,6 +23,24 @@ test.serial('database down', async t => {
 	const health = await service.getHealth();
 
 	t.like(health, {
-		databaseIsReachable: false
+		database: 'degraded'
+	});
+});
+
+test.serial('job queue clogged', async t => {
+	const {service, prisma} = await getTestService(HealthController);
+
+	// A job that was just created isn't counted...
+	await prisma.$queryRaw`INSERT INTO "graphile_worker"."jobs" (task_identifier, payload, created_at) VALUES ('foo', '{}', NOW())`;
+	const health = await service.getHealth();
+	t.like(health, {
+		jobQueue: 'healthy'
+	});
+
+	// ...but a job that was created two minutes ago is.
+	await prisma.$queryRaw`INSERT INTO "graphile_worker"."jobs" (task_identifier, payload, created_at) VALUES ('foo', '{}', NOW() - INTERVAL '2 minute')`;
+	const degradedHealth = await service.getHealth();
+	t.like(degradedHealth, {
+		jobQueue: 'degraded'
 	});
 });

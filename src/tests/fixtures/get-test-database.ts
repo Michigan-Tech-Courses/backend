@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import glob from 'glob';
 import {getTestPostgresDatabaseFactory} from 'ava-postgres';
 import {PrismaClient} from '@prisma/client';
+import {runMigrations} from 'graphile-worker';
 import {BUILDINGS} from '../../../prisma/seed-data';
 import {FakeFetcherService} from './fetcher-fake';
 
@@ -20,6 +21,8 @@ export const getTestDatabase = getTestPostgresDatabaseFactory<GetTestDatabaseOpt
 			// eslint-disable-next-line no-await-in-loop
 			await pool.query(await fs.readFile(file, 'utf8'));
 		}
+
+		await runMigrations({connectionString});
 
 		const fakeFetcher = new FakeFetcherService();
 
