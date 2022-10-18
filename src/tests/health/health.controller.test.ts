@@ -9,7 +9,8 @@ test.serial('healthy', async t => {
 
 	t.deepEqual(health, {
 		database: 'healthy',
-		jobQueue: 'healthy'
+		jobQueue: 'healthy',
+		jobs: 'healthy'
 	});
 });
 
@@ -42,5 +43,15 @@ test.serial('job queue clogged', async t => {
 	const degradedHealth = await service.getHealth();
 	t.like(degradedHealth, {
 		jobQueue: 'degraded'
+	});
+});
+
+test.serial('job queue with errors', async t => {
+	const {service, prisma} = await getTestService(HealthController);
+
+	await prisma.$queryRaw`INSERT INTO "graphile_worker"."jobs" (task_identifier, payload, created_at, last_error) VALUES ('foo', '{}', NOW(), 'foo')`;
+	const health = await service.getHealth();
+	t.like(health, {
+		jobs: 'degraded'
 	});
 });
