@@ -1,6 +1,3 @@
-// Datadog integration
-// eslint-disable-next-line import/no-unassigned-import
-import './lib/tracer';
 import {NestFactory} from '@nestjs/core';
 import {ValidationPipe} from '@nestjs/common';
 import type {
