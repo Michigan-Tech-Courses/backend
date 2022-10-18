@@ -46,6 +46,7 @@ const reshapeSectionFromScraperToDatabase = (section: ISection, year: number): M
 		cmp: section.cmp,
 		minCredits: Math.min(...section.creditRange),
 		maxCredits: Math.max(...section.creditRange),
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		time: (schedule as any).toJSON() as Prisma.JsonObject,
 		totalSeats: section.seats,
 		takenSeats: section.seatsTaken,

@@ -38,9 +38,11 @@ test.serial('updates location to online', async t => {
 
 	const section = await prisma.section.findFirstOrThrow();
 
-	t.is(section.locationType, LocationType.ONLINE);
-	t.is(section.buildingName, null),
-	t.is(section.room, null);
+	t.like(section, {
+		locationType: LocationType.ONLINE,
+		buildingName: null,
+		room: null,
+	});
 });
 
 test.serial('updates room', async t => {

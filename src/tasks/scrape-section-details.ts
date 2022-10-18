@@ -34,6 +34,7 @@ export class ScrapeSectionDetailsTask {
 
 		const allBuildings = await this.prisma.building.findMany();
 
+		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			sectionsToProcess = await this.prisma.section.findMany({
 				orderBy: {
