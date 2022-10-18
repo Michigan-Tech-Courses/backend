@@ -1,4 +1,5 @@
-import {Building, LocationType, Section} from '@prisma/client';
+import type {Building, Section} from '@prisma/client';
+import {LocationType} from '@prisma/client';
 
 const numbersRegex = new RegExp(/(\d)\w+/);
 

@@ -8,33 +8,33 @@ export class GetSectionsParameters {
 	@Type(() => Date)
 	@IsOptional()
 	@ApiProperty({required: false, description: 'ISO DateTime string; only return instances that have been updated since this date.'})
-	updatedSince!: Date;
+		updatedSince!: Date;
 
 	@IsNumber()
 	@IsOptional()
 	@Type(() => Number)
 	@ApiProperty({required: false, description: 'filter sections by year'})
-	year!: number;
+		year!: number;
 
 	@IsIn(Object.values(Semester))
 	@IsOptional()
 	@ApiProperty({required: false, description: 'filter sections by semester'})
-	semester!: Semester;
+		semester!: Semester;
 }
 
 export class FindFirstSectionParamters {
 	@IsOptional()
 	@ApiProperty({required: false, description: 'filter sections by CRN (combine with year and semester)'})
-	crn!: string;
+		crn!: string;
 
 	@IsNumber()
 	@IsOptional()
 	@Type(() => Number)
 	@ApiProperty({required: false, description: 'filter sections by year'})
-	year!: number;
+		year!: number;
 
 	@IsIn(Object.values(Semester))
 	@IsOptional()
 	@ApiProperty({required: false, description: 'filter sections by semester'})
-	semester!: Semester;
+		semester!: Semester;
 }

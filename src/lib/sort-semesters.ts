@@ -6,8 +6,6 @@ const values = {
 	[Semester.FALL]: 0.3
 };
 
-const sortSemesters = (semesters: Array<{semester: Semester; year: number}>) => semesters.sort((b, a) => {
-	return (b.year + values[b.semester]) - (a.year + values[a.semester]);
-});
+const sortSemesters = (semesters: Array<{semester: Semester; year: number}>) => semesters.sort((b, a) => (b.year + values[b.semester]) - (a.year + values[a.semester]));
 
 export default sortSemesters;

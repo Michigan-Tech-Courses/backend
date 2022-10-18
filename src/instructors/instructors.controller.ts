@@ -1,8 +1,8 @@
 import {CacheInterceptor, Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
 import {Thumbor} from '@mtucourses/thumbor';
 import {PrismaService} from 'src/prisma/prisma.service';
-import {GetInstructorsParameters} from './types';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
+import {GetInstructorsParameters} from './types';
 
 @Controller('instructors')
 @UseInterceptors(CacheInterceptor, NoCacheUpdatedSinceInterceptor)

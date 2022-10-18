@@ -1,0 +1,24 @@
+app = "courses-api"
+
+[build]
+  dockerfile = "../Dockerfile"
+
+[deploy]
+  release_command = "migrations:run"
+
+[env]
+  THUMBOR_URL = "https://courses-thumbor.fly.dev"
+  ENDPOINT = "https://api.michigantechcourses.com"
+
+[[services]]
+  internal_port = 3000
+  protocol = "tcp"
+
+[[services.ports]]
+  handlers = ["http"]
+  port = 80
+  force_https = true
+
+[[services.ports]]
+  handlers = ["tls"]
+  port = 443

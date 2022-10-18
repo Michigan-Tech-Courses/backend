@@ -1,0 +1,29 @@
+app = "courses-thumbor"
+
+[build]
+  image = "minimalcompact/thumbor:7.0.0"
+
+[env]
+  THUMBOR_NUM_PROCESSES = "1"
+  MAX_AGE = "3600"
+  MAX_AGE_TEMP_IMAGE = "300"
+  RESULT_STORAGE_EXPIRATION_SECONDS = "31536000"
+  AUTO_WEBP = "True"
+  CORS_ALLOW_ORIGIN = "*"
+  ALLOW_UNSAFE_URL = "False"
+  RESULT_STORAGE = "thumbor.result_storages.no_storage"
+  STORAGE = "thumbor.storages.file_storage"
+  DETECTORS = "['thumbor.detectors.face_detector']"
+
+[[services]]
+  internal_port = 80
+  protocol = "tcp"
+
+[[services.ports]]
+  handlers = ["http"]
+  port = 80
+  force_https = true
+
+[[services.ports]]
+  handlers = ["tls"]
+  port = 443

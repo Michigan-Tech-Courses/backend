@@ -1,5 +1,5 @@
 import {CacheInterceptor, Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
-import {Prisma} from '@prisma/client';
+import type {Prisma} from '@prisma/client';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import sortSemesters from 'src/lib/sort-semesters';
 import {PrismaService} from 'src/prisma/prisma.service';
@@ -96,6 +96,8 @@ export class CoursesController {
 						updatedAt: {
 							gt: parameters.updatedSince
 						},
+					},
+					{
 						deletedAt: {
 							gt: parameters.updatedSince
 						}

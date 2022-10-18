@@ -1,5 +1,5 @@
 import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors, Header} from '@nestjs/common';
-import {Prisma, Section} from '@prisma/client';
+import type {Prisma} from '@prisma/client';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import {PrismaService} from 'src/prisma/prisma.service';
 import {GetSectionsParameters, FindFirstSectionParamters} from './types';
@@ -40,70 +40,42 @@ export class SectionsController {
 	@Get()
 	@Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400')
 	async getSections(@Query() parameters?: GetSectionsParameters) {
-		const courseParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
-			where: {},
-			select: {
-				sections: {
-					where: {},
-					include: {
-						instructors: {
-							select: {
-								id: true
-							}
-						}
+		const sectionParameters: Prisma.SectionFindManyArgs = {
+			where: {
+				course: {}
+			},
+			include: {
+				instructors: {
+					select: {
+						id: true,
 					}
 				}
 			}
 		};
 
 		if (parameters?.semester) {
-			courseParameters.where.semester = parameters.semester;
+			sectionParameters.where!.course!.semester = parameters.semester;
 		}
 
 		if (parameters?.year) {
-			courseParameters.where.year = parameters.year;
+			sectionParameters.where!.course!.year = parameters.year;
 		}
 
 		if (parameters?.updatedSince) {
-			courseParameters.where.sections = {
-				every: {
-					OR: [
-						{
-							updatedAt: {
-								gt: parameters.updatedSince
-							}
-						},
-						{
-							deletedAt: {
-								gt: parameters.updatedSince
-							}
-						}
-					]
-				}
-			};
-
-			courseParameters.where = {
-				OR: [
-					{
-						...courseParameters.where,
-						updatedAt: {
-							gt: parameters.updatedSince
-						}
-					},
-					{
-						...courseParameters.where,
-						deletedAt: {
-							gt: parameters.updatedSince
-						}
+			sectionParameters.where!.OR = [
+				{
+					updatedAt: {
+						gt: new Date(parameters.updatedSince)
 					}
-				]
-			};
+				},
+				{
+					deletedAt: {
+						gt: new Date(parameters.updatedSince)
+					}
+				}
+			];
 		}
 
-		// C'mon TS
-		const filteredCoursesWithSections = await this.prisma.course.findMany(courseParameters) as unknown as Array<{sections: Section[]}>;
-
-		// Hoist
-		return filteredCoursesWithSections.map(c => c.sections).flat();
+		return this.prisma.section.findMany(sectionParameters);
 	}
 }

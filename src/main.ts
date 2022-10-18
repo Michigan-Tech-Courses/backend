@@ -3,11 +3,14 @@
 import './lib/tracer';
 import {NestFactory} from '@nestjs/core';
 import {ValidationPipe} from '@nestjs/common';
-import {
-	FastifyAdapter,
+import type {
 	NestFastifyApplication
 } from '@nestjs/platform-fastify';
+import {
+	FastifyAdapter
+} from '@nestjs/platform-fastify';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
+import {WorkerService} from 'nestjs-graphile-worker';
 import {AppModule} from './app.module';
 
 async function bootstrap() {
@@ -29,6 +32,8 @@ async function bootstrap() {
 	app.enableCors();
 
 	await app.listen(process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3000, '0.0.0.0');
+
+	void app.get(WorkerService).run();
 }
 
 void bootstrap();

@@ -1,4 +1,4 @@
-import {Course} from '@prisma/client';
+import type {Course} from '@prisma/client';
 
 export class CourseMap {
 	private readonly map = new Map<string, {saw: boolean; course: Course}>();

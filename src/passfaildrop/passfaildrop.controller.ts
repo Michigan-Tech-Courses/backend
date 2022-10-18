@@ -1,9 +1,10 @@
 import {Body, CacheInterceptor, Controller, Get, Injectable, Put, UseInterceptors, Headers, Header, Query} from '@nestjs/common';
-import {Prisma, Semester} from '@prisma/client';
+import type {Prisma, Semester} from '@prisma/client';
 import pThrottle from 'p-throttle';
 import {PrismaService} from 'src/prisma/prisma.service';
 import checkAuthHeader from 'src/lib/check-auth-header';
-import {GetAllParameters, PutDto} from './types';
+import type {PutDto} from './types';
+import {GetAllParameters} from './types';
 
 @Controller('passfaildrop')
 @UseInterceptors(CacheInterceptor)

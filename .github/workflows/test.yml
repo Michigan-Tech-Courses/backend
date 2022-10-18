@@ -1,56 +1,23 @@
 name: Test
-
 on: push
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: node:15.5-buster
-    services:
-      # Label used to access the service container
-      redis:
-        # Docker Hub image
-        image: redis
-        # Set health checks to wait until redis has started
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
-      - uses: actions/setup-node@v2
-
-      - uses: actions/checkout@v1
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Cache yarn dependencies
-        uses: actions/cache@v2
-        id: yarn-cache
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 16
+          cache: "yarn"
 
       - name: Install dependencies
         run: yarn install
 
-      - name: Unit tests
-        run: yarn test:coverage
-        env:
-          REDIS_HOST: redis
-          REDIS_PORT: 6379
-
-      - name: E2E tests
-        run: yarn test:e2e --coverage
-        env:
-          REDIS_HOST: redis
-          REDIS_PORT: 6379
+      - name: AVA tests
+        run: yarn c8 -r lcov ava -T 1m
 
       - name: Upload coverage
         uses: codecov/codecov-action@v1
         with:
-          files: ./test/coverage/lcov.info,./coverage/lcov.info
+          files: ./coverage/lcov.info
