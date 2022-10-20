@@ -14,6 +14,7 @@ export type GetTestDatabaseOptions = {
 };
 
 export const getTestDatabase = getTestPostgresDatabaseFactory<GetTestDatabaseOptions>({
+	postgresVersion: '15',
 	async beforeTemplateIsBaked({connection: {pool, connectionString}, params}) {
 		const files = glob.sync('prisma/migrations/**/*.sql');
 

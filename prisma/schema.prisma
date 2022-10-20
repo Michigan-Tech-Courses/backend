@@ -90,7 +90,7 @@ model Instructor {
   photoURL                String?
   interests               String[]
   occupations             String[]
-  updatedAt               DateTime  @updatedAt
+  updatedAt               DateTime  @updatedAt @default(now())
   deletedAt               DateTime?
   averageDifficultyRating Float?
   averageRating           Float?

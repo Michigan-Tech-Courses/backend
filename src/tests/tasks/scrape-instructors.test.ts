@@ -20,7 +20,10 @@ test.serial('does not update if unchanged', async t => {
 
 	await service.handler();
 
-	t.is(instructor.updatedAt.getTime(), (await prisma.instructor.findFirstOrThrow()).updatedAt.getTime());
+	const updatedInstructor = await prisma.instructor.findFirstOrThrow();
+
+	t.is(instructor.updatedAt.getTime(), updatedInstructor.updatedAt.getTime());
+	t.falsy(updatedInstructor.deletedAt);
 });
 
 test.serial('updates if changed', async t => {
@@ -37,5 +40,37 @@ test.serial('updates if changed', async t => {
 
 	await service.handler();
 
-	t.not(instructor.updatedAt.getTime(), (await prisma.instructor.findFirstOrThrow()).updatedAt.getTime());
+	const updatedInstructor = await prisma.instructor.findFirstOrThrow();
+
+	t.not(instructor.updatedAt.getTime(), updatedInstructor.updatedAt.getTime());
+	t.falsy(updatedInstructor.deletedAt);
+});
+
+test.serial('deletes if not in scrape', async t => {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeInstructorsTask);
+
+	await service.handler();
+
+	fetcherFake.instructors = [];
+
+	await service.handler();
+
+	const instructor = await prisma.instructor.findFirstOrThrow();
+	t.truthy(instructor.deletedAt);
+});
+
+test.serial('works with multiple instructors', async t => {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeInstructorsTask);
+
+	await service.handler();
+
+	fetcherFake.instructors.push({
+		...fetcherFake.instructors[0],
+		name: 'Instructor 2',
+	});
+
+	await service.handler();
+
+	const instructors = await prisma.instructor.findMany();
+	t.is(instructors.length, 2);
 });

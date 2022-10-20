@@ -1,17 +1,15 @@
 import {Injectable, Logger} from '@nestjs/common';
-import type {IFaculty} from '@mtucourses/scraper';
-import pThrottle from 'p-throttle';
-import equal from 'deep-equal';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
-import {PrismaService} from 'src/prisma/prisma.service';
+import * as db from 'zapatos/db';
 import {FetcherService} from 'src/fetcher/fetcher.service';
+import {PoolService} from '~/pool/pool.service';
 
 @Injectable()
 @Task('scrape-instructors')
 export class ScrapeInstructorsTask {
 	private readonly logger = new Logger(ScrapeInstructorsTask.name);
 
-	constructor(private readonly prisma: PrismaService, private readonly fetcher: FetcherService) {}
+	constructor(private readonly pool: PoolService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
 	async handler() {
@@ -19,48 +17,49 @@ export class ScrapeInstructorsTask {
 
 		this.logger.log('Finished scraping website');
 
-		const processInstructor = pThrottle({
-			limit: 5,
-			interval: 512
-		})(async (instructor: IFaculty) => {
-			const existingInstructor = await this.prisma.instructor.findUnique({where: {fullName: instructor.name}});
+		await db.serializable(this.pool, async trx => {
+			await db.update('Instructor', {
+				deletedAt: db.sql`now()`,
+			}, {}).run(trx);
 
-			// Need to prevent upserting if nothing has changed since otherwise updatedAt will be changed
-			let shouldUpsert = false;
-
-			if (existingInstructor) {
-				const storedAttributesToCompare: IFaculty = {
-					name: existingInstructor.fullName,
-					departments: existingInstructor.departments,
-					email: existingInstructor.email,
-					phone: existingInstructor.phone,
-					office: existingInstructor.office,
-					websiteURL: existingInstructor.websiteURL,
-					interests: existingInstructor.interests,
-					occupations: existingInstructor.occupations,
-					photoURL: existingInstructor.photoURL
-				};
-
-				if (!equal(storedAttributesToCompare, instructor)) {
-					shouldUpsert = true;
+			await db.upsert('Instructor', faculty.map(f => ({
+				fullName: f.name,
+				departments: f.departments,
+				email: f.email,
+				phone: f.phone,
+				office: f.office,
+				websiteURL: f.websiteURL,
+				interests: f.interests,
+				occupations: f.occupations,
+				photoURL: f.photoURL,
+			})), ['fullName'], {
+				updateValues: {
+					deletedAt: db.sql`null`,
+					// Todo: is there an easy way to infer this (should exclude the deletedAt column from the comparison)?
+					updatedAt: db.sql`
+						CASE WHEN (
+							"Instructor"."fullName",
+							"Instructor"."departments",
+							"Instructor"."email",
+							"Instructor"."phone",
+							"Instructor"."office",
+							"Instructor"."websiteURL",
+							"Instructor"."interests",
+							"Instructor"."occupations",
+							"Instructor"."photoURL"
+						) IS DISTINCT FROM (
+							EXCLUDED."fullName",
+							EXCLUDED."departments",
+							EXCLUDED."email",
+							EXCLUDED."phone",
+							EXCLUDED."office",
+							EXCLUDED."websiteURL",
+							EXCLUDED."interests",
+							EXCLUDED."occupations",
+							EXCLUDED."photoURL"
+						) THEN now() ELSE "Instructor"."updatedAt" END`,
 				}
-			} else {
-				shouldUpsert = true;
-			}
-
-			if (shouldUpsert) {
-				const {name, ...preparedInstructor} = instructor;
-
-				await this.prisma.instructor.upsert({
-					where: {
-						fullName: instructor.name
-					},
-					update: {...preparedInstructor, fullName: instructor.name},
-					create: {...preparedInstructor, fullName: instructor.name}
-				});
-			}
+			}).run(trx);
 		});
-
-		await Promise.all(faculty.map(async instructor => processInstructor(instructor)));
 	}
 }

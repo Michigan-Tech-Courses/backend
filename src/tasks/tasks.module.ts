@@ -6,9 +6,11 @@ import {ScrapeSectionDetailsTask} from './scrape-section-details';
 import {ScrapeSectionsTask} from './scrape-sections';
 import {ScrapeTransferCoursesTask} from './scrape-transfer-courses';
 import {FetcherModule} from '~/fetcher/fetcher.module';
+import {PoolModule} from '~/pool/pool.module';
 
 @Module({
 	imports: [
+		PoolModule,
 		PrismaModule,
 		FetcherModule,
 	],

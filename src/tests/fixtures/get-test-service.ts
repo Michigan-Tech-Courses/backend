@@ -8,6 +8,7 @@ import {FetcherService} from '~/fetcher/fetcher.service';
 import {PrismaModule} from '~/prisma/prisma.module';
 import {PrismaService} from '~/prisma/prisma.service';
 import {CacheModule} from '~/cache/cache.module';
+import {PoolModule} from '~/pool/pool.module';
 
 type UnwrapNestType<T> = T extends Type<infer U> ? U : never;
 
@@ -30,7 +31,7 @@ export const getTestService = async <T extends Type>(service: T, options: Option
 	const fetcherFake = new FakeFetcherService();
 
 	const module = await Test.createTestingModule({
-		imports: [FetcherModule, PrismaModule, CacheModule],
+		imports: [FetcherModule, PrismaModule, PoolModule, CacheModule],
 		providers: [service]
 	})
 		.overrideProvider(FetcherService)
