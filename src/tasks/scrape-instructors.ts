@@ -35,7 +35,6 @@ export class ScrapeInstructorsTask {
 			})), ['fullName'], {
 				updateValues: {
 					deletedAt: db.sql`null`,
-					// Todo: is there an easy way to infer this (should exclude the deletedAt column from the comparison)?
 					updatedAt: db.sql`
 						CASE WHEN (
 							"Instructor"."fullName",

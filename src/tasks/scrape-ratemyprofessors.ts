@@ -2,17 +2,18 @@ import {Injectable, Logger} from '@nestjs/common';
 import pThrottle from 'p-throttle';
 import equal from 'deep-equal';
 import remap from 'src/lib/remap';
-import type {Instructor} from '@prisma/client';
-import {PrismaService} from 'src/prisma/prisma.service';
+import * as db from 'zapatos/db';
+import type * as schema from 'zapatos/schema';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
 import {FetcherService} from '~/fetcher/fetcher.service';
+import {PoolService} from '~/pool/pool.service';
 
 @Injectable()
 @Task('scrape-rate-my-professors')
 export class ScrapeRateMyProfessorsTask {
 	private readonly logger = new Logger(ScrapeRateMyProfessorsTask.name);
 
-	constructor(private readonly prisma: PrismaService, private readonly fetcher: FetcherService) {}
+	constructor(private readonly pool: PoolService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
 	async handler() {
@@ -25,7 +26,7 @@ export class ScrapeRateMyProfessorsTask {
 		const processInstructor = pThrottle({
 			limit: 2,
 			interval: 100
-		})(async (instructor: Instructor) => {
+		})(async (instructor: schema.JSONSelectableForTable<'Instructor'>) => {
 			const nameFragments = instructor.fullName.split(' ');
 			const firstName = nameFragments[0];
 			const lastName = nameFragments[nameFragments.length - 1];
@@ -50,17 +51,20 @@ export class ScrapeRateMyProfessorsTask {
 				};
 
 				if (!equal(storedRating, newRating)) {
-					await this.prisma.instructor.update({
-						where: {
-							id: instructor.id
-						},
-						data: newRating
-					});
+					await db.update('Instructor', {
+						averageDifficultyRating: newRating.averageDifficultyRating,
+						averageRating: newRating.averageRating,
+						numRatings: newRating.numRatings,
+						rmpId: newRating.rmpId,
+						updatedAt: new Date()
+					}, {
+						id: instructor.id,
+					}).run(this.pool);
 				}
 			}
 		});
 
-		const instructors = await this.prisma.instructor.findMany();
+		const instructors = await db.select('Instructor', db.all).run(this.pool);
 
 		await Promise.all(instructors.map(async instructor => processInstructor(instructor)));
 	}
