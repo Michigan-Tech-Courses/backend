@@ -57,9 +57,7 @@ export class SectionsController {
 			where.push(db.sql`(${'courseId'} IN (SELECT ${'id'} FROM ${'Course'} WHERE year = ${db.param(parameters.year)}))`);
 		}
 
-		const combinedWhere = db.sql`${mapWithSeparator(where, db.sql` AND `, v => v)}`;
-
-		return db.select('Section', combinedWhere, {
+		return db.select('Section', where.length > 0 ? db.sql`${mapWithSeparator(where, db.sql` AND `, v => v)}` : db.all, {
 			lateral: {
 				instructors: db.select('_InstructorToSection', {
 					B: db.parent('id')
