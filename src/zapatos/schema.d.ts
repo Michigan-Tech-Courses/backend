@@ -529,7 +529,7 @@ declare module 'zapatos/schema' {
       /**
       * **Course.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
       id: string;
       /**
@@ -609,7 +609,7 @@ declare module 'zapatos/schema' {
       /**
       * **Course.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
       id: string;
       /**
@@ -689,7 +689,7 @@ declare module 'zapatos/schema' {
       /**
       * **Course.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
       id?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
       /**
@@ -769,9 +769,9 @@ declare module 'zapatos/schema' {
       /**
       * **Course.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
-      id: string | db.Parameter<string> | db.SQLFragment;
+      id?: string | db.Parameter<string> | db.DefaultType | db.SQLFragment;
       /**
       * **Course.year**
       * - `int4` in database
@@ -849,9 +849,9 @@ declare module 'zapatos/schema' {
       /**
       * **Course.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
-      id?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      id?: string | db.Parameter<string> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.DefaultType | db.SQLFragment>;
       /**
       * **Course.year**
       * - `int4` in database
@@ -1708,7 +1708,7 @@ declare module 'zapatos/schema' {
       /**
       * **Section.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
       id: string;
       /**
@@ -1812,7 +1812,7 @@ declare module 'zapatos/schema' {
       /**
       * **Section.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
       id: string;
       /**
@@ -1916,7 +1916,7 @@ declare module 'zapatos/schema' {
       /**
       * **Section.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
       id?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
       /**
@@ -2020,9 +2020,9 @@ declare module 'zapatos/schema' {
       /**
       * **Section.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
-      id: string | db.Parameter<string> | db.SQLFragment;
+      id?: string | db.Parameter<string> | db.DefaultType | db.SQLFragment;
       /**
       * **Section.courseId**
       * - `text` in database
@@ -2124,9 +2124,9 @@ declare module 'zapatos/schema' {
       /**
       * **Section.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
-      id?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      id?: string | db.Parameter<string> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.DefaultType | db.SQLFragment>;
       /**
       * **Section.courseId**
       * - `text` in database
@@ -2224,7 +2224,7 @@ declare module 'zapatos/schema' {
       */
       locationType?: LocationType | db.Parameter<LocationType> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, LocationType | db.Parameter<LocationType> | db.DefaultType | db.SQLFragment>;
     }
-    export type UniqueIndex = 'Section_pkey';
+    export type UniqueIndex = 'Section_courseId_section_key' | 'Section_pkey';
     export type Column = keyof Selectable;
     export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
     export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
@@ -2241,7 +2241,7 @@ declare module 'zapatos/schema' {
       /**
       * **TransferCourse.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
       id: string;
       /**
@@ -2309,7 +2309,7 @@ declare module 'zapatos/schema' {
       /**
       * **TransferCourse.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
       id: string;
       /**
@@ -2377,7 +2377,7 @@ declare module 'zapatos/schema' {
       /**
       * **TransferCourse.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
       id?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
       /**
@@ -2445,9 +2445,9 @@ declare module 'zapatos/schema' {
       /**
       * **TransferCourse.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
-      id: string | db.Parameter<string> | db.SQLFragment;
+      id?: string | db.Parameter<string> | db.DefaultType | db.SQLFragment;
       /**
       * **TransferCourse.fromCollege**
       * - `text` in database
@@ -2513,9 +2513,9 @@ declare module 'zapatos/schema' {
       /**
       * **TransferCourse.id**
       * - `text` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `gen_random_uuid()`
       */
-      id?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      id?: string | db.Parameter<string> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.DefaultType | db.SQLFragment>;
       /**
       * **TransferCourse.fromCollege**
       * - `text` in database

@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Course {
-  id          String     @unique(map: "Course.id_unique") @default(cuid())
+  id          String     @unique(map: "Course.id_unique") @default(dbgenerated("gen_random_uuid()"))
   year        Int
   semester    Semester
   subject     String
@@ -30,7 +30,7 @@ model Course {
 }
 
 model TransferCourse {
-  id               String   @unique(map: "TransferCourse.id_unique") @default(cuid())
+  id               String   @unique(map: "TransferCourse.id_unique") @default(dbgenerated("gen_random_uuid()"))
   fromCollege      String
   fromCollegeState String
   fromCRSE         String
@@ -54,7 +54,7 @@ model Building {
 }
 
 model Section {
-  id             String       @id @default(cuid())
+  id             String       @id @default(dbgenerated("gen_random_uuid()"))
   courseId       String
   crn            String
   section        String
@@ -77,6 +77,7 @@ model Section {
 
   @@index([deletedAt], map: "Section.deletedAt_index")
   @@index([updatedAt], map: "Section.updatedAt_index")
+  @@unique([courseId, section])
 }
 
 model Instructor {

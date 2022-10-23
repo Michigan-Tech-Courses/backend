@@ -10,7 +10,7 @@ import QueryStream from 'pg-query-stream';
 import {FetcherService} from '~/fetcher/fetcher.service';
 import {fetcherSemesterToDatabaseSemester} from '~/lib/convert-semester-type';
 import {PoolService} from '~/pool/pool.service';
-import {mapWithSeparator} from '~/lib/db-utils';
+import {mapWithSeparator, updateDeletedAtUpdatedAtForUpsert} from '~/lib/db-utils';
 
 type UnwrapQueryResult<T> = T extends db.SQLFragment<infer U> ? U : never;
 
@@ -111,18 +111,11 @@ export class ScrapeSectionDetailsTask {
 				room: parsedLocation.room,
 			};
 		}), ['id'], {
-			updateValues: {
-				updatedAt: db.sql`
-					CASE WHEN (
-						"Section"."locationType",
-						"Section"."buildingName",
-						"Section"."room"
-					) IS DISTINCT FROM (
-						EXCLUDED."locationType",
-						EXCLUDED."buildingName",
-						EXCLUDED."room"
-					) THEN now() ELSE "Section"."updatedAt" END`,
-			}
+			updateValues: updateDeletedAtUpdatedAtForUpsert('Section', [
+				'locationType',
+				'buildingName',
+				'room',
+			])
 		}).run(this.pool);
 
 		// Update courses
@@ -135,18 +128,11 @@ export class ScrapeSectionDetailsTask {
 				offered: scrapedSemestersOffered
 			};
 		}), ['id'], {
-			updateValues: {
-				updatedAt: db.sql`
-						CASE WHEN (
-							"Course"."description",
-							"Course"."prereqs",
-							"Course"."offered"
-						) IS DISTINCT FROM (
-							EXCLUDED."description",
-							EXCLUDED."prereqs",
-							EXCLUDED."offered"
-						) THEN now() ELSE "Course"."updatedAt" END`,
-			}
+			updateValues: updateDeletedAtUpdatedAtForUpsert('Course', [
+				'description',
+				'prereqs',
+				'offered',
+			])
 		}).run(this.pool);
 	}
 
