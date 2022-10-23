@@ -571,7 +571,7 @@ declare module 'zapatos/schema' {
       /**
       * **Course.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
       updatedAt: Date;
       /**
@@ -651,7 +651,7 @@ declare module 'zapatos/schema' {
       /**
       * **Course.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
       updatedAt: db.TimestampString;
       /**
@@ -731,7 +731,7 @@ declare module 'zapatos/schema' {
       /**
       * **Course.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
       updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
       /**
@@ -811,9 +811,9 @@ declare module 'zapatos/schema' {
       /**
       * **Course.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
-      updatedAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.DefaultType | db.SQLFragment;
       /**
       * **Course.deletedAt**
       * - `timestamp` in database
@@ -891,9 +891,9 @@ declare module 'zapatos/schema' {
       /**
       * **Course.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
-      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.DefaultType | db.SQLFragment>;
       /**
       * **Course.deletedAt**
       * - `timestamp` in database
@@ -1780,7 +1780,7 @@ declare module 'zapatos/schema' {
       /**
       * **Section.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
       updatedAt: Date;
       /**
@@ -1884,7 +1884,7 @@ declare module 'zapatos/schema' {
       /**
       * **Section.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
       updatedAt: db.TimestampString;
       /**
@@ -1988,7 +1988,7 @@ declare module 'zapatos/schema' {
       /**
       * **Section.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
       updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
       /**
@@ -2092,9 +2092,9 @@ declare module 'zapatos/schema' {
       /**
       * **Section.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
-      updatedAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.DefaultType | db.SQLFragment;
       /**
       * **Section.deletedAt**
       * - `timestamp` in database
@@ -2196,9 +2196,9 @@ declare module 'zapatos/schema' {
       /**
       * **Section.updatedAt**
       * - `timestamp` in database
-      * - `NOT NULL`, no default
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
       */
-      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.DefaultType | db.SQLFragment>;
       /**
       * **Section.deletedAt**
       * - `timestamp` in database

@@ -103,7 +103,7 @@ test.serial('updates instructor', async t => {
 
 	// Update instructor
 	fetcherFake.putFirstSectionDetails({
-		instructors: ['Leo Ureel']
+		instructors: ['Leo Ureel', 'Max Isom']
 	});
 
 	await service.handler({
@@ -115,18 +115,22 @@ test.serial('updates instructor', async t => {
 			instructors: true
 		}
 	});
-	t.is(updatedSection.instructors.length, course.sectionDetails[0].extSectionDetails.instructors.length);
-	t.like(updatedSection.instructors[0], {
-		fullName: 'Leo Ureel',
-	});
+	t.is(updatedSection.instructors.length, 2);
+	t.deepEqual(updatedSection.instructors.map(i => i.fullName), ['Leo Ureel', 'Max Isom']);
 
-	// Created a new instructor
-	const instructor = await prisma.instructor.findFirst({
+	// Created new instructors
+	const instructor1 = await prisma.instructor.findFirst({
 		where: {
 			fullName: 'Leo Ureel'
 		}
 	});
-	t.truthy(instructor);
+	t.truthy(instructor1);
+	const instructor2 = await prisma.instructor.findFirst({
+		where: {
+			fullName: 'Max Isom'
+		}
+	});
+	t.truthy(instructor2);
 });
 
 test.serial('disconnects removed instructor', async t => {
