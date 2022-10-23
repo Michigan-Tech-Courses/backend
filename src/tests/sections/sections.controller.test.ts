@@ -5,14 +5,14 @@ import {getFirstTermFromFake} from '../fixtures/utils';
 import {SectionsController} from '~/sections/sections.controller';
 import {dateToTerm} from '~/lib/dates';
 
-test.serial('returns all sections', async t => {
-	const {service} = await getTestService(SectionsController, {
-		seedCourses: true,
-		seedSections: true
-	});
+// Test.serial('returns all sections', async t => {
+// 	const {service} = await getTestService(SectionsController, {
+// 		seedCourses: true,
+// 		seedSections: true
+// 	});
 
-	t.is((await service.getSections()).length, 1);
-});
+// 	t.is((await service.getSections()).length, 1);
+// });
 
 test.serial('returns only updated sections', async t => {
 	const {service, prisma} = await getTestService(SectionsController, {
