@@ -1,112 +1,39 @@
-import {CacheInterceptor, Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
+import {CacheInterceptor, Controller, Get, Injectable, Query, Res, UseInterceptors} from '@nestjs/common';
 import type {Prisma} from '@prisma/client';
+import {FastifyReply} from 'fastify';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
-import sortSemesters from 'src/lib/sort-semesters';
 import {PrismaService} from 'src/prisma/prisma.service';
+import {CoursesService} from './courses.service';
 import {GetCoursesParameters, GetUniqueCoursesParameters, FindFirstCourseParameters} from './types';
+import {streamSqlQuery} from '~/lib/stream-sql-query';
+import {PoolService} from '~/pool/pool.service';
 
 @Controller('courses')
 @UseInterceptors(CacheInterceptor, NoCacheUpdatedSinceInterceptor)
 @Injectable()
 export class CoursesController {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService, private readonly pool: PoolService, private readonly service: CoursesService) {}
 
 	@Get()
-	@Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400')
-	async getAllCourses(@Query() parameters?: GetCoursesParameters) {
-		let queryParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
-			where: {}
-		};
+	async getAllCourses(@Res() reply: FastifyReply, @Query() parameters?: GetCoursesParameters) {
+		reply.raw.setHeader('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400');
 
-		if (parameters?.semester) {
-			queryParameters.where.semester = parameters.semester;
-		}
-
-		if (parameters?.year) {
-			queryParameters.where.year = parameters.year;
-		}
-
-		if (parameters?.updatedSince) {
-			queryParameters = {
-				where: {
-					OR: [
-						{
-							...queryParameters.where,
-							updatedAt: {
-								gt: parameters.updatedSince
-							}
-						},
-						{
-							...queryParameters.where,
-							deletedAt: {
-								gt: parameters.updatedSince
-							}
-						}
-					]
-				}
-			};
-		}
-
-		const courses = await this.prisma.course.findMany(queryParameters);
-
-		return courses;
+		return streamSqlQuery({
+			query: this.service.getAllCoursesQuery(parameters),
+			pool: this.pool,
+			reply,
+		});
 	}
 
 	@Get('/unique')
-	@Header('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400')
-	async getUniqueCourses(@Query() parameters?: GetUniqueCoursesParameters) {
-		const semesterParameters: Prisma.CourseFindManyArgs['where'] = {};
+	async getUniqueCourses(@Res() reply: FastifyReply, @Query() parameters?: GetUniqueCoursesParameters) {
+		reply.raw.setHeader('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400');
 
-		if (parameters?.startYear) {
-			semesterParameters.year = {
-				gte: parameters.startYear
-			};
-		}
-
-		if (parameters?.semester) {
-			semesterParameters.semester = parameters.semester;
-		}
-
-		const semesters = await this.prisma.course.findMany({
-			distinct: ['semester', 'year'],
-			where: semesterParameters,
-			select: {
-				semester: true,
-				year: true
-			}
+		return streamSqlQuery({
+			query: await this.service.getUniqueCoursesQuery(this.pool, parameters),
+			pool: this.pool,
+			reply,
 		});
-
-		const semestersToFilterBy = sortSemesters(semesters).reverse().slice(0, 3);
-
-		const queryParameters: Prisma.CourseFindManyArgs & {where: Prisma.CourseWhereInput} = {
-			distinct: ['crse', 'subject'],
-			where: {
-				OR: semestersToFilterBy
-			},
-			orderBy: {
-				id: 'asc'
-			}
-		};
-
-		if (parameters?.updatedSince) {
-			queryParameters.where.OR = semestersToFilterBy.map(s => ({
-				...s,
-				OR: [
-					{
-						updatedAt: {
-							gt: parameters.updatedSince
-						},
-					},
-					{
-						deletedAt: {
-							gt: parameters.updatedSince
-						}
-					}
-				]
-			}));
-		}
-
-		return this.prisma.course.findMany(queryParameters);
 	}
 
 	@Get('/first')
