@@ -22,7 +22,7 @@ type Options = {
  */
 export const getTestService = async <T extends Type>(service: T, options: Options = {}) => {
 	const {shouldInjectDatabaseUrl, ...seedOptions} = options;
-	const {connectionString} = await getTestDatabase(seedOptions);
+	const {connectionString, pool} = await getTestDatabase(seedOptions);
 
 	if (shouldInjectDatabaseUrl ?? true) {
 		process.env.DATABASE_URL = connectionString;
@@ -44,6 +44,7 @@ export const getTestService = async <T extends Type>(service: T, options: Option
 	return {
 		service: compiledService,
 		fetcherFake,
-		prisma
+		prisma,
+		pool
 	};
 };

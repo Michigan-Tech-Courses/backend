@@ -4,7 +4,7 @@ import type {
 	NestFastifyApplication
 } from '@nestjs/platform-fastify';
 import {
-	FastifyAdapter
+	FastifyAdapter,
 } from '@nestjs/platform-fastify';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import {WorkerService} from 'nestjs-graphile-worker';
