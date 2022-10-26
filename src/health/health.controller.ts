@@ -1,4 +1,5 @@
 import {Controller, Get, Injectable} from '@nestjs/common';
+import pTimeout from 'p-timeout';
 import * as db from 'zapatos/db';
 import {PoolService} from '~/pool/pool.service';
 
@@ -24,7 +25,7 @@ export class HealthController {
 
 	private async canConnectToDatabase() {
 		try {
-			await this.pool.connect();
+			await pTimeout(this.pool.connect(), 2000);
 			return true;
 		} catch {
 			return false;
@@ -33,14 +34,16 @@ export class HealthController {
 
 	private async arePendingJobs() {
 		try {
-			const pending_jobs = await db.count('graphile_worker.jobs', {
-				locked_at: db.conditions.isNull,
-				run_at: db.conditions.lte(db.sql`now()`),
-				created_at: db.conditions.lte(db.sql`now() - interval '1 minute'`),
-				attempts: 0
-			}).run(this.pool);
+			return await pTimeout((async () => {
+				const pending_jobs = await db.count('graphile_worker.jobs', {
+					locked_at: db.conditions.isNull,
+					run_at: db.conditions.lte(db.sql`now()`),
+					created_at: db.conditions.lte(db.sql`now() - interval '1 minute'`),
+					attempts: 0
+				}).run(this.pool);
 
-			return pending_jobs > 0;
+				return pending_jobs > 0;
+			})(), 2000);
 		} catch {
 			return false;
 		}
@@ -48,11 +51,13 @@ export class HealthController {
 
 	private async haveJobsErrored() {
 		try {
-			const errored_jobs = await db.count('graphile_worker.jobs', {
-				last_error: db.conditions.isNotNull
-			}).run(this.pool);
+			return await pTimeout((async () => {
+				const errored_jobs = await db.count('graphile_worker.jobs', {
+					last_error: db.conditions.isNotNull
+				}).run(this.pool);
 
-			return errored_jobs > 0;
+				return errored_jobs > 0;
+			})(), 2000);
 		} catch {
 			return false;
 		}
