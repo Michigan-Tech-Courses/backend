@@ -1,11 +1,11 @@
 import {Module} from '@nestjs/common';
 import {CacheModule} from 'src/cache/cache.module';
-import {PrismaModule} from 'src/prisma/prisma.module';
 import {InstructorsController} from './instructors.controller';
+import {PoolModule} from '~/pool/pool.module';
 
 @Module({
 	imports: [
-		PrismaModule,
+		PoolModule,
 		CacheModule
 	],
 	controllers: [InstructorsController],

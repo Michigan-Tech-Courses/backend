@@ -2605,24 +2605,894 @@ declare module 'zapatos/schema' {
 
 
 
+  /* === schema: graphile_worker === */
+
+  export namespace graphile_worker {
+  
+    /* --- enums --- */
+    /* (none) */
+  
+    /* --- tables --- */
+  
+    /**
+     * **graphile_worker.job_queues**
+     * - Table in database
+     */
+    export namespace job_queues {
+      export type Table = 'graphile_worker.job_queues';
+      export interface Selectable {
+        /**
+        * **graphile_worker.job_queues.queue_name**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        queue_name: string;
+        /**
+        * **graphile_worker.job_queues.job_count**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        job_count: number;
+        /**
+        * **graphile_worker.job_queues.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at: Date | null;
+        /**
+        * **graphile_worker.job_queues.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by: string | null;
+      }
+      export interface JSONSelectable {
+        /**
+        * **graphile_worker.job_queues.queue_name**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        queue_name: string;
+        /**
+        * **graphile_worker.job_queues.job_count**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        job_count: number;
+        /**
+        * **graphile_worker.job_queues.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at: db.TimestampTzString | null;
+        /**
+        * **graphile_worker.job_queues.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by: string | null;
+      }
+      export interface Whereable {
+        /**
+        * **graphile_worker.job_queues.queue_name**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        queue_name?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.job_queues.job_count**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        job_count?: number | db.Parameter<number> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, number | db.Parameter<number> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.job_queues.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.job_queues.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      }
+      export interface Insertable {
+        /**
+        * **graphile_worker.job_queues.queue_name**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        queue_name: string | db.Parameter<string> | db.SQLFragment;
+        /**
+        * **graphile_worker.job_queues.job_count**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        job_count: number | db.Parameter<number> | db.SQLFragment;
+        /**
+        * **graphile_worker.job_queues.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | null | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.job_queues.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      }
+      export interface Updatable {
+        /**
+        * **graphile_worker.job_queues.queue_name**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        queue_name?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+        /**
+        * **graphile_worker.job_queues.job_count**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        job_count?: number | db.Parameter<number> | db.SQLFragment | db.SQLFragment<any, number | db.Parameter<number> | db.SQLFragment>;
+        /**
+        * **graphile_worker.job_queues.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | null | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.job_queues.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      }
+      export type UniqueIndex = 'job_queues_pkey';
+      export type Column = keyof Selectable;
+      export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
+      export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
+      export type SQL = SQLExpression | SQLExpression[];
+    }
+  
+    /**
+     * **graphile_worker.jobs**
+     * - Table in database
+     */
+    export namespace jobs {
+      export type Table = 'graphile_worker.jobs';
+      export interface Selectable {
+        /**
+        * **graphile_worker.jobs.id**
+        * - `int8` in database
+        * - `NOT NULL`, default: `nextval('graphile_worker.jobs_id_seq'::regclass)`
+        */
+        id: db.Int8String;
+        /**
+        * **graphile_worker.jobs.queue_name**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        queue_name: string | null;
+        /**
+        * **graphile_worker.jobs.task_identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        task_identifier: string;
+        /**
+        * **graphile_worker.jobs.payload**
+        * - `json` in database
+        * - `NOT NULL`, default: `'{}'::json`
+        */
+        payload: db.JSONValue;
+        /**
+        * **graphile_worker.jobs.priority**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        priority: number;
+        /**
+        * **graphile_worker.jobs.run_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        run_at: Date;
+        /**
+        * **graphile_worker.jobs.attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        attempts: number;
+        /**
+        * **graphile_worker.jobs.max_attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `25`
+        */
+        max_attempts: number;
+        /**
+        * **graphile_worker.jobs.last_error**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        last_error: string | null;
+        /**
+        * **graphile_worker.jobs.created_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        created_at: Date;
+        /**
+        * **graphile_worker.jobs.updated_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        updated_at: Date;
+        /**
+        * **graphile_worker.jobs.key**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        key: string | null;
+        /**
+        * **graphile_worker.jobs.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at: Date | null;
+        /**
+        * **graphile_worker.jobs.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by: string | null;
+        /**
+        * **graphile_worker.jobs.revision**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        revision: number;
+        /**
+        * **graphile_worker.jobs.flags**
+        * - `jsonb` in database
+        * - Nullable, no default
+        */
+        flags: db.JSONValue | null;
+      }
+      export interface JSONSelectable {
+        /**
+        * **graphile_worker.jobs.id**
+        * - `int8` in database
+        * - `NOT NULL`, default: `nextval('graphile_worker.jobs_id_seq'::regclass)`
+        */
+        id: number;
+        /**
+        * **graphile_worker.jobs.queue_name**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        queue_name: string | null;
+        /**
+        * **graphile_worker.jobs.task_identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        task_identifier: string;
+        /**
+        * **graphile_worker.jobs.payload**
+        * - `json` in database
+        * - `NOT NULL`, default: `'{}'::json`
+        */
+        payload: db.JSONValue;
+        /**
+        * **graphile_worker.jobs.priority**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        priority: number;
+        /**
+        * **graphile_worker.jobs.run_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        run_at: db.TimestampTzString;
+        /**
+        * **graphile_worker.jobs.attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        attempts: number;
+        /**
+        * **graphile_worker.jobs.max_attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `25`
+        */
+        max_attempts: number;
+        /**
+        * **graphile_worker.jobs.last_error**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        last_error: string | null;
+        /**
+        * **graphile_worker.jobs.created_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        created_at: db.TimestampTzString;
+        /**
+        * **graphile_worker.jobs.updated_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        updated_at: db.TimestampTzString;
+        /**
+        * **graphile_worker.jobs.key**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        key: string | null;
+        /**
+        * **graphile_worker.jobs.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at: db.TimestampTzString | null;
+        /**
+        * **graphile_worker.jobs.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by: string | null;
+        /**
+        * **graphile_worker.jobs.revision**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        revision: number;
+        /**
+        * **graphile_worker.jobs.flags**
+        * - `jsonb` in database
+        * - Nullable, no default
+        */
+        flags: db.JSONValue | null;
+      }
+      export interface Whereable {
+        /**
+        * **graphile_worker.jobs.id**
+        * - `int8` in database
+        * - `NOT NULL`, default: `nextval('graphile_worker.jobs_id_seq'::regclass)`
+        */
+        id?: (number | db.Int8String) | db.Parameter<(number | db.Int8String)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (number | db.Int8String) | db.Parameter<(number | db.Int8String)> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.queue_name**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        queue_name?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.task_identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        task_identifier?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.payload**
+        * - `json` in database
+        * - `NOT NULL`, default: `'{}'::json`
+        */
+        payload?: db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.priority**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        priority?: number | db.Parameter<number> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, number | db.Parameter<number> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.run_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        run_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        attempts?: number | db.Parameter<number> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, number | db.Parameter<number> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.max_attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `25`
+        */
+        max_attempts?: number | db.Parameter<number> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, number | db.Parameter<number> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.last_error**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        last_error?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.created_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        created_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.updated_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        updated_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.key**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        key?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.revision**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        revision?: number | db.Parameter<number> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, number | db.Parameter<number> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.jobs.flags**
+        * - `jsonb` in database
+        * - Nullable, no default
+        */
+        flags?: db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment | db.ParentColumn>;
+      }
+      export interface Insertable {
+        /**
+        * **graphile_worker.jobs.id**
+        * - `int8` in database
+        * - `NOT NULL`, default: `nextval('graphile_worker.jobs_id_seq'::regclass)`
+        */
+        id?: (number | db.Int8String) | db.Parameter<(number | db.Int8String)> | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.queue_name**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        queue_name?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.task_identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        task_identifier: string | db.Parameter<string> | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.payload**
+        * - `json` in database
+        * - `NOT NULL`, default: `'{}'::json`
+        */
+        payload?: db.JSONValue | db.Parameter<db.JSONValue> | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.priority**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        priority?: number | db.Parameter<number> | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.run_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        run_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        attempts?: number | db.Parameter<number> | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.max_attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `25`
+        */
+        max_attempts?: number | db.Parameter<number> | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.last_error**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        last_error?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.created_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        created_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.updated_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        updated_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.key**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        key?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | null | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.revision**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        revision?: number | db.Parameter<number> | db.DefaultType | db.SQLFragment;
+        /**
+        * **graphile_worker.jobs.flags**
+        * - `jsonb` in database
+        * - Nullable, no default
+        */
+        flags?: db.JSONValue | db.Parameter<db.JSONValue> | null | db.DefaultType | db.SQLFragment;
+      }
+      export interface Updatable {
+        /**
+        * **graphile_worker.jobs.id**
+        * - `int8` in database
+        * - `NOT NULL`, default: `nextval('graphile_worker.jobs_id_seq'::regclass)`
+        */
+        id?: (number | db.Int8String) | db.Parameter<(number | db.Int8String)> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (number | db.Int8String) | db.Parameter<(number | db.Int8String)> | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.queue_name**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        queue_name?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.task_identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        task_identifier?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.payload**
+        * - `json` in database
+        * - `NOT NULL`, default: `'{}'::json`
+        */
+        payload?: db.JSONValue | db.Parameter<db.JSONValue> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, db.JSONValue | db.Parameter<db.JSONValue> | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.priority**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        priority?: number | db.Parameter<number> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, number | db.Parameter<number> | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.run_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        run_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        attempts?: number | db.Parameter<number> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, number | db.Parameter<number> | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.max_attempts**
+        * - `int4` in database
+        * - `NOT NULL`, default: `25`
+        */
+        max_attempts?: number | db.Parameter<number> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, number | db.Parameter<number> | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.last_error**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        last_error?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.created_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        created_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.updated_at**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        updated_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.key**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        key?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.locked_at**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        locked_at?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | null | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.locked_by**
+        * - `text` in database
+        * - Nullable, no default
+        */
+        locked_by?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.revision**
+        * - `int4` in database
+        * - `NOT NULL`, default: `0`
+        */
+        revision?: number | db.Parameter<number> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, number | db.Parameter<number> | db.DefaultType | db.SQLFragment>;
+        /**
+        * **graphile_worker.jobs.flags**
+        * - `jsonb` in database
+        * - Nullable, no default
+        */
+        flags?: db.JSONValue | db.Parameter<db.JSONValue> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, db.JSONValue | db.Parameter<db.JSONValue> | null | db.DefaultType | db.SQLFragment>;
+      }
+      export type UniqueIndex = 'jobs_key_key' | 'jobs_pkey';
+      export type Column = keyof Selectable;
+      export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
+      export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
+      export type SQL = SQLExpression | SQLExpression[];
+    }
+  
+    /**
+     * **graphile_worker.known_crontabs**
+     * - Table in database
+     */
+    export namespace known_crontabs {
+      export type Table = 'graphile_worker.known_crontabs';
+      export interface Selectable {
+        /**
+        * **graphile_worker.known_crontabs.identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        identifier: string;
+        /**
+        * **graphile_worker.known_crontabs.known_since**
+        * - `timestamptz` in database
+        * - `NOT NULL`, no default
+        */
+        known_since: Date;
+        /**
+        * **graphile_worker.known_crontabs.last_execution**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        last_execution: Date | null;
+      }
+      export interface JSONSelectable {
+        /**
+        * **graphile_worker.known_crontabs.identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        identifier: string;
+        /**
+        * **graphile_worker.known_crontabs.known_since**
+        * - `timestamptz` in database
+        * - `NOT NULL`, no default
+        */
+        known_since: db.TimestampTzString;
+        /**
+        * **graphile_worker.known_crontabs.last_execution**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        last_execution: db.TimestampTzString | null;
+      }
+      export interface Whereable {
+        /**
+        * **graphile_worker.known_crontabs.identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        identifier?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.known_crontabs.known_since**
+        * - `timestamptz` in database
+        * - `NOT NULL`, no default
+        */
+        known_since?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.known_crontabs.last_execution**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        last_execution?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn>;
+      }
+      export interface Insertable {
+        /**
+        * **graphile_worker.known_crontabs.identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        identifier: string | db.Parameter<string> | db.SQLFragment;
+        /**
+        * **graphile_worker.known_crontabs.known_since**
+        * - `timestamptz` in database
+        * - `NOT NULL`, no default
+        */
+        known_since: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment;
+        /**
+        * **graphile_worker.known_crontabs.last_execution**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        last_execution?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | null | db.DefaultType | db.SQLFragment;
+      }
+      export interface Updatable {
+        /**
+        * **graphile_worker.known_crontabs.identifier**
+        * - `text` in database
+        * - `NOT NULL`, no default
+        */
+        identifier?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+        /**
+        * **graphile_worker.known_crontabs.known_since**
+        * - `timestamptz` in database
+        * - `NOT NULL`, no default
+        */
+        known_since?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment>;
+        /**
+        * **graphile_worker.known_crontabs.last_execution**
+        * - `timestamptz` in database
+        * - Nullable, no default
+        */
+        last_execution?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | null | db.DefaultType | db.SQLFragment>;
+      }
+      export type UniqueIndex = 'known_crontabs_pkey';
+      export type Column = keyof Selectable;
+      export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
+      export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
+      export type SQL = SQLExpression | SQLExpression[];
+    }
+  
+    /**
+     * **graphile_worker.migrations**
+     * - Table in database
+     */
+    export namespace migrations {
+      export type Table = 'graphile_worker.migrations';
+      export interface Selectable {
+        /**
+        * **graphile_worker.migrations.id**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        id: number;
+        /**
+        * **graphile_worker.migrations.ts**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        ts: Date;
+      }
+      export interface JSONSelectable {
+        /**
+        * **graphile_worker.migrations.id**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        id: number;
+        /**
+        * **graphile_worker.migrations.ts**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        ts: db.TimestampTzString;
+      }
+      export interface Whereable {
+        /**
+        * **graphile_worker.migrations.id**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        id?: number | db.Parameter<number> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, number | db.Parameter<number> | db.SQLFragment | db.ParentColumn>;
+        /**
+        * **graphile_worker.migrations.ts**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        ts?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.SQLFragment | db.ParentColumn>;
+      }
+      export interface Insertable {
+        /**
+        * **graphile_worker.migrations.id**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        id: number | db.Parameter<number> | db.SQLFragment;
+        /**
+        * **graphile_worker.migrations.ts**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        ts?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment;
+      }
+      export interface Updatable {
+        /**
+        * **graphile_worker.migrations.id**
+        * - `int4` in database
+        * - `NOT NULL`, no default
+        */
+        id?: number | db.Parameter<number> | db.SQLFragment | db.SQLFragment<any, number | db.Parameter<number> | db.SQLFragment>;
+        /**
+        * **graphile_worker.migrations.ts**
+        * - `timestamptz` in database
+        * - `NOT NULL`, default: `now()`
+        */
+        ts?: (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampTzString | Date) | db.Parameter<(db.TimestampTzString | Date)> | db.DefaultType | db.SQLFragment>;
+      }
+      export type UniqueIndex = 'migrations_pkey';
+      export type Column = keyof Selectable;
+      export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
+      export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
+      export type SQL = SQLExpression | SQLExpression[];
+    }
+  
+    /* --- aggregate types --- */
+  
+    export type Table = job_queues.Table | jobs.Table | known_crontabs.Table | migrations.Table;
+    export type Selectable = job_queues.Selectable | jobs.Selectable | known_crontabs.Selectable | migrations.Selectable;
+    export type JSONSelectable = job_queues.JSONSelectable | jobs.JSONSelectable | known_crontabs.JSONSelectable | migrations.JSONSelectable;
+    export type Whereable = job_queues.Whereable | jobs.Whereable | known_crontabs.Whereable | migrations.Whereable;
+    export type Insertable = job_queues.Insertable | jobs.Insertable | known_crontabs.Insertable | migrations.Insertable;
+    export type Updatable = job_queues.Updatable | jobs.Updatable | known_crontabs.Updatable | migrations.Updatable;
+    export type UniqueIndex = job_queues.UniqueIndex | jobs.UniqueIndex | known_crontabs.UniqueIndex | migrations.UniqueIndex;
+    export type Column = job_queues.Column | jobs.Column | known_crontabs.Column | migrations.Column;
+  
+    export type AllBaseTables = [job_queues.Table, jobs.Table, known_crontabs.Table, migrations.Table];
+    export type AllForeignTables = [];
+    export type AllViews = [];
+    export type AllMaterializedViews = [];
+    export type AllTablesAndViews = [job_queues.Table, jobs.Table, known_crontabs.Table, migrations.Table];
+  }
+
+
   /* === global aggregate types === */
 
-  export type Schema = 'public';
-  export type Table = public.Table;
-  export type Selectable = public.Selectable;
-  export type JSONSelectable = public.JSONSelectable;
-  export type Whereable = public.Whereable;
-  export type Insertable = public.Insertable;
-  export type Updatable = public.Updatable;
-  export type UniqueIndex = public.UniqueIndex;
-  export type Column = public.Column;
+  export type Schema = 'public' | 'graphile_worker';
+  export type Table = public.Table | graphile_worker.Table;
+  export type Selectable = public.Selectable | graphile_worker.Selectable;
+  export type JSONSelectable = public.JSONSelectable | graphile_worker.JSONSelectable;
+  export type Whereable = public.Whereable | graphile_worker.Whereable;
+  export type Insertable = public.Insertable | graphile_worker.Insertable;
+  export type Updatable = public.Updatable | graphile_worker.Updatable;
+  export type UniqueIndex = public.UniqueIndex | graphile_worker.UniqueIndex;
+  export type Column = public.Column | graphile_worker.Column;
 
-  export type AllSchemas = ['public'];
-  export type AllBaseTables = [...public.AllBaseTables];
-  export type AllForeignTables = [...public.AllForeignTables];
-  export type AllViews = [...public.AllViews];
-  export type AllMaterializedViews = [...public.AllMaterializedViews];
-  export type AllTablesAndViews = [...public.AllTablesAndViews];
+  export type AllSchemas = ['public', 'graphile_worker'];
+  export type AllBaseTables = [...public.AllBaseTables, ...graphile_worker.AllBaseTables];
+  export type AllForeignTables = [...public.AllForeignTables, ...graphile_worker.AllForeignTables];
+  export type AllViews = [...public.AllViews, ...graphile_worker.AllViews];
+  export type AllMaterializedViews = [...public.AllMaterializedViews, ...graphile_worker.AllMaterializedViews];
+  export type AllTablesAndViews = [...public.AllTablesAndViews, ...graphile_worker.AllTablesAndViews];
 
 
   /* === lookups === */
@@ -2636,6 +3506,10 @@ declare module 'zapatos/schema' {
     "PassFailDrop": PassFailDrop.Selectable;
     "Section": Section.Selectable;
     "TransferCourse": TransferCourse.Selectable;
+    "graphile_worker.job_queues": graphile_worker.job_queues.Selectable;
+    "graphile_worker.jobs": graphile_worker.jobs.Selectable;
+    "graphile_worker.known_crontabs": graphile_worker.known_crontabs.Selectable;
+    "graphile_worker.migrations": graphile_worker.migrations.Selectable;
   }[T];
 
   export type JSONSelectableForTable<T extends Table> = {
@@ -2647,6 +3521,10 @@ declare module 'zapatos/schema' {
     "PassFailDrop": PassFailDrop.JSONSelectable;
     "Section": Section.JSONSelectable;
     "TransferCourse": TransferCourse.JSONSelectable;
+    "graphile_worker.job_queues": graphile_worker.job_queues.JSONSelectable;
+    "graphile_worker.jobs": graphile_worker.jobs.JSONSelectable;
+    "graphile_worker.known_crontabs": graphile_worker.known_crontabs.JSONSelectable;
+    "graphile_worker.migrations": graphile_worker.migrations.JSONSelectable;
   }[T];
 
   export type WhereableForTable<T extends Table> = {
@@ -2658,6 +3536,10 @@ declare module 'zapatos/schema' {
     "PassFailDrop": PassFailDrop.Whereable;
     "Section": Section.Whereable;
     "TransferCourse": TransferCourse.Whereable;
+    "graphile_worker.job_queues": graphile_worker.job_queues.Whereable;
+    "graphile_worker.jobs": graphile_worker.jobs.Whereable;
+    "graphile_worker.known_crontabs": graphile_worker.known_crontabs.Whereable;
+    "graphile_worker.migrations": graphile_worker.migrations.Whereable;
   }[T];
 
   export type InsertableForTable<T extends Table> = {
@@ -2669,6 +3551,10 @@ declare module 'zapatos/schema' {
     "PassFailDrop": PassFailDrop.Insertable;
     "Section": Section.Insertable;
     "TransferCourse": TransferCourse.Insertable;
+    "graphile_worker.job_queues": graphile_worker.job_queues.Insertable;
+    "graphile_worker.jobs": graphile_worker.jobs.Insertable;
+    "graphile_worker.known_crontabs": graphile_worker.known_crontabs.Insertable;
+    "graphile_worker.migrations": graphile_worker.migrations.Insertable;
   }[T];
 
   export type UpdatableForTable<T extends Table> = {
@@ -2680,6 +3566,10 @@ declare module 'zapatos/schema' {
     "PassFailDrop": PassFailDrop.Updatable;
     "Section": Section.Updatable;
     "TransferCourse": TransferCourse.Updatable;
+    "graphile_worker.job_queues": graphile_worker.job_queues.Updatable;
+    "graphile_worker.jobs": graphile_worker.jobs.Updatable;
+    "graphile_worker.known_crontabs": graphile_worker.known_crontabs.Updatable;
+    "graphile_worker.migrations": graphile_worker.migrations.Updatable;
   }[T];
 
   export type UniqueIndexForTable<T extends Table> = {
@@ -2691,6 +3581,10 @@ declare module 'zapatos/schema' {
     "PassFailDrop": PassFailDrop.UniqueIndex;
     "Section": Section.UniqueIndex;
     "TransferCourse": TransferCourse.UniqueIndex;
+    "graphile_worker.job_queues": graphile_worker.job_queues.UniqueIndex;
+    "graphile_worker.jobs": graphile_worker.jobs.UniqueIndex;
+    "graphile_worker.known_crontabs": graphile_worker.known_crontabs.UniqueIndex;
+    "graphile_worker.migrations": graphile_worker.migrations.UniqueIndex;
   }[T];
 
   export type ColumnForTable<T extends Table> = {
@@ -2702,6 +3596,10 @@ declare module 'zapatos/schema' {
     "PassFailDrop": PassFailDrop.Column;
     "Section": Section.Column;
     "TransferCourse": TransferCourse.Column;
+    "graphile_worker.job_queues": graphile_worker.job_queues.Column;
+    "graphile_worker.jobs": graphile_worker.jobs.Column;
+    "graphile_worker.known_crontabs": graphile_worker.known_crontabs.Column;
+    "graphile_worker.migrations": graphile_worker.migrations.Column;
   }[T];
 
   export type SQLForTable<T extends Table> = {
@@ -2713,6 +3611,10 @@ declare module 'zapatos/schema' {
     "PassFailDrop": PassFailDrop.SQL;
     "Section": Section.SQL;
     "TransferCourse": TransferCourse.SQL;
+    "graphile_worker.job_queues": graphile_worker.job_queues.SQL;
+    "graphile_worker.jobs": graphile_worker.jobs.SQL;
+    "graphile_worker.known_crontabs": graphile_worker.known_crontabs.SQL;
+    "graphile_worker.migrations": graphile_worker.migrations.SQL;
   }[T];
 
 }

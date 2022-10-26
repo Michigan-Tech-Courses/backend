@@ -1,5 +1,4 @@
 import {Module} from '@nestjs/common';
-import {PrismaModule} from 'src/prisma/prisma.module';
 import {ScrapeInstructorsTask} from './scrape-instructors';
 import {ScrapeRateMyProfessorsTask} from './scrape-ratemyprofessors';
 import {ScrapeSectionDetailsTask} from './scrape-section-details';
@@ -11,7 +10,6 @@ import {PoolModule} from '~/pool/pool.module';
 @Module({
 	imports: [
 		PoolModule,
-		PrismaModule,
 		FetcherModule,
 	],
 	controllers: [],

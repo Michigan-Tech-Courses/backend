@@ -24,12 +24,22 @@ export const mapWithSeparator = <TIn, TSep, TOut>(
  * @param columnsToCheck
  * @returns
  */
-export const updateDeletedAtUpdatedAtForUpsert = <T extends schema.Table> (tableName: T, columnsToCheck: Array<schema.ColumnForTable<T>>): schema.UpdatableForTable<T> => ({
-	deletedAt: db.sql`null`,
+export const updateUpdatedAtForUpsert = <T extends schema.Table> (tableName: T, columnsToCheck: Array<schema.ColumnForTable<T>>): schema.UpdatableForTable<T> => ({
 	updatedAt: db.sql`
 			CASE WHEN (
 				${mapWithSeparator(columnsToCheck, db.sql`, `, c => db.sql`${tableName}.${c}`)}
 			) IS DISTINCT FROM (
 				${mapWithSeparator(columnsToCheck, db.sql`, `, c => db.sql`EXCLUDED.${c}`)}
 			) THEN now() ELSE ${tableName}.${'updatedAt'} END`,
+});
+
+/**
+ * Pass the result of this function to the `updateValues` parameter of `db.upsert()` when the `updatedAt` column should change when any of the specified columns change.
+ * @param tableName
+ * @param columnsToCheck
+ * @returns
+ */
+export const updateDeletedAtUpdatedAtForUpsert = <T extends schema.Table> (tableName: T, columnsToCheck: Array<schema.ColumnForTable<T>>): schema.UpdatableForTable<T> => ({
+	deletedAt: db.sql`null`,
+	...updateUpdatedAtForUpsert(tableName, columnsToCheck),
 });

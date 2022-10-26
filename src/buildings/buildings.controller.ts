@@ -1,14 +1,15 @@
 import {Controller, Get, Header, Injectable} from '@nestjs/common';
-import {PrismaService} from 'src/prisma/prisma.service';
+import * as db from 'zapatos/db';
+import {PoolService} from '~/pool/pool.service';
 
 @Controller('buildings')
 @Injectable()
 export class BuildingsController {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly pool: PoolService) {}
 
 	@Get()
 	@Header('Cache-Control', 'public,max-age=120')
 	async getAllBuildings() {
-		return this.prisma.building.findMany();
+		return db.select('Building', db.all).run(this.pool);
 	}
 }

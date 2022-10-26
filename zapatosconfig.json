@@ -2,5 +2,15 @@
   "db": {
     "connectionString": "{{DATABASE_URL}}"
   },
-  "outDir": "./src"
+  "outDir": "./src",
+  "schemas": {
+    "public": {
+      "include": "*",
+      "exclude": []
+    },
+    "graphile_worker": {
+      "include": "*",
+      "exclude": []
+    }
+  }
 }

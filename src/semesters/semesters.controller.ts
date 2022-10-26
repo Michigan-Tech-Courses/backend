@@ -1,22 +1,18 @@
 import {Controller, Get, Header, Injectable} from '@nestjs/common';
-import {PrismaService} from 'src/prisma/prisma.service';
+import * as db from 'zapatos/db';
+import {PoolService} from '~/pool/pool.service';
 
 @Controller('semesters')
 @Injectable()
 export class SemestersController {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly pool: PoolService) {}
 
 	@Get()
 	@Header('Cache-Control', 'public, max-age=120')
 	async getDistinctSemesters() {
-		const semesters = await this.prisma.course.findMany({
+		return db.select('Course', db.all, {
 			distinct: ['semester', 'year'],
-			select: {
-				semester: true,
-				year: true
-			}
-		});
-
-		return semesters;
+			columns: ['semester', 'year']
+		}).run(this.pool);
 	}
 }

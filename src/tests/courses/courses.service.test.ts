@@ -136,3 +136,11 @@ test.serial('returns unique courses with updatedSince (deleted)', async t => {
 
 	t.is((await pool.query(query.text, query.values)).rowCount, 1);
 });
+
+test.serial('finds first course', async t => {
+	const {service, pool} = await getTestService(CoursesService, {
+		seedCourses: true
+	});
+
+	t.truthy(await service.getFirstCourseZapatosQuery().run(pool));
+});

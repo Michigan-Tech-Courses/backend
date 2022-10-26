@@ -2,7 +2,7 @@ import * as db from 'zapatos/db';
 import type * as schema from 'zapatos/schema';
 import sortSemesters from 'src/lib/sort-semesters';
 import type {Pool} from 'pg';
-import type {GetCoursesParameters, GetUniqueCoursesParameters} from './types';
+import type {FindFirstCourseParameters, GetCoursesParameters, GetUniqueCoursesParameters} from './types';
 
 export class CoursesService {
 	getAllCoursesQuery(parameters?: GetCoursesParameters) {
@@ -55,5 +55,27 @@ export class CoursesService {
 		}
 
 		return db.sql`SELECT * FROM ${'Course'} WHERE ${where} ORDER BY ${'id'} ASC`.compile();
+	}
+
+	getFirstCourseZapatosQuery(parameters?: FindFirstCourseParameters) {
+		const where: schema.WhereableForTable<'Course'> = {};
+
+		if (parameters?.semester) {
+			where.semester = parameters.semester;
+		}
+
+		if (parameters?.year) {
+			where.year = parameters.year;
+		}
+
+		if (parameters?.crse) {
+			where.crse = parameters.crse;
+		}
+
+		if (parameters?.subject) {
+			where.subject = parameters.subject;
+		}
+
+		return db.selectOne('Course', where);
 	}
 }

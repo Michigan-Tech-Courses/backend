@@ -1,12 +1,11 @@
 import {Test} from '@nestjs/testing';
 import type {Type} from '@nestjs/common';
+import {PrismaClient} from '@prisma/client';
 import type {GetTestDatabaseOptions} from './get-test-database';
 import {getTestDatabase} from './get-test-database';
 import {FakeFetcherService} from './fetcher-fake';
 import {FetcherModule} from '~/fetcher/fetcher.module';
 import {FetcherService} from '~/fetcher/fetcher.service';
-import {PrismaModule} from '~/prisma/prisma.module';
-import {PrismaService} from '~/prisma/prisma.service';
 import {CacheModule} from '~/cache/cache.module';
 import {PoolModule} from '~/pool/pool.module';
 
@@ -31,7 +30,7 @@ export const getTestService = async <T extends Type>(service: T, options: Option
 	const fetcherFake = new FakeFetcherService();
 
 	const module = await Test.createTestingModule({
-		imports: [FetcherModule, PrismaModule, PoolModule, CacheModule],
+		imports: [FetcherModule, PoolModule, CacheModule],
 		providers: [service]
 	})
 		.overrideProvider(FetcherService)
@@ -39,12 +38,11 @@ export const getTestService = async <T extends Type>(service: T, options: Option
 		.compile();
 
 	const compiledService: UnwrapNestType<T> = module.get(service);
-	const prisma = module.get(PrismaService);
 
 	return {
 		service: compiledService,
 		fetcherFake,
-		prisma,
+		prisma: new PrismaClient(),
 		pool
 	};
 };

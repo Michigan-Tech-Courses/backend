@@ -1,10 +1,11 @@
 import {Controller, Get, Injectable} from '@nestjs/common';
-import {PrismaService} from 'src/prisma/prisma.service';
+import * as db from 'zapatos/db';
+import {PoolService} from '~/pool/pool.service';
 
 @Controller('health')
 @Injectable()
 export class HealthController {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly pool: PoolService) {}
 
 	@Get()
 	async getHealth() {
@@ -23,7 +24,7 @@ export class HealthController {
 
 	private async canConnectToDatabase() {
 		try {
-			await this.prisma.$connect();
+			await this.pool.connect();
 			return true;
 		} catch {
 			return false;
@@ -32,15 +33,12 @@ export class HealthController {
 
 	private async arePendingJobs() {
 		try {
-			const [{pending_jobs}] = await this.prisma.$queryRaw<Array<{pending_jobs: number}>>`
-        SELECT COUNT(*) AS pending_jobs
-        FROM "graphile_worker"."jobs"
-        WHERE
-          locked_at IS NULL AND
-          run_at <= NOW() AND
-          created_at <= NOW() - INTERVAL '1 minute' AND
-          attempts = 0
-      `;
+			const pending_jobs = await db.count('graphile_worker.jobs', {
+				locked_at: db.conditions.isNull,
+				run_at: db.conditions.lte(db.sql`now()`),
+				created_at: db.conditions.lte(db.sql`now() - interval '1 minute'`),
+				attempts: 0
+			}).run(this.pool);
 
 			return pending_jobs > 0;
 		} catch {
@@ -50,12 +48,9 @@ export class HealthController {
 
 	private async haveJobsErrored() {
 		try {
-			const [{errored_jobs}] = await this.prisma.$queryRaw<Array<{errored_jobs: number}>>`
-				SELECT COUNT(*) AS errored_jobs
-				FROM "graphile_worker"."jobs"
-				WHERE
-					last_error IS NOT NULL
-			`;
+			const errored_jobs = await db.count('graphile_worker.jobs', {
+				last_error: db.conditions.isNotNull
+			}).run(this.pool);
 
 			return errored_jobs > 0;
 		} catch {

@@ -22,6 +22,19 @@ test.serial('returns all records', async t => {
 		}
 	});
 
+	const row2 = await prisma.passFailDrop.create({
+		data: {
+			courseSubject: 'CS',
+			courseCrse: '12344',
+			year: 2021,
+			semester: Semester.FALL,
+			section: '0A',
+			failed: 3,
+			dropped: 8,
+			total: 10
+		}
+	});
+
 	t.deepEqual(await service.getAll(), {
 		[`${row.courseSubject}${row.courseCrse}`]: [{
 			dropped: row.dropped,
@@ -29,6 +42,13 @@ test.serial('returns all records', async t => {
 			total: row.total,
 			semester: row.semester,
 			year: row.year,
+		}],
+		[`${row2.courseSubject}${row2.courseCrse}`]: [{
+			dropped: row2.dropped,
+			failed: row2.failed,
+			total: row2.total,
+			semester: row2.semester,
+			year: row2.year,
 		}]
 	});
 });

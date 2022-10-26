@@ -1,10 +1,10 @@
 import {Module} from '@nestjs/common';
-import {PrismaModule} from 'src/prisma/prisma.module';
 import {HealthController} from './health.controller';
+import {PoolModule} from '~/pool/pool.module';
 
 @Module({
 	imports: [
-		PrismaModule
+		PoolModule
 	],
 	controllers: [HealthController],
 	providers: []
