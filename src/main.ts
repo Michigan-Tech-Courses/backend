@@ -9,6 +9,8 @@ import {
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import {WorkerService} from 'nestjs-graphile-worker';
 import {AppModule} from './app.module';
+// eslint-disable-next-line import/no-unassigned-import
+import './sentry';
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());

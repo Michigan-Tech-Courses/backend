@@ -41,6 +41,8 @@
     "@rschedule/core": "^1.2.3",
     "@rschedule/json-tools": "^1.2.3",
     "@rschedule/standard-date-adapter": "^1.2.3",
+    "@sentry/node": "7.16.0",
+    "@sentry/tracing": "7.16.0",
     "JSONStream": "1.3.5",
     "arr-diff": "^4.0.0",
     "cache-manager": "^3.4.0",
