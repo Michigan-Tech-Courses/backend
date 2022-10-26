@@ -7,7 +7,9 @@ jobs:
   deploy:
     name: Deploy to Fly.io
     runs-on: ubuntu-20.04
-    concurrency: fly-deploy
+    concurrency:
+      group: fly-deploy
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v3
