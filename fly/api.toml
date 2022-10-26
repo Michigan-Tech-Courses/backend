@@ -5,6 +5,7 @@ app = "courses-api"
 
 [deploy]
   release_command = "migrations:run"
+  kill_timeout = 300
 
 [env]
   THUMBOR_URL = "https://courses-thumbor.fly.dev"
