@@ -9,10 +9,9 @@ import {GraphileWorkerListener, OnWorkerEvent} from 'nestjs-graphile-worker';
 export class AppService {
 	@OnWorkerEvent('job:error')
 	onJobError({job, error}: WorkerEventMap['job:error']) {
-		Sentry.captureException(error, {
-			contexts: {
-				job: job as Record<string, any>
-			}
+		Sentry.withScope(scope => {
+			scope.setExtra('job', job);
+			Sentry.captureException(error);
 		});
 	}
 }
