@@ -7,6 +7,7 @@ export class PoolService extends Pool
 		// Todo: pull from config
 		super({
 			connectionString: process.env.DATABASE_URL,
+			max: 10
 		});
 	}
 
