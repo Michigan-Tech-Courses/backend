@@ -10,22 +10,22 @@ export class HealthController {
 
 	@Get()
 	async getHealth() {
-		const [isDatabaseReachable, arePendingJobs, haveJobsErrored] = await Promise.all([
+		const [canConnectToDatabase, arePendingJobs, haveJobsErrored] = await Promise.all([
 			this.canConnectToDatabase(),
 			this.arePendingJobs(),
 			this.haveJobsErrored()
-		]);
+		].map(async p => pTimeout(p, 2000).catch(() => -1)));
 
 		return {
-			database: this.boolStatusToStr(isDatabaseReachable),
-			jobQueue: this.boolStatusToStr(!arePendingJobs),
-			jobs: this.boolStatusToStr(!haveJobsErrored)
+			canConnectToDatabase,
+			arePendingJobs,
+			haveJobsErrored
 		};
 	}
 
 	private async canConnectToDatabase() {
 		try {
-			await pTimeout(this.pool.connect(), 2000);
+			await this.pool.connect();
 			return true;
 		} catch {
 			return false;
@@ -34,16 +34,14 @@ export class HealthController {
 
 	private async arePendingJobs() {
 		try {
-			return await pTimeout((async () => {
-				const pending_jobs = await db.count('graphile_worker.jobs', {
-					locked_at: db.conditions.isNull,
-					run_at: db.conditions.lte(db.sql`now()`),
-					created_at: db.conditions.lte(db.sql`now() - interval '1 minute'`),
-					attempts: 0
-				}).run(this.pool);
+			const pending_jobs = await db.count('graphile_worker.jobs', {
+				locked_at: db.conditions.isNull,
+				run_at: db.conditions.lte(db.sql`now()`),
+				created_at: db.conditions.lte(db.sql`now() - interval '1 minute'`),
+				attempts: 0
+			}).run(this.pool);
 
-				return pending_jobs > 0;
-			})(), 2000);
+			return pending_jobs > 0;
 		} catch {
 			return false;
 		}
@@ -51,19 +49,13 @@ export class HealthController {
 
 	private async haveJobsErrored() {
 		try {
-			return await pTimeout((async () => {
-				const errored_jobs = await db.count('graphile_worker.jobs', {
-					last_error: db.conditions.isNotNull
-				}).run(this.pool);
+			const errored_jobs = await db.count('graphile_worker.jobs', {
+				last_error: db.conditions.isNotNull
+			}).run(this.pool);
 
-				return errored_jobs > 0;
-			})(), 2000);
+			return errored_jobs > 0;
 		} catch {
 			return false;
 		}
-	}
-
-	private boolStatusToStr(status: boolean) {
-		return status ? 'healthy' : 'degraded';
 	}
 }

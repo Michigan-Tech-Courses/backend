@@ -8,9 +8,9 @@ test.serial('healthy', async t => {
 	const health = await service.getHealth();
 
 	t.deepEqual(health, {
-		database: 'healthy',
-		jobQueue: 'healthy',
-		jobs: 'healthy'
+		arePendingJobs: false,
+		canConnectToDatabase: true,
+		haveJobsErrored: false,
 	});
 });
 
@@ -24,7 +24,7 @@ test.serial('database down', async t => {
 	const health = await service.getHealth();
 
 	t.like(health, {
-		database: 'degraded'
+		canConnectToDatabase: false
 	});
 });
 
@@ -35,14 +35,14 @@ test.serial('job queue clogged', async t => {
 	await prisma.$queryRaw`INSERT INTO "graphile_worker"."jobs" (task_identifier, payload, created_at) VALUES ('foo', '{}', NOW())`;
 	const health = await service.getHealth();
 	t.like(health, {
-		jobQueue: 'healthy'
+		arePendingJobs: false,
 	});
 
 	// ...but a job that was created two minutes ago is.
 	await prisma.$queryRaw`INSERT INTO "graphile_worker"."jobs" (task_identifier, payload, created_at) VALUES ('foo', '{}', NOW() - INTERVAL '2 minute')`;
 	const degradedHealth = await service.getHealth();
 	t.like(degradedHealth, {
-		jobQueue: 'degraded'
+		arePendingJobs: true
 	});
 });
 
@@ -52,6 +52,6 @@ test.serial('job queue with errors', async t => {
 	await prisma.$queryRaw`INSERT INTO "graphile_worker"."jobs" (task_identifier, payload, created_at, last_error) VALUES ('foo', '{}', NOW(), 'foo')`;
 	const health = await service.getHealth();
 	t.like(health, {
-		jobs: 'degraded'
+		haveJobsErrored: true
 	});
 });
