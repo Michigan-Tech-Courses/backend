@@ -22,6 +22,7 @@ import {AppService} from './app.service';
 			useFactory: () => ({
 				connectionString: process.env.DATABASE_URL,
 				crontab,
+				concurrency: 2,
 			})
 		}),
 		TasksModule,
