@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "start": "nest start",
+    "start": "node dist/src/main",
     "dev": "NODE_ENV=dev nest start --watch",
     "dev:debug": "NODE_ENV=dev nest start --debug --watch",
     "dev:no-processors": "DISABLE_PROCESSORS=true yarn dev",
