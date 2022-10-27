@@ -30,6 +30,8 @@ async function bootstrap() {
 
 	app.enableCors();
 
+	app.enableShutdownHooks();
+
 	await app.listen(process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3000, '0.0.0.0');
 
 	void app.get(WorkerService).run();
