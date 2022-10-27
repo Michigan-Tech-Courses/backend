@@ -1,5 +1,6 @@
 import {Injectable, Logger} from '@nestjs/common';
 import pThrottle from 'p-throttle';
+import * as Sentry from '@sentry/node';
 import {dateToTerm, termToDate} from 'src/lib/dates';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
 import parseLocation from 'src/lib/parse-location';
@@ -14,7 +15,7 @@ import {mapWithSeparator, updateDeletedAtUpdatedAtForUpsert} from '~/lib/db-util
 
 type UnwrapQueryResult<T> = T extends db.SQLFragment<infer U> ? U : never;
 
-const getSectionsQuery = (terms: Date[]) => db.select('Section', {
+const getWhereForSectionsQuery = (terms: Date[]): schema.WhereableForTable<'Section'> => ({
 	courseId: db.sql<schema.SQLForTable<'Course'>>`
 		${db.self} IN (
 			SELECT id
@@ -23,7 +24,9 @@ const getSectionsQuery = (terms: Date[]) => db.select('Section', {
 				(${mapWithSeparator(terms.map(d => dateToTerm(d)), db.sql` OR `, term => db.sql`(year = ${db.param(term.year)} AND semester = ${db.param(term.semester)})`)}) AND
 				"deletedAt" IS NULL
 		)`,
-}, {
+});
+
+const getSectionsQuery = (terms: Date[]) => db.select('Section', getWhereForSectionsQuery(terms), {
 	lateral: {
 		course: db.selectExactlyOne('Course', {
 			id: db.parent('courseId')
@@ -55,17 +58,29 @@ export class ScrapeSectionDetailsTask {
 
 		const sectionsQuery = getSectionsQuery(terms);
 
+		let totalSectionsNotFound = 0;
+
 		// Query streaming requires a direct client instead of a pool instance
 		const poolClient = await this.pool.connect();
 		const sectionsQueryStream = poolClient.query(new QueryStream(sectionsQuery.compile().text, sectionsQuery.compile().values));
 		for await (const {result: sections} of sectionsQueryStream as AsyncIterable<{result: SectionsQueryResult}>) {
-			await this.processSections(sections, buildings);
+			const {numNotFound} = await this.processSections(sections, buildings);
+			totalSectionsNotFound += numNotFound;
 		}
 
 		poolClient.release();
+
+		const percentageNotFound = totalSectionsNotFound / (await db.count('Section', getWhereForSectionsQuery(terms)).run(this.pool));
+
+		if (percentageNotFound > 0.1) {
+			// We don't throw here because we don't want to keep retrying the task
+			Sentry.captureException(new Error(`More than 10% of sections were not found: ${percentageNotFound}. There's probably an issue with the scraper.`));
+		}
 	}
 
-	private async processSections(sections: SectionsQueryResult, buildings: Array<schema.JSONSelectableForTable<'Building'>>) {
+	private async processSections(sections: SectionsQueryResult, buildings: Array<schema.JSONSelectableForTable<'Building'>>): Promise<{numNotFound: number}> {
+		let numberNotFound = 0;
+
 		const scrapedSectionDetailsWithNulls = await Promise.all(sections.map(async section => {
 			try {
 				const extScrapedDetails = await this.throttledGetSectionDetails({
@@ -83,6 +98,7 @@ export class ScrapeSectionDetailsTask {
 				if ((error as Error).message === 'Course not found') {
 					this.logger.log(`Did not find ${section.course.id}: ${JSON.stringify(section.course)}`);
 					this.logger.log('It should be cleaned up automatically on the next course scrape.');
+					numberNotFound++;
 					return null;
 				}
 
@@ -134,6 +150,8 @@ export class ScrapeSectionDetailsTask {
 				'offered',
 			])
 		}).run(this.pool);
+
+		return {numNotFound: numberNotFound};
 	}
 
 	private async updateAssociatedInstructors(sections: Array<{sectionId: string; instructorNames: string[]}>) {

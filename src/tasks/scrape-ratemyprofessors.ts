@@ -23,6 +23,7 @@ export class ScrapeRateMyProfessorsTask {
 			throw new Error('School ID could not be resolved.');
 		}
 
+		// Todo: make this faster with transactions
 		const processInstructor = pThrottle({
 			limit: 2,
 			interval: 100
