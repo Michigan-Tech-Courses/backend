@@ -12,8 +12,7 @@ import {FetcherService} from '~/fetcher/fetcher.service';
 import {fetcherSemesterToDatabaseSemester} from '~/lib/convert-semester-type';
 import {PoolService} from '~/pool/pool.service';
 import {mapWithSeparator, updateDeletedAtUpdatedAtForUpsert} from '~/lib/db-utils';
-
-type UnwrapQueryResult<T> = T extends db.SQLFragment<infer U> ? U : never;
+import {batchAsyncIterator} from '~/lib/batch-async-iterator';
 
 const getWhereForSectionsQuery = (terms: Date[]): schema.WhereableForTable<'Section'> => ({
 	courseId: db.sql<schema.SQLForTable<'Course'>>`
@@ -26,21 +25,26 @@ const getWhereForSectionsQuery = (terms: Date[]): schema.WhereableForTable<'Sect
 		)`,
 });
 
-const getSectionsQuery = (terms: Date[]) => db.select('Section', getWhereForSectionsQuery(terms), {
-	lateral: {
-		course: db.selectExactlyOne('Course', {
-			id: db.parent('courseId')
-		}, {
-			columns: ['id', 'subject', 'crse', 'year', 'semester', 'title'],
-		})
-	},
-	order: {
-		by: 'id',
-		direction: 'ASC'
-	}
-});
+const getSectionsQuery = (terms: Date[]) => db.sql`
+SELECT ${'Section'}.*, jsonb_build_object(
+	'id', course.${'id'},
+	'subject', course.${'subject'},
+	'crse', course.${'crse'},
+	'year', course.${'year'},
+	'semester', course.${'semester'},
+	'title', course.${'title'}
+) AS course
+FROM ${'Section'}
+LEFT JOIN LATERAL (
+	SELECT *
+	FROM ${'Course'}
+	WHERE ${'Course'}.${'id'} = ${'Section'}.${'courseId'}
+) course ON true
+WHERE ${getWhereForSectionsQuery(terms)}
+ORDER BY ${'Section'}.${'id'} ASC
+`;
 
-type SectionsQueryResult = UnwrapQueryResult<ReturnType<typeof getSectionsQuery>>;
+type SectionsQueryResult = Array<schema.SelectableForTable<'Section'> & {course: Pick<schema.SelectableForTable<'Course'>, 'id' | 'subject' | 'crse' | 'year' | 'semester' | 'title'>}>;
 
 @Injectable()
 @Task('scrape-section-details')
@@ -62,13 +66,15 @@ export class ScrapeSectionDetailsTask {
 
 		// Query streaming requires a direct client instead of a pool instance
 		const poolClient = await this.pool.connect();
-		const sectionsQueryStream = poolClient.query(new QueryStream(sectionsQuery.compile().text, sectionsQuery.compile().values));
-		for await (const {result: sections} of sectionsQueryStream as AsyncIterable<{result: SectionsQueryResult}>) {
-			const {numNotFound} = await this.processSections(sections, buildings);
-			totalSectionsNotFound += numNotFound;
+		try {
+			const sectionsQueryStream: AsyncIterable<SectionsQueryResult[number]> = poolClient.query(new QueryStream(sectionsQuery.compile().text, sectionsQuery.compile().values));
+			for await (const sections of batchAsyncIterator(sectionsQueryStream, 256)) {
+				const {numNotFound} = await this.processSections(sections, buildings);
+				totalSectionsNotFound += numNotFound;
+			}
+		} finally {
+			poolClient.release();
 		}
-
-		poolClient.release();
 
 		const percentageNotFound = totalSectionsNotFound / (await db.count('Section', getWhereForSectionsQuery(terms)).run(this.pool));
 
