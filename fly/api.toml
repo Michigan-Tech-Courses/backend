@@ -5,7 +5,7 @@ app = "courses-api"
   buildpacks = ["gcr.io/paketo-buildpacks/nodejs"]
 
 [deploy]
-  release_command = "migrations:run"
+  release_command = "yarn migrations:run"
   kill_timeout = 300
 
 [env]
