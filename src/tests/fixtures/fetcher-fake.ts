@@ -44,6 +44,7 @@ const getSchool = (): ISchoolFromSearch => ({
 
 const getTeacherPage = (): ITeacherPage => ({
 	id: 'gorkem-asilioglu',
+	legacyId: 12_345,
 	firstName: 'Gorkem',
 	lastName: 'Asilioglu',
 	avgDifficulty: 5,
