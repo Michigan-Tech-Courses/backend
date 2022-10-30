@@ -15,6 +15,7 @@ export class CoursesController {
 	@Get()
 	async getAllCourses(@Res() reply: FastifyReply, @Query() parameters?: GetCoursesParameters) {
 		reply.raw.setHeader('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400');
+		reply.raw.setHeader('Access-Control-Allow-Origin', '*');
 
 		return streamSqlQuery({
 			query: this.service.getAllCoursesQuery(parameters),
@@ -26,6 +27,7 @@ export class CoursesController {
 	@Get('/unique')
 	async getUniqueCourses(@Res() reply: FastifyReply, @Query() parameters?: GetUniqueCoursesParameters) {
 		reply.raw.setHeader('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400');
+		reply.raw.setHeader('Access-Control-Allow-Origin', '*');
 
 		return streamSqlQuery({
 			query: await this.service.getUniqueCoursesQuery(this.pool, parameters),

@@ -20,6 +20,7 @@ export class SectionsController {
 	@Get()
 	async getSections(@Res() reply: FastifyReply, @Query() parameters?: GetSectionsParameters) {
 		reply.raw.setHeader('Cache-Control', 'public, max-age=120, stale-while-revalidate=86400');
+		reply.raw.setHeader('Access-Control-Allow-Origin', '*');
 
 		return streamSqlQuery({
 			query: this.service.getSectionsQuery(parameters),
