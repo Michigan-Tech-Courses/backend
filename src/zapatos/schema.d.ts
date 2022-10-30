@@ -1436,6 +1436,149 @@ declare module 'zapatos/schema' {
   }
 
   /**
+   * **JobLog**
+   * - Table in database
+   */
+  export namespace JobLog {
+    export type Table = 'JobLog';
+    export interface Selectable {
+      /**
+      * **JobLog.id**
+      * - `text` in database
+      * - `NOT NULL`, default: `gen_random_uuid()`
+      */
+      id: string;
+      /**
+      * **JobLog.jobName**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      jobName: string;
+      /**
+      * **JobLog.graphileJob**
+      * - `jsonb` in database
+      * - `NOT NULL`, no default
+      */
+      graphileJob: db.JSONValue;
+      /**
+      * **JobLog.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
+      */
+      createdAt: Date;
+    }
+    export interface JSONSelectable {
+      /**
+      * **JobLog.id**
+      * - `text` in database
+      * - `NOT NULL`, default: `gen_random_uuid()`
+      */
+      id: string;
+      /**
+      * **JobLog.jobName**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      jobName: string;
+      /**
+      * **JobLog.graphileJob**
+      * - `jsonb` in database
+      * - `NOT NULL`, no default
+      */
+      graphileJob: db.JSONValue;
+      /**
+      * **JobLog.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
+      */
+      createdAt: db.TimestampString;
+    }
+    export interface Whereable {
+      /**
+      * **JobLog.id**
+      * - `text` in database
+      * - `NOT NULL`, default: `gen_random_uuid()`
+      */
+      id?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **JobLog.jobName**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      jobName?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **JobLog.graphileJob**
+      * - `jsonb` in database
+      * - `NOT NULL`, no default
+      */
+      graphileJob?: db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **JobLog.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+    }
+    export interface Insertable {
+      /**
+      * **JobLog.id**
+      * - `text` in database
+      * - `NOT NULL`, default: `gen_random_uuid()`
+      */
+      id?: string | db.Parameter<string> | db.DefaultType | db.SQLFragment;
+      /**
+      * **JobLog.jobName**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      jobName: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **JobLog.graphileJob**
+      * - `jsonb` in database
+      * - `NOT NULL`, no default
+      */
+      graphileJob: db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment;
+      /**
+      * **JobLog.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.DefaultType | db.SQLFragment;
+    }
+    export interface Updatable {
+      /**
+      * **JobLog.id**
+      * - `text` in database
+      * - `NOT NULL`, default: `gen_random_uuid()`
+      */
+      id?: string | db.Parameter<string> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.DefaultType | db.SQLFragment>;
+      /**
+      * **JobLog.jobName**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      jobName?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **JobLog.graphileJob**
+      * - `jsonb` in database
+      * - `NOT NULL`, no default
+      */
+      graphileJob?: db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment | db.SQLFragment<any, db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment>;
+      /**
+      * **JobLog.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, default: `CURRENT_TIMESTAMP`
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.DefaultType | db.SQLFragment>;
+    }
+    export type UniqueIndex = 'JobLog_pkey';
+    export type Column = keyof Selectable;
+    export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
+    export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
+    export type SQL = SQLExpression | SQLExpression[];
+  }
+
+  /**
    * **PassFailDrop**
    * - Table in database
    */
@@ -2587,20 +2730,20 @@ declare module 'zapatos/schema' {
   /* --- aggregate types --- */
 
   export namespace public {  
-    export type Table = _InstructorToSection.Table | _prisma_migrations.Table | Building.Table | Course.Table | Instructor.Table | PassFailDrop.Table | Section.Table | TransferCourse.Table;
-    export type Selectable = _InstructorToSection.Selectable | _prisma_migrations.Selectable | Building.Selectable | Course.Selectable | Instructor.Selectable | PassFailDrop.Selectable | Section.Selectable | TransferCourse.Selectable;
-    export type JSONSelectable = _InstructorToSection.JSONSelectable | _prisma_migrations.JSONSelectable | Building.JSONSelectable | Course.JSONSelectable | Instructor.JSONSelectable | PassFailDrop.JSONSelectable | Section.JSONSelectable | TransferCourse.JSONSelectable;
-    export type Whereable = _InstructorToSection.Whereable | _prisma_migrations.Whereable | Building.Whereable | Course.Whereable | Instructor.Whereable | PassFailDrop.Whereable | Section.Whereable | TransferCourse.Whereable;
-    export type Insertable = _InstructorToSection.Insertable | _prisma_migrations.Insertable | Building.Insertable | Course.Insertable | Instructor.Insertable | PassFailDrop.Insertable | Section.Insertable | TransferCourse.Insertable;
-    export type Updatable = _InstructorToSection.Updatable | _prisma_migrations.Updatable | Building.Updatable | Course.Updatable | Instructor.Updatable | PassFailDrop.Updatable | Section.Updatable | TransferCourse.Updatable;
-    export type UniqueIndex = _InstructorToSection.UniqueIndex | _prisma_migrations.UniqueIndex | Building.UniqueIndex | Course.UniqueIndex | Instructor.UniqueIndex | PassFailDrop.UniqueIndex | Section.UniqueIndex | TransferCourse.UniqueIndex;
-    export type Column = _InstructorToSection.Column | _prisma_migrations.Column | Building.Column | Course.Column | Instructor.Column | PassFailDrop.Column | Section.Column | TransferCourse.Column;
+    export type Table = _InstructorToSection.Table | _prisma_migrations.Table | Building.Table | Course.Table | Instructor.Table | JobLog.Table | PassFailDrop.Table | Section.Table | TransferCourse.Table;
+    export type Selectable = _InstructorToSection.Selectable | _prisma_migrations.Selectable | Building.Selectable | Course.Selectable | Instructor.Selectable | JobLog.Selectable | PassFailDrop.Selectable | Section.Selectable | TransferCourse.Selectable;
+    export type JSONSelectable = _InstructorToSection.JSONSelectable | _prisma_migrations.JSONSelectable | Building.JSONSelectable | Course.JSONSelectable | Instructor.JSONSelectable | JobLog.JSONSelectable | PassFailDrop.JSONSelectable | Section.JSONSelectable | TransferCourse.JSONSelectable;
+    export type Whereable = _InstructorToSection.Whereable | _prisma_migrations.Whereable | Building.Whereable | Course.Whereable | Instructor.Whereable | JobLog.Whereable | PassFailDrop.Whereable | Section.Whereable | TransferCourse.Whereable;
+    export type Insertable = _InstructorToSection.Insertable | _prisma_migrations.Insertable | Building.Insertable | Course.Insertable | Instructor.Insertable | JobLog.Insertable | PassFailDrop.Insertable | Section.Insertable | TransferCourse.Insertable;
+    export type Updatable = _InstructorToSection.Updatable | _prisma_migrations.Updatable | Building.Updatable | Course.Updatable | Instructor.Updatable | JobLog.Updatable | PassFailDrop.Updatable | Section.Updatable | TransferCourse.Updatable;
+    export type UniqueIndex = _InstructorToSection.UniqueIndex | _prisma_migrations.UniqueIndex | Building.UniqueIndex | Course.UniqueIndex | Instructor.UniqueIndex | JobLog.UniqueIndex | PassFailDrop.UniqueIndex | Section.UniqueIndex | TransferCourse.UniqueIndex;
+    export type Column = _InstructorToSection.Column | _prisma_migrations.Column | Building.Column | Course.Column | Instructor.Column | JobLog.Column | PassFailDrop.Column | Section.Column | TransferCourse.Column;
   
-    export type AllBaseTables = [_InstructorToSection.Table, _prisma_migrations.Table, Building.Table, Course.Table, Instructor.Table, PassFailDrop.Table, Section.Table, TransferCourse.Table];
+    export type AllBaseTables = [_InstructorToSection.Table, _prisma_migrations.Table, Building.Table, Course.Table, Instructor.Table, JobLog.Table, PassFailDrop.Table, Section.Table, TransferCourse.Table];
     export type AllForeignTables = [];
     export type AllViews = [];
     export type AllMaterializedViews = [];
-    export type AllTablesAndViews = [_InstructorToSection.Table, _prisma_migrations.Table, Building.Table, Course.Table, Instructor.Table, PassFailDrop.Table, Section.Table, TransferCourse.Table];
+    export type AllTablesAndViews = [_InstructorToSection.Table, _prisma_migrations.Table, Building.Table, Course.Table, Instructor.Table, JobLog.Table, PassFailDrop.Table, Section.Table, TransferCourse.Table];
   }
 
 
@@ -3503,6 +3646,7 @@ declare module 'zapatos/schema' {
     "Building": Building.Selectable;
     "Course": Course.Selectable;
     "Instructor": Instructor.Selectable;
+    "JobLog": JobLog.Selectable;
     "PassFailDrop": PassFailDrop.Selectable;
     "Section": Section.Selectable;
     "TransferCourse": TransferCourse.Selectable;
@@ -3518,6 +3662,7 @@ declare module 'zapatos/schema' {
     "Building": Building.JSONSelectable;
     "Course": Course.JSONSelectable;
     "Instructor": Instructor.JSONSelectable;
+    "JobLog": JobLog.JSONSelectable;
     "PassFailDrop": PassFailDrop.JSONSelectable;
     "Section": Section.JSONSelectable;
     "TransferCourse": TransferCourse.JSONSelectable;
@@ -3533,6 +3678,7 @@ declare module 'zapatos/schema' {
     "Building": Building.Whereable;
     "Course": Course.Whereable;
     "Instructor": Instructor.Whereable;
+    "JobLog": JobLog.Whereable;
     "PassFailDrop": PassFailDrop.Whereable;
     "Section": Section.Whereable;
     "TransferCourse": TransferCourse.Whereable;
@@ -3548,6 +3694,7 @@ declare module 'zapatos/schema' {
     "Building": Building.Insertable;
     "Course": Course.Insertable;
     "Instructor": Instructor.Insertable;
+    "JobLog": JobLog.Insertable;
     "PassFailDrop": PassFailDrop.Insertable;
     "Section": Section.Insertable;
     "TransferCourse": TransferCourse.Insertable;
@@ -3563,6 +3710,7 @@ declare module 'zapatos/schema' {
     "Building": Building.Updatable;
     "Course": Course.Updatable;
     "Instructor": Instructor.Updatable;
+    "JobLog": JobLog.Updatable;
     "PassFailDrop": PassFailDrop.Updatable;
     "Section": Section.Updatable;
     "TransferCourse": TransferCourse.Updatable;
@@ -3578,6 +3726,7 @@ declare module 'zapatos/schema' {
     "Building": Building.UniqueIndex;
     "Course": Course.UniqueIndex;
     "Instructor": Instructor.UniqueIndex;
+    "JobLog": JobLog.UniqueIndex;
     "PassFailDrop": PassFailDrop.UniqueIndex;
     "Section": Section.UniqueIndex;
     "TransferCourse": TransferCourse.UniqueIndex;
@@ -3593,6 +3742,7 @@ declare module 'zapatos/schema' {
     "Building": Building.Column;
     "Course": Course.Column;
     "Instructor": Instructor.Column;
+    "JobLog": JobLog.Column;
     "PassFailDrop": PassFailDrop.Column;
     "Section": Section.Column;
     "TransferCourse": TransferCourse.Column;
@@ -3608,6 +3758,7 @@ declare module 'zapatos/schema' {
     "Building": Building.SQL;
     "Course": Course.SQL;
     "Instructor": Instructor.SQL;
+    "JobLog": JobLog.SQL;
     "PassFailDrop": PassFailDrop.SQL;
     "Section": Section.SQL;
     "TransferCourse": TransferCourse.SQL;

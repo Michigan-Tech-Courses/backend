@@ -9,13 +9,16 @@ import {CoursesModule} from './courses/courses.module';
 import {SectionsModule} from './sections/sections.module';
 import {PassFailDropModule} from './passfaildrop/passfaildrop.module';
 import {SemestersModule} from './semesters/semesters.module';
+import {StatsModule} from './stats/stats.module';
 import {BuildingsModule} from './buildings/buildings.module';
 import {TransferCoursesModule} from './transfer-courses/transfer-courses.module';
 import {crontab} from './tasks/crontab';
 import {AppService} from './app.service';
+import {PoolModule} from './pool/pool.module';
 
 @Module({
 	imports: [
+		PoolModule,
 		CacheModule,
 		ConfigModule.forRoot(),
 		GraphileWorkerModule.forRootAsync({
@@ -32,6 +35,7 @@ import {AppService} from './app.service';
 		PassFailDropModule,
 		SectionsModule,
 		SemestersModule,
+		StatsModule,
 		BuildingsModule,
 		TransferCoursesModule,
 	],

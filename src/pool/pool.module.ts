@@ -14,6 +14,6 @@ export class PoolModule implements OnApplicationShutdown {
 
 	async onApplicationShutdown() {
 		const pool = this.moduleRef.get(PoolService);
-		return pool.end();
+		await pool.end();
 	}
 }

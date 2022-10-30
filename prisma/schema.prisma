@@ -16,7 +16,7 @@ model Course {
   crse        String
   title       String
   description String?
-  updatedAt   DateTime   @updatedAt @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
   deletedAt   DateTime?
   prereqs     String?
   offered     Semester[]
@@ -66,7 +66,7 @@ model Section {
   takenSeats     Int
   availableSeats Int
   fee            Int
-  updatedAt      DateTime     @updatedAt @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
   deletedAt      DateTime?
   room           String?
   buildingName   String?
@@ -75,9 +75,9 @@ model Section {
   course         Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   instructors    Instructor[]
 
+  @@unique([courseId, section])
   @@index([deletedAt], map: "Section.deletedAt_index")
   @@index([updatedAt], map: "Section.updatedAt_index")
-  @@unique([courseId, section])
 }
 
 model Instructor {
@@ -91,7 +91,7 @@ model Instructor {
   photoURL                String?
   interests               String[]
   occupations             String[]
-  updatedAt               DateTime  @updatedAt @default(now())
+  updatedAt               DateTime  @default(now()) @updatedAt
   deletedAt               DateTime?
   averageDifficultyRating Float?
   averageRating           Float?
@@ -114,6 +114,15 @@ model PassFailDrop {
   total         Int
 
   @@id([courseSubject, courseCrse, year, semester, section])
+}
+
+model JobLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()"))
+  jobName     String
+  graphileJob Json
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 enum Semester {
