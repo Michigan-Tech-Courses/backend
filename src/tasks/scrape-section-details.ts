@@ -220,6 +220,9 @@ export class ScrapeSectionDetailsTask {
 			}
 
 			const namesToCreate = namesToIds.filter(n => n.id === null);
+
+			this.logger.log(`Creating ${JSON.stringify({namesToCreate})}...`);
+
 			const createdInstructors = await db.insert('Instructor', namesToCreate.map(n => ({
 				fullName: n.full_name
 			})), {
