@@ -17,7 +17,7 @@ export class StatsController {
       FROM ${'JobLog'}
       ORDER BY ${'createdAt'} DESC
     )
-    SELECT ${'jobName'}, ${'createdAt'} FROM a
+    SELECT ${'jobName'}, ${'createdAt'}, ${'graphileJob'} FROM a
     WHERE rn = 1
 `;
 

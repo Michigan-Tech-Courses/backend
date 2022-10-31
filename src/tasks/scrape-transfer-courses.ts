@@ -17,25 +17,29 @@ export class ScrapeTransferCoursesTask {
 		await db.serializable(this.pool, async trx => {
 			await db.sql`ALTER TABLE ${'TransferCourse'} ADD was_seen boolean DEFAULT false`.run(trx);
 
-			await db.upsert(
-				'TransferCourse',
-				extTransferCourses.map(course => ({
-					fromCollege: course.from.college,
-					fromCollegeState: course.from.state,
-					fromCRSE: course.from.crse,
-					fromCredits: course.from.credits,
-					fromSubject: course.from.subject,
-					toCRSE: course.to.crse,
-					toCredits: course.to.credits,
-					toSubject: course.to.subject,
-					title: course.to.title,
-					was_seen: true,
-				})),
-				['fromCollege', 'fromCRSE', 'fromSubject', 'toCRSE', 'toSubject', 'toCredits'],
-				{
-					updateValues: updateUpdatedAtForUpsert('TransferCourse', ['fromCredits', 'toCredits', 'title'])
-				}
-			).run(trx);
+			// Batch updates
+			for (let i = 0; i < extTransferCourses.length; i += 100) {
+				// eslint-disable-next-line no-await-in-loop
+				await db.upsert(
+					'TransferCourse',
+					extTransferCourses.slice(i, 100).map(course => ({
+						fromCollege: course.from.college,
+						fromCollegeState: course.from.state,
+						fromCRSE: course.from.crse,
+						fromCredits: course.from.credits,
+						fromSubject: course.from.subject,
+						toCRSE: course.to.crse,
+						toCredits: course.to.credits,
+						toSubject: course.to.subject,
+						title: course.to.title,
+						was_seen: true,
+					})),
+					['fromCollege', 'fromCRSE', 'fromSubject', 'toCRSE', 'toSubject', 'toCredits'],
+					{
+						updateValues: updateUpdatedAtForUpsert('TransferCourse', ['fromCredits', 'toCredits', 'title'])
+					}
+				).run(trx);
+			}
 
 			await db.sql`DELETE FROM ${'TransferCourse'} WHERE was_seen = false`.run(trx);
 
