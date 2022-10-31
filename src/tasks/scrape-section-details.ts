@@ -13,6 +13,7 @@ import {fetcherSemesterToDatabaseSemester} from '~/lib/convert-semester-type';
 import {PoolService} from '~/pool/pool.service';
 import {mapWithSeparator, updateDeletedAtUpdatedAtForUpsert} from '~/lib/db-utils';
 import {batchAsyncIterator} from '~/lib/batch-async-iterator';
+import {numericHash} from '~/lib/numeric-hash';
 
 const getWhereForSectionsQuery = (terms: Date[]): schema.WhereableForTable<'Section'> => ({
 	courseId: db.sql<schema.SQLForTable<'Course'>>`
@@ -194,7 +195,11 @@ export class ScrapeSectionDetailsTask {
 			};
 		});
 
-		const namesToIds = await db.sql<schema.SQLForTable<'Instructor'>, Array<{id: number; full_name: string}>>`
+		return db.serializable(this.pool, async trx => {
+			// We don't want this function to run concurrently and create insert conflicts
+			await db.sql`SELECT pg_advisory_xact_lock(${db.param(numericHash('getOrCreateInstructorIdsByNames'))});`.run(trx);
+
+			const namesToIds = await db.sql<schema.SQLForTable<'Instructor'>, Array<{id: number; full_name: string}>>`
 			SELECT i.id, names.full_name FROM
 			(
 				SELECT
@@ -207,24 +212,25 @@ export class ScrapeSectionDetailsTask {
 				i.${'fullName'} LIKE names.full_name OR
 				i.${'fullName'} LIKE CONCAT(names.first_name, ' & ', names.last_name)
 			)
-		`.run(this.pool);
+		`.run(trx);
 
-		const namesToIdsMap = new Map<string, number>();
-		for (const {id, full_name} of namesToIds.filter(n => n.id !== null)) {
-			namesToIdsMap.set(full_name, id);
-		}
+			const namesToIdsMap = new Map<string, number>();
+			for (const {id, full_name} of namesToIds.filter(n => n.id !== null)) {
+				namesToIdsMap.set(full_name, id);
+			}
 
-		const namesToCreate = namesToIds.filter(n => n.id === null);
-		const createdInstructors = await db.insert('Instructor', namesToCreate.map(n => ({
-			fullName: n.full_name
-		})), {
-			returning: ['id', 'fullName']
-		}).run(this.pool);
+			const namesToCreate = namesToIds.filter(n => n.id === null);
+			const createdInstructors = await db.insert('Instructor', namesToCreate.map(n => ({
+				fullName: n.full_name
+			})), {
+				returning: ['id', 'fullName']
+			}).run(trx);
 
-		for (const {id, fullName} of createdInstructors) {
-			namesToIdsMap.set(fullName, id);
-		}
+			for (const {id, fullName} of createdInstructors) {
+				namesToIdsMap.set(fullName, id);
+			}
 
-		return namesToIdsMap;
+			return namesToIdsMap;
+		});
 	}
 }
