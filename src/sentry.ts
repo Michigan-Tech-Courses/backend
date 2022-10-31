@@ -3,8 +3,9 @@ import * as Tracing from '@sentry/tracing';
 
 Sentry.init({
 	dsn: process.env.SENTRY_DSN,
-	tracesSampleRate: 0.1,
+	tracesSampleRate: 1,
 	integrations: [
-		new Tracing.Integrations.Postgres()
+		new Tracing.Integrations.Postgres(),
+		new Sentry.Integrations.Http({tracing: true}),
 	]
 });
