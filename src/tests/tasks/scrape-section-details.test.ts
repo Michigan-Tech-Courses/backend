@@ -271,3 +271,74 @@ test.serial('doesn\'t update if unchanged', async t => {
 
 	t.is(section.updatedAt.getTime(), updatedSection.updatedAt.getTime());
 });
+
+test.serial('works with multiple sections taught by the same instructor', async t => {
+	const {prisma, service, fetcherFake} = await getTestService(ScrapeSectionDetailsTask, {
+		seedBuildings: true,
+		seedCourses: true,
+		seedSections: true,
+	});
+
+	const [firstExtCourse] = fetcherFake.courses;
+
+	const createdCourse = await prisma.course.create({
+		data: {
+			subject: 'MA',
+			crse: '1101',
+			year: firstExtCourse.year,
+			semester: firstExtCourse.semester,
+			title: 'Calculus I',
+		}
+	});
+
+	const createdSection = await prisma.section.create({
+		data: {
+			courseId: createdCourse.id,
+			crn: '12345',
+			section: '001',
+			totalSeats: 0,
+			availableSeats: 0,
+			takenSeats: 0,
+			cmp: '0',
+			minCredits: 0,
+			maxCredits: 0,
+			time: {},
+			fee: 0
+		}
+	});
+
+	fetcherFake.courses = [
+		...fetcherFake.courses,
+		{
+			extCourse: {
+				subject: createdCourse.subject,
+				crse: createdCourse.crse,
+				title: createdCourse.title,
+			},
+			extSections: [{
+				crn: createdSection.crn,
+				section: createdSection.section,
+				cmp: createdSection.cmp,
+				creditRange: [createdSection.minCredits, createdSection.maxCredits],
+				seats: createdSection.totalSeats,
+				seatsAvailable: createdSection.availableSeats,
+				seatsTaken: createdSection.takenSeats,
+				location: null,
+				fee: createdSection.fee,
+				schedules: [],
+				instructors: [
+					firstExtCourse.extSections[0].instructors[0],
+				]
+			}],
+			sectionDetails: firstExtCourse.sectionDetails,
+			year: createdCourse.year,
+			semester: createdCourse.semester,
+		}
+	];
+
+	await t.notThrowsAsync(async () => {
+		await service.handler({
+			terms: [getFirstTermFromFake()],
+		});
+	});
+});
