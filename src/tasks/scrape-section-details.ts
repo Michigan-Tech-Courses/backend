@@ -14,7 +14,6 @@ import {PoolService} from '~/pool/pool.service';
 import {mapWithSeparator, updateDeletedAtUpdatedAtForUpsert} from '~/lib/db-utils';
 import {batchAsyncIterator} from '~/lib/batch-async-iterator';
 import {numericHash} from '~/lib/numeric-hash';
-import {sentryScope} from '~/lib/sentry-scope';
 
 const getWhereForSectionsQuery = (terms: Date[]): schema.WhereableForTable<'Section'> => ({
 	courseId: db.sql<schema.SQLForTable<'Course'>>`
@@ -57,7 +56,6 @@ export class ScrapeSectionDetailsTask {
 	constructor(private readonly pool: PoolService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
-	@sentryScope({task: 'scrape-section-details'})
 	async handler(payload: {terms?: string[]} = {}) {
 		const terms = payload.terms?.map(termString => new Date(termString)) ?? await getTermsToProcess();
 

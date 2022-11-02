@@ -11,7 +11,6 @@ import type {InsertableForTable} from 'zapatos/schema';
 import {FetcherService} from '~/fetcher/fetcher.service';
 import {PoolService} from '~/pool/pool.service';
 import {updateDeletedAtUpdatedAtForUpsert} from '~/lib/db-utils';
-import {sentryScope} from '~/lib/sentry-scope';
 
 @Injectable()
 @Task('scrape-sections')
@@ -19,7 +18,6 @@ export class ScrapeSectionsTask {
 	constructor(private readonly pool: PoolService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
-	@sentryScope({task: 'scrape-sections'})
 	async handler(payload: {terms?: string[]} = {}) {
 		const terms = payload.terms?.map(termString => new Date(termString)) ?? await getTermsToProcess();
 

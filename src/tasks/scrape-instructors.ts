@@ -4,7 +4,6 @@ import * as db from 'zapatos/db';
 import {FetcherService} from 'src/fetcher/fetcher.service';
 import {PoolService} from '~/pool/pool.service';
 import {updateDeletedAtUpdatedAtForUpsert} from '~/lib/db-utils';
-import {sentryScope} from '~/lib/sentry-scope';
 
 @Injectable()
 @Task('scrape-instructors')
@@ -14,7 +13,6 @@ export class ScrapeInstructorsTask {
 	constructor(private readonly pool: PoolService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
-	@sentryScope({task: 'scrape-instructors'})
 	async handler() {
 		const faculty = await this.fetcher.getAllFaculty();
 

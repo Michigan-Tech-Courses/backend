@@ -7,7 +7,6 @@ import type * as schema from 'zapatos/schema';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
 import {FetcherService} from '~/fetcher/fetcher.service';
 import {PoolService} from '~/pool/pool.service';
-import {sentryScope} from '~/lib/sentry-scope';
 
 @Injectable()
 @Task('scrape-rate-my-professors')
@@ -17,7 +16,6 @@ export class ScrapeRateMyProfessorsTask {
 	constructor(private readonly pool: PoolService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
-	@sentryScope({task: 'scrape-rate-my-professors'})
 	async handler() {
 		const schools = await this.fetcher.rateMyProfessors.searchSchool('Michigan Technological University');
 
