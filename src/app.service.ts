@@ -9,6 +9,8 @@ import {PoolService} from './pool/pool.service';
 @Injectable()
 @GraphileWorkerListener()
 export class AppService {
+	private readonly graphile_job_id_to_sentry_transaction = new Map<string, ReturnType<typeof Sentry.startTransaction>>();
+
 	constructor(private readonly pool: PoolService) {}
 
 	@OnWorkerEvent('job:error')
@@ -25,5 +27,22 @@ export class AppService {
 			jobName: job.task_identifier,
 			graphileJob: JSON.stringify(job),
 		}).run(this.pool);
+	}
+
+	@OnWorkerEvent('job:start')
+	async onJobStart({job}: WorkerEventMap['job:start']) {
+		this.graphile_job_id_to_sentry_transaction.set(job.id, Sentry.startTransaction({
+			op: 'job',
+			name: job.task_identifier,
+		}));
+	}
+
+	@OnWorkerEvent('job:complete')
+	async onJobComplete({job}: WorkerEventMap['job:complete']) {
+		const transaction = this.graphile_job_id_to_sentry_transaction.get(job.id);
+		if (transaction) {
+			transaction.finish();
+			this.graphile_job_id_to_sentry_transaction.delete(job.id);
+		}
 	}
 }

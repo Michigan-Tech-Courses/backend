@@ -25,8 +25,8 @@ import {PoolModule} from './pool/pool.module';
 			useFactory: () => ({
 				connectionString: process.env.DATABASE_URL,
 				crontab,
-				concurrency: 2,
-				noPreparedStatements: true
+				concurrency: 1,
+				noPreparedStatements: true,
 			})
 		}),
 		TasksModule,
