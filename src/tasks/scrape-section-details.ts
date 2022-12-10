@@ -222,6 +222,10 @@ export class ScrapeSectionDetailsTask {
 			// (remove duplicate values)
 			const namesToCreate = [...new Set(namesToIds.filter(n => n.id === null).map(n => n.full_name))];
 
+			if (namesToCreate.length === 0) {
+				return namesToIdsMap;
+			}
+
 			this.logger.log(`Creating ${JSON.stringify({namesToCreate})}...`);
 
 			const createdInstructors = await db.insert('Instructor', namesToCreate.map(fullName => ({
