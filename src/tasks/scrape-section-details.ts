@@ -125,7 +125,6 @@ export class ScrapeSectionDetailsTask {
 
 		// Update sections
 		this.logger.log(`Updating ${scrapedSectionDetails.length} sections...`);
-		this.logger.debug(scrapedSectionDetails);
 
 		await db.upsert('Section', scrapedSectionDetails.map(({section, extScrapedDetails}) => {
 			const parsedLocation = parseLocation(extScrapedDetails.location, buildings);
