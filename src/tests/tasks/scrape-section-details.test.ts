@@ -20,6 +20,51 @@ test.serial('scrapes successfully', async t => {
 	t.pass();
 });
 
+test.serial('works with 2 sections on course', async t => {
+	const {service, fetcherFake, prisma} = await getTestService(ScrapeSectionDetailsTask, {
+		seedBuildings: true,
+		seedInstructors: true,
+		seedCourses: true,
+		seedSections: true,
+	});
+
+	fetcherFake.courses[0].extSections.push({
+		...fetcherFake.courses[0].extSections[0],
+		section: '02',
+	});
+
+	fetcherFake.courses[0].sectionDetails.push({
+		crn: '54321',
+		extSectionDetails: {
+			...fetcherFake.courses[0].sectionDetails[0].extSectionDetails,
+		}
+	});
+
+	const course = await prisma.course.findFirstOrThrow();
+
+	await prisma.section.create({
+		data: {
+			courseId: course.id,
+			crn: '54321',
+			section: '02',
+			totalSeats: 0,
+			availableSeats: 0,
+			takenSeats: 0,
+			cmp: '0',
+			minCredits: 0,
+			maxCredits: 0,
+			time: {},
+			fee: 0
+		}
+	});
+
+	await service.handler({
+		terms: [getFirstTermFromFake()],
+	});
+
+	t.pass();
+});
+
 test.serial('updates location to online', async t => {
 	const {prisma, service, fetcherFake} = await getTestService(ScrapeSectionDetailsTask, {
 		seedBuildings: true,

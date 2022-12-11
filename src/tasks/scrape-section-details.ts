@@ -8,6 +8,7 @@ import {Task, TaskHandler} from 'nestjs-graphile-worker';
 import * as db from 'zapatos/db';
 import type * as schema from 'zapatos/schema';
 import QueryStream from 'pg-query-stream';
+import type {ISectionDetails} from '@mtucourses/scraper';
 import {FetcherService} from '~/fetcher/fetcher.service';
 import {fetcherSemesterToDatabaseSemester} from '~/lib/convert-semester-type';
 import {PoolService} from '~/pool/pool.service';
@@ -145,10 +146,23 @@ export class ScrapeSectionDetailsTask {
 		}).run(this.pool);
 
 		// Update courses
-		await db.upsert('Course', scrapedSectionDetails.map(({section, extScrapedDetails}) => {
+		// (Need to clean duplicates)
+		const scrapedSectionByCourseId = new Map<string, {extScrapedDetails: ISectionDetails; course: typeof scrapedSectionDetails[number]['section']['course']}>();
+		for (const {section, extScrapedDetails} of scrapedSectionDetails) {
+			const courseId = section.course.id;
+			if (!scrapedSectionByCourseId.has(courseId)) {
+				scrapedSectionByCourseId.set(courseId, {
+					extScrapedDetails,
+					course: section.course
+				});
+			}
+		}
+
+		await db.upsert('Course', [...scrapedSectionByCourseId.values()].map(({extScrapedDetails, course}) => {
 			const scrapedSemestersOffered = extScrapedDetails.semestersOffered.map(semester => fetcherSemesterToDatabaseSemester(semester));
+
 			return {
-				...section.course,
+				...course,
 				description: extScrapedDetails.description,
 				prereqs: extScrapedDetails.prereqs,
 				offered: scrapedSemestersOffered

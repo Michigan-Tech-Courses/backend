@@ -6,7 +6,6 @@ import {ProfilingIntegration} from '@sentry/profiling-node';
 
 Sentry.init({
 	dsn: process.env.SENTRY_DSN,
-	debug: true,
 	tracesSampleRate: 1,
 	integrations: [
 		new Tracing.Integrations.Postgres(),
