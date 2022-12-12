@@ -1,6 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import pThrottle from 'p-throttle';
 import equal from 'deep-equal';
+import pRetry from 'p-retry';
 import remap from 'src/lib/remap';
 import * as db from 'zapatos/db';
 import type * as schema from 'zapatos/schema';
@@ -17,11 +18,15 @@ export class ScrapeRateMyProfessorsTask {
 
 	@TaskHandler()
 	async handler() {
-		const schools = await this.fetcher.rateMyProfessors.searchSchool('Michigan Technological University');
+		const schools = await pRetry(async () => {
+			const schools = await this.fetcher.rateMyProfessors.searchSchool('Michigan Technological University');
 
-		if (schools.length === 0) {
-			throw new Error('School ID could not be resolved.');
-		}
+			if (schools.length === 0) {
+				throw new Error('School ID could not be resolved.');
+			}
+
+			return schools;
+		});
 
 		// Todo: make this faster with transactions
 		const processInstructor = pThrottle({
