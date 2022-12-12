@@ -26,6 +26,8 @@ export class ScrapeRateMyProfessorsTask {
 			}
 
 			return schools;
+		}, {
+			retries: 5
 		});
 
 		// Todo: make this faster with transactions
