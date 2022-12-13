@@ -25,6 +25,7 @@ export class InstructorsController {
 			const {photoURL, ...instructorWithoutPhoto} = instructor;
 			return {
 				...instructorWithoutPhoto,
+				departments: instructor.departments ?? [],
 				thumbnailURL: instructor.photoURL ? this.thumbor.setPath(instructor.photoURL).smartCrop(true).resize(128, 128).buildURL() : null
 			};
 		});
