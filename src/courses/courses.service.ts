@@ -21,7 +21,7 @@ export class CoursesService {
 			where.id = db.conditions.or(db.sql`${'updatedAt'} > ${db.param(parameters.updatedSince, 'timestamptz')}`, db.sql`${'deletedAt'} > ${db.param(parameters.updatedSince, 'timestamptz')}`);
 		}
 
-		return db.sql`SELECT * FROM ${'Course'} WHERE ${where}`.compile();
+		return db.sql`SELECT *, to_json("offered") as offered FROM ${'Course'} WHERE ${where}`.compile();
 	}
 
 	async getUniqueCoursesQuery(pool: Pool, parameters?: GetUniqueCoursesParameters) {
@@ -54,7 +54,7 @@ export class CoursesService {
 				)));
 		}
 
-		return db.sql`SELECT * FROM ${'Course'} WHERE ${where} ORDER BY ${'id'} ASC`.compile();
+		return db.sql`SELECT *, to_json("offered") as offered FROM ${'Course'} WHERE ${where} ORDER BY ${'id'} ASC`.compile();
 	}
 
 	getFirstCourseZapatosQuery(parameters?: FindFirstCourseParameters) {
@@ -76,6 +76,10 @@ export class CoursesService {
 			where.subject = parameters.subject;
 		}
 
-		return db.selectOne('Course', where);
+		return db.selectOne('Course', where, {
+			extras: {
+				offered: db.sql`to_json("offered")`,
+			}
+		});
 	}
 }

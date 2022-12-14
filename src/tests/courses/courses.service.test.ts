@@ -6,12 +6,21 @@ import {dateToTerm} from '~/lib/dates';
 import {CoursesService} from '~/courses/courses.service';
 
 test.serial('returns all courses', async t => {
-	const {service, pool} = await getTestService(CoursesService, {
+	const {service, pool, prisma} = await getTestService(CoursesService, {
 		seedCourses: true
+	});
+
+	await prisma.course.updateMany({
+		data: {
+			offered: [Semester.FALL, Semester.SPRING]
+		}
 	});
 
 	const query = service.getAllCoursesQuery();
 	const result = await pool.query(query.text, query.values);
+
+	// Check that offered was cast correctly
+	t.is(result.rows[0].offered.length, 2);
 
 	t.is(result.rowCount, 1);
 });
