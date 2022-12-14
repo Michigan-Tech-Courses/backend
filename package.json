@@ -26,7 +26,7 @@
   "dependencies": {
     "@fastify/static": "6.5.0",
     "@mtucourses/rate-my-professors": "^2.0.1",
-    "@mtucourses/scraper": "^3.0.0",
+    "@mtucourses/scraper": "^3.0.1",
     "@mtucourses/thumbor": "^2.0.0",
     "@nestjs/cli": "^9.1.4",
     "@nestjs/common": "^9.1.4",
