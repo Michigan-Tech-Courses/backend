@@ -11,6 +11,7 @@ app = "courses-api"
 [env]
   THUMBOR_URL = "https://courses-thumbor.fly.dev"
   ENDPOINT = "https://api.michigantechcourses.com"
+  NODE_ENV = "production"
 
 [[services]]
   internal_port = 3000
