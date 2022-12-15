@@ -48,28 +48,17 @@ test.serial('returns all records', async t => {
 		}
 	});
 
-	t.deepEqual(await service.getAll(), {
-		[`${row.courseSubject}${row.courseCrse}`]: [{
-			dropped: row.dropped,
-			failed: row.failed,
-			total: row.total,
-			semester: row.semester,
-			year: row.year,
-		}],
-		[`${row2.courseSubject}${row2.courseCrse}`]: [{
-			dropped: row2.dropped,
-			failed: row2.failed,
-			total: row2.total,
-			semester: row2.semester,
-			year: row2.year,
-		}, {
-			dropped: row3.dropped,
-			failed: row3.failed,
-			total: row3.total,
-			semester: row3.semester,
-			year: row3.year,
-		}]
-	});
+	const result = await service.getAll();
+
+	t.deepEqual(result[`${row.courseSubject}${row.courseCrse}`], [{
+		dropped: row.dropped,
+		failed: row.failed,
+		total: row.total,
+		semester: row.semester,
+		year: row.year,
+	}]);
+
+	t.is(result[`${row2.courseSubject}${row2.courseCrse}`].length, 2);
 });
 
 test.serial('averages stats', async t => {
