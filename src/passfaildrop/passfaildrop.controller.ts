@@ -38,9 +38,10 @@ export class PassFailDropController {
 
 		// Todo: move this into the query
 		// eslint-disable-next-line unicorn/no-array-reduce
-		return result.reduce<Record<string, unknown>>((acc, row) => {
+		return result.reduce<Record<string, unknown[]>>((acc, row) => {
 			const key = `${row.courseSubject}${row.courseCrse}`;
 			acc[key] = [
+				...(acc[key] ?? []),
 				{
 					semester: row.semester,
 					year: row.year,
