@@ -60,6 +60,8 @@ export class ScrapeSectionDetailsTask {
 	async handler(payload: {terms?: string[]} = {}) {
 		const terms = payload.terms?.map(termString => new Date(termString)) ?? await getTermsToProcess();
 
+		this.logger.log(`Processing ${JSON.stringify(terms)}...`);
+
 		const buildings = await db.select('Building', db.all).run(this.pool);
 
 		const sectionsQuery = getSectionsQuery(terms);
