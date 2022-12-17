@@ -50,7 +50,8 @@ export class HealthController {
 	private async haveJobsErrored() {
 		try {
 			const errored_jobs = await db.count('graphile_worker.jobs', {
-				last_error: db.conditions.isNotNull
+				last_error: db.conditions.isNotNull,
+				created_at: db.conditions.gte(db.sql`now() - interval '1 day'`),
 			}).run(this.pool);
 
 			return errored_jobs > 0;
