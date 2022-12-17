@@ -18,7 +18,7 @@ export class ScrapeTransferCoursesTask {
 			await db.sql`ALTER TABLE ${'TransferCourse'} ADD was_seen boolean DEFAULT false`.run(trx);
 
 			// Batch updates
-			for (let i = 0; i < extTransferCourses.length; i += 100) {
+			for (let i = 0; i <= extTransferCourses.length; i += 100) {
 				// eslint-disable-next-line no-await-in-loop
 				await db.upsert(
 					'TransferCourse',
