@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
 import * as db from 'zapatos/db';
 import {FetcherService} from '~/fetcher/fetcher.service';
@@ -8,11 +8,15 @@ import {updateUpdatedAtForUpsert} from '~/lib/db-utils';
 @Injectable()
 @Task('scrape-transfer-courses')
 export class ScrapeTransferCoursesTask {
+	private readonly logger = new Logger(ScrapeTransferCoursesTask.name);
+
 	constructor(private readonly pool: PoolService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
 	async handler() {
 		const extTransferCourses = await this.fetcher.getAllTransferCourses();
+
+		this.logger.log(`Scraped ${extTransferCourses.length} transfer courses...`);
 
 		await db.serializable(this.pool, async trx => {
 			await db.sql`ALTER TABLE ${'TransferCourse'} ADD was_seen boolean DEFAULT false`.run(trx);
