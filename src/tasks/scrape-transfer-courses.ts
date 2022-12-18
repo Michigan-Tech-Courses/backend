@@ -26,7 +26,7 @@ export class ScrapeTransferCoursesTask {
 				// eslint-disable-next-line no-await-in-loop
 				await db.upsert(
 					'TransferCourse',
-					extTransferCourses.slice(i, 100).map(course => ({
+					extTransferCourses.slice(i, i + 100).map(course => ({
 						fromCollege: course.from.college,
 						fromCollegeState: course.from.state,
 						fromCRSE: course.from.crse,
@@ -40,7 +40,7 @@ export class ScrapeTransferCoursesTask {
 					})),
 					['fromCollege', 'fromCRSE', 'fromSubject', 'toCRSE', 'toSubject', 'toCredits'],
 					{
-						updateValues: updateUpdatedAtForUpsert('TransferCourse', ['fromCredits', 'toCredits', 'title'])
+						updateValues: updateUpdatedAtForUpsert('TransferCourse', ['fromCredits', 'toCredits', 'title']),
 					}
 				).run(trx);
 			}
