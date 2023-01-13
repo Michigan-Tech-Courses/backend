@@ -180,6 +180,10 @@ export class ScrapeSectionDetailsTask {
 	}
 
 	private async updateAssociatedInstructors(sections: Array<{sectionId: string; instructorNames: string[]}>) {
+		if (sections.length === 0) {
+			return;
+		}
+
 		// Match instructor names to stored instructors
 		const instructorNameToIdMap = await this.getOrCreateInstructorIdsByNames(sections.flatMap(s => s.instructorNames));
 
