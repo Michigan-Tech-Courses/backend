@@ -112,6 +112,11 @@ export class ScrapeSectionDetailsTask {
 					return null;
 				}
 
+				if ((error as Error).message === 'Invalid term') {
+					this.logger.log(`Invalid term (${section.course.year} ${section.course.semester}), skipping...`);
+					return null;
+				}
+
 				throw error;
 			}
 		}));
