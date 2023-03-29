@@ -33,7 +33,7 @@ export class ScrapeRateMyProfessorsTask {
 		// Todo: make this faster with transactions
 		const processInstructor = pThrottle({
 			limit: 2,
-			interval: 100
+			interval: 256
 		})(async (instructor: schema.JSONSelectableForTable<'Instructor'>) => {
 			const nameFragments = instructor.fullName.split(' ');
 			const firstName = nameFragments[0];
