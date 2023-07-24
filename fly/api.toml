@@ -27,7 +27,7 @@ app = "courses-api"
   port = 443
 
 [[services.http_checks]]
-  interval = 1000
+  interval = 3000
   grace_period = "10s"
   method = "get"
   path = "/health"
