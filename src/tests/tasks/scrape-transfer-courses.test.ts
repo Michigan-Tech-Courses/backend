@@ -24,18 +24,6 @@ test.serial('scrapes successfully', async t => {
 	});
 });
 
-test.serial('doesn\'t update if nothing changed', async t => {
-	const {service, prisma} = await getTestService(ScrapeTransferCoursesTask);
-
-	await service.handler();
-	const transferCourse = await prisma.transferCourse.findFirstOrThrow();
-
-	await service.handler();
-	const transferCourse2 = await prisma.transferCourse.findFirstOrThrow();
-
-	t.is(transferCourse.updatedAt.getTime(), transferCourse2.updatedAt.getTime());
-});
-
 test.serial('updates if not equal', async t => {
 	const {service, prisma, fetcherFake} = await getTestService(ScrapeTransferCoursesTask);
 

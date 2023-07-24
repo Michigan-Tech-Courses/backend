@@ -33,9 +33,8 @@ export class ScrapeTransferCoursesTask {
 
 		this.logger.log(`Scraped ${extTransferCourses.length} transfer courses (${extUniqueTransferCourses.length} unique ones)...`);
 
+		const startedUpdatingAt = new Date();
 		await db.serializable(this.pool, async trx => {
-			await db.sql`ALTER TABLE ${'TransferCourse'} ADD was_seen boolean DEFAULT false`.run(trx);
-
 			// Batch updates
 			for (let i = 0; i <= extUniqueTransferCourses.length; i += 100) {
 				// eslint-disable-next-line no-await-in-loop
@@ -51,18 +50,18 @@ export class ScrapeTransferCoursesTask {
 						toCredits: course.to.credits,
 						toSubject: course.to.subject,
 						title: course.to.title,
-						was_seen: true,
+						updatedAt: new Date(),
 					})),
 					['fromCollege', 'fromCRSE', 'fromSubject', 'toCRSE', 'toSubject', 'toCredits'],
 					{
-						updateValues: updateUpdatedAtForUpsert('TransferCourse', ['fromCredits', 'toCredits', 'title']),
+						updateValues: updateUpdatedAtForUpsert('TransferCourse', ['fromCredits', 'toCredits', 'title', 'updatedAt']),
 					}
 				).run(trx);
 			}
 
-			await db.sql`DELETE FROM ${'TransferCourse'} WHERE was_seen = false`.run(trx);
-
-			await db.sql`ALTER TABLE ${'TransferCourse'} DROP was_seen`.run(trx);
+			await db.deletes('TransferCourse', {
+				updatedAt: db.conditions.lt(startedUpdatingAt),
+			}).run(trx);
 		});
 	}
 }
