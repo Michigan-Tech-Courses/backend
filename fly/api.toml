@@ -1,9 +1,5 @@
 app = "courses-api"
 
-[build]
-  builder = "paketobuildpacks/builder:base"
-  buildpacks = ["gcr.io/paketo-buildpacks/nodejs"]
-
 [deploy]
   release_command = "yarn migrations:run"
   kill_timeout = 300
