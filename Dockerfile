@@ -9,7 +9,7 @@ WORKDIR $APP_HOME
 COPY --chown=node:node package.json ./
 COPY --chown=node:node yarn.lock ./
 
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --frozen-lockfile
 
 COPY --chown=node:node . .
 
