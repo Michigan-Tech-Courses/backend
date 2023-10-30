@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import pThrottle from 'p-throttle';
 import type {ICourseOverview, ISection} from '@mtucourses/scraper';
 import type {IRuleOptions} from 'src/lib/rschedule';
@@ -15,6 +15,8 @@ import {updateDeletedAtUpdatedAtForUpsert} from '~/lib/db-utils';
 @Injectable()
 @Task('scrape-sections')
 export class ScrapeSectionsTask {
+	private readonly logger = new Logger(ScrapeSectionsTask.name);
+
 	constructor(private readonly pool: PoolService, private readonly fetcher: FetcherService) {}
 
 	@TaskHandler()
@@ -28,7 +30,15 @@ export class ScrapeSectionsTask {
 
 	private async processTerm(term: Date) {
 		const {semester, year} = dateToTerm(term);
-		const extCourses = await this.fetcher.getAllSections(term);
+		let extCourses: ICourseOverview[] = [];
+		try {
+			extCourses = await this.fetcher.getAllSections(term);
+		} catch (error: unknown) {
+			if (error instanceof Error && error.message === 'Banner services are currently down.') {
+				this.logger.warn('Banner services are currently down. Skipping scraping instructors.');
+				return;
+			}
+		}
 
 		await db.serializable(this.pool, async trx => {
 			// Mark courses and sections in term as deleted by default

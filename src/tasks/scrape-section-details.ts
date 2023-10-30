@@ -105,6 +105,11 @@ export class ScrapeSectionDetailsTask {
 					section
 				};
 			} catch (error: unknown) {
+				if (error instanceof Error && error.message === 'Banner services are currently down.') {
+					this.logger.warn('Banner services are currently down. Skipping scraping instructors.');
+					return;
+				}
+
 				if ((error as Error).message === 'Course not found') {
 					this.logger.log(`Did not find ${section.course.id}: ${JSON.stringify(section.course)}`);
 					this.logger.log('It should be cleaned up automatically on the next course scrape.');

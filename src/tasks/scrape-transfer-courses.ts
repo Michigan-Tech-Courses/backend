@@ -15,7 +15,15 @@ export class ScrapeTransferCoursesTask {
 
 	@TaskHandler()
 	async handler() {
-		const extTransferCourses = await this.fetcher.getAllTransferCourses();
+		let extTransferCourses: ITransferCourse[] = [];
+		try {
+			extTransferCourses = await this.fetcher.getAllTransferCourses();
+		} catch (error: unknown) {
+			if (error instanceof Error && error.message === 'Banner services are currently down.') {
+				this.logger.warn('Banner services are currently down. Skipping scraping instructors.');
+				return;
+			}
+		}
 
 		// Filter out duplicates
 		// todo: this should be handled by the scraper

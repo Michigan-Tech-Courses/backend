@@ -2,6 +2,7 @@ import {Injectable, Logger} from '@nestjs/common';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
 import * as db from 'zapatos/db';
 import {FetcherService} from 'src/fetcher/fetcher.service';
+import type {IFaculty} from '@mtucourses/scraper';
 import {PoolService} from '~/pool/pool.service';
 import {updateDeletedAtUpdatedAtForUpsert} from '~/lib/db-utils';
 
@@ -14,7 +15,15 @@ export class ScrapeInstructorsTask {
 
 	@TaskHandler()
 	async handler() {
-		const faculty = await this.fetcher.getAllFaculty();
+		let faculty: IFaculty[] = [];
+		try {
+			faculty = await this.fetcher.getAllFaculty();
+		} catch (error: unknown) {
+			if (error instanceof Error && error.message === 'Banner services are currently down.') {
+				this.logger.warn('Banner services are currently down. Skipping scraping instructors.');
+				return;
+			}
+		}
 
 		this.logger.log('Finished scraping website');
 
