@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:18
 
 ENV NODE_ENV production
 ENV APP_HOME=/opt/node/app
@@ -9,7 +9,7 @@ WORKDIR $APP_HOME
 COPY --chown=node:node package.json ./
 COPY --chown=node:node yarn.lock ./
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --production=false
 
 COPY --chown=node:node . .
 
