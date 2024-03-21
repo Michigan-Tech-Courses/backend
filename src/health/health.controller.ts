@@ -1,6 +1,7 @@
-import {Controller, Get, Injectable} from '@nestjs/common';
+import {Controller, Get, Injectable, Res} from '@nestjs/common';
 import pTimeout from 'p-timeout';
 import * as db from 'zapatos/db';
+import {FastifyReply} from 'fastify';
 import {PoolService} from '~/pool/pool.service';
 
 @Controller('health')
@@ -9,18 +10,18 @@ export class HealthController {
 	constructor(private readonly pool: PoolService) {}
 
 	@Get()
-	async getHealth() {
+	async getHealth(@Res() reply: FastifyReply) {
 		const [canConnectToDatabase, arePendingJobs, haveJobsErrored] = await Promise.all([
 			this.canConnectToDatabase(),
 			this.arePendingJobs(),
 			this.haveJobsErrored()
 		].map(async p => pTimeout(p, 2000).catch(() => -1)));
 
-		return {
+		await reply.status(canConnectToDatabase ? 200 : 503).send({
 			canConnectToDatabase,
 			arePendingJobs,
-			haveJobsErrored
-		};
+			haveJobsErrored,
+		});
 	}
 
 	private async canConnectToDatabase() {

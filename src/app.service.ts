@@ -45,4 +45,18 @@ export class AppService {
 			this.graphile_job_id_to_sentry_transaction.delete(job.id);
 		}
 	}
+
+	@OnWorkerEvent('worker:fatalError')
+	onFatalError({error}: WorkerEventMap['worker:fatalError']) {
+		Sentry.captureException(error);
+		// eslint-disable-next-line unicorn/no-process-exit
+		process.exit(1);
+	}
+
+	@OnWorkerEvent('pool:listen:error')
+	onPoolListenError({error}: WorkerEventMap['pool:listen:error']) {
+		Sentry.captureException(error);
+		// eslint-disable-next-line unicorn/no-process-exit
+		process.exit(1);
+	}
 }

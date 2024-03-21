@@ -12,6 +12,8 @@ app = "courses-api"
 [[services]]
   internal_port = 3000
   protocol = "tcp"
+  auto_stop_machines = false
+  auto_start_machines = false
 
 [[services.ports]]
   handlers = ["http"]
