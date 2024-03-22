@@ -23,6 +23,7 @@ import {PoolModule} from './pool/pool.module';
 		ConfigModule.forRoot(),
 		GraphileWorkerModule.forRootAsync({
 			useFactory: () => ({
+				maxPoolSize: 2,
 				connectionString: process.env.DATABASE_URL,
 				crontab,
 				concurrency: 1,
