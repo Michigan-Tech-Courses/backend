@@ -42,34 +42,32 @@ export class ScrapeTransferCoursesTask {
 		this.logger.log(`Scraped ${extensionTransferCourses.length} transfer courses (${extensionUniqueTransferCourses.length} unique ones)...`);
 
 		const startedUpdatingAt = new Date();
-		await db.serializable(this.pool, async trx => {
-			// Batch updates
-			for (let i = 0; i <= extensionUniqueTransferCourses.length; i += 100) {
-				// eslint-disable-next-line no-await-in-loop
-				await db.upsert(
-					'TransferCourse',
-					extensionUniqueTransferCourses.slice(i, i + 100).map(course => ({
-						fromCollege: course.from.college,
-						fromCollegeState: course.from.state,
-						fromCRSE: course.from.crse,
-						fromCredits: course.from.credits,
-						fromSubject: course.from.subject,
-						toCRSE: course.to.crse,
-						toCredits: course.to.credits,
-						toSubject: course.to.subject,
-						title: course.to.title,
-						updatedAt: new Date(),
-					})),
-					['fromCollege', 'fromCRSE', 'fromSubject', 'toCRSE', 'toSubject', 'toCredits'],
-					{
-						updateValues: updateUpdatedAtForUpsert('TransferCourse', ['fromCredits', 'toCredits', 'title', 'updatedAt']),
-					}
-				).run(trx);
-			}
+		// Batch updates
+		for (let i = 0; i <= extensionUniqueTransferCourses.length; i += 100) {
+			// eslint-disable-next-line no-await-in-loop
+			await db.upsert(
+				'TransferCourse',
+				extensionUniqueTransferCourses.slice(i, i + 100).map(course => ({
+					fromCollege: course.from.college,
+					fromCollegeState: course.from.state,
+					fromCRSE: course.from.crse,
+					fromCredits: course.from.credits,
+					fromSubject: course.from.subject,
+					toCRSE: course.to.crse,
+					toCredits: course.to.credits,
+					toSubject: course.to.subject,
+					title: course.to.title,
+					updatedAt: new Date(),
+				})),
+				['fromCollege', 'fromCRSE', 'fromSubject', 'toCRSE', 'toSubject', 'toCredits'],
+				{
+					updateValues: updateUpdatedAtForUpsert('TransferCourse', ['fromCredits', 'toCredits', 'title', 'updatedAt']),
+				}
+			).run(this.pool);
+		}
 
-			await db.deletes('TransferCourse', {
-				updatedAt: db.conditions.lt(startedUpdatingAt),
-			}).run(trx);
-		});
+		await db.deletes('TransferCourse', {
+			updatedAt: db.conditions.lt(startedUpdatingAt),
+		}).run(this.pool);
 	}
 }
