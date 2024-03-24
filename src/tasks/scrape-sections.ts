@@ -39,7 +39,7 @@ export class ScrapeSectionsTask {
 			}
 		}
 
-		await db.serializable(this.pool, async trx => {
+		const updatedCourses = await db.serializable(this.pool, async trx => {
 			// Mark courses in term as deleted by default
 			await db.update('Course', {
 				deletedAt: new Date(),
@@ -49,7 +49,7 @@ export class ScrapeSectionsTask {
 			}).run(trx);
 
 			// Upsert courses
-			await db.upsert('Course', extensionCourses.map(extensionCourse => {
+			return db.upsert('Course', extensionCourses.map(extensionCourse => {
 				const [minCredits, maxCredits] = this.getCreditsRangeFromCourse(extensionCourse);
 
 				return {
@@ -82,9 +82,14 @@ export class ScrapeSectionsTask {
 			const sectionsUpsertInput: Array<InsertableForTable<'Section'>> = extensionCourses.flatMap(extensionCourse => extensionCourse.sections.map(extensionSection => {
 				const section = this.reshapeSectionFromScraperToDatabase(extensionSection, year);
 
+				const course = updatedCourses.find(course => course.subject === extensionCourse.subject && course.crse === extensionCourse.crse && course.year === year && course.semester === semester);
+				if (!course) {
+					throw new Error(`Course ${extensionCourse.subject} ${extensionCourse.crse} not found`);
+				}
+
 				return {
 					...section,
-					courseId: db.sql`(SELECT ${'id'} FROM ${'Course'} WHERE ${'year'} = ${db.param(year)} AND ${'semester'} = ${db.param(semester)} AND ${'subject'} = ${db.param(extensionCourse.subject)} AND ${'crse'} = ${db.param(extensionCourse.crse)})`
+					courseId: course.id
 				};
 			}));
 
