@@ -40,18 +40,12 @@ export class ScrapeSectionsTask {
 		}
 
 		await db.serializable(this.pool, async trx => {
-			// Mark courses and sections in term as deleted by default
+			// Mark courses in term as deleted by default
 			await db.update('Course', {
 				deletedAt: new Date(),
 			}, {
 				semester,
 				year
-			}).run(trx);
-
-			await db.update('Section', {
-				deletedAt: new Date(),
-			}, {
-				courseId: db.sql`${db.self} IN (SELECT ${'id'} FROM ${'Course'} WHERE ${'semester'} = ${db.param(semester)} AND ${'year'} = ${db.param(year)})`
 			}).run(trx);
 
 			// Upsert courses
@@ -73,6 +67,15 @@ export class ScrapeSectionsTask {
 					'minCredits',
 					'maxCredits'
 				])
+			}).run(trx);
+		});
+
+		await db.serializable(this.pool, async trx => {
+			// Mark sections in term as deleted by default
+			await db.update('Section', {
+				deletedAt: new Date(),
+			}, {
+				courseId: db.sql`${db.self} IN (SELECT ${'id'} FROM ${'Course'} WHERE ${'semester'} = ${db.param(semester)} AND ${'year'} = ${db.param(year)})`
 			}).run(trx);
 
 			// Upsert sections
