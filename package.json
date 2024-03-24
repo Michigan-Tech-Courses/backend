@@ -7,7 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "yarn prisma generate && nest build",
+    "postinstall": "prisma generate",
+    "build": "nest build",
     "start": "node dist/src/main",
     "dev": "NODE_ENV=dev nest start --watch",
     "dev:debug": "NODE_ENV=dev nest start --debug --watch",
