@@ -27,6 +27,7 @@ COPY --chown=node:node package.json ./
 COPY --chown=node:node yarn.lock ./
 RUN yarn install --frozen-lockfile --production=true && yarn cache clean
 
+COPY --chown=node:node prisma ./prisma
 COPY --from=builder --chown=node:node $APP_HOME/dist ./dist
 
 CMD ["yarn", "start"]
