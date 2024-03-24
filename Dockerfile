@@ -17,6 +17,9 @@ RUN yarn build
 
 FROM node:20-slim
 
+# Required by Prisma
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
 ENV NODE_ENV production
 ENV APP_HOME=/opt/node/app
 
