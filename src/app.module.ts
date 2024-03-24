@@ -26,7 +26,7 @@ import {PoolModule} from './pool/pool.module';
 				maxPoolSize: 2,
 				connectionString: process.env.DATABASE_URL,
 				crontab,
-				concurrency: 1,
+				concurrency: 2,
 				noPreparedStatements: true,
 			})
 		}),
