@@ -1,4 +1,6 @@
-import {Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
+import {
+	Controller, Get, Header, Injectable, Query, UseInterceptors
+} from '@nestjs/common';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import * as db from 'zapatos/db';
 import type {WhereableForTable} from 'zapatos/schema';

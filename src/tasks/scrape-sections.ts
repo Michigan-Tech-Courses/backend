@@ -1,8 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import pThrottle from 'p-throttle';
 import type {ICourseOverview, ISection} from '@mtucourses/scraper';
-import type {IRuleOptions} from 'src/lib/rschedule';
-import {Schedule} from 'src/lib/rschedule';
+import {Schedule, type IRuleOptions} from 'src/lib/rschedule';
 import {calculateDiffInTime, dateToTerm, mapDayCharToRRScheduleString} from 'src/lib/dates';
 import getTermsToProcess from 'src/lib/get-terms-to-process';
 import {Task, TaskHandler} from 'nestjs-graphile-worker';
@@ -30,9 +29,9 @@ export class ScrapeSectionsTask {
 
 	private async processTerm(term: Date) {
 		const {semester, year} = dateToTerm(term);
-		let extCourses: ICourseOverview[] = [];
+		let extensionCourses: ICourseOverview[] = [];
 		try {
-			extCourses = await this.fetcher.getAllSections(term);
+			extensionCourses = await this.fetcher.getAllSections(term);
 		} catch (error: unknown) {
 			if (error instanceof Error && error.message === 'Banner services are currently down.') {
 				this.logger.warn('Banner services are currently down. Skipping scraping instructors.');
@@ -56,15 +55,15 @@ export class ScrapeSectionsTask {
 			}).run(trx);
 
 			// Upsert courses
-			await db.upsert('Course', extCourses.map(extCourse => {
-				const [minCredits, maxCredits] = this.getCreditsRangeFromCourse(extCourse);
+			await db.upsert('Course', extensionCourses.map(extensionCourse => {
+				const [minCredits, maxCredits] = this.getCreditsRangeFromCourse(extensionCourse);
 
 				return {
 					year,
 					semester,
-					subject: extCourse.subject,
-					crse: extCourse.crse,
-					title: extCourse.title,
+					subject: extensionCourse.subject,
+					crse: extensionCourse.crse,
+					title: extensionCourse.title,
 					minCredits,
 					maxCredits,
 				};
@@ -77,12 +76,12 @@ export class ScrapeSectionsTask {
 			}).run(trx);
 
 			// Upsert sections
-			const sectionsUpsertInput: Array<InsertableForTable<'Section'>> = extCourses.flatMap(extCourse => extCourse.sections.map(extSection => {
-				const section = this.reshapeSectionFromScraperToDatabase(extSection, year);
+			const sectionsUpsertInput: Array<InsertableForTable<'Section'>> = extensionCourses.flatMap(extensionCourse => extensionCourse.sections.map(extensionSection => {
+				const section = this.reshapeSectionFromScraperToDatabase(extensionSection, year);
 
 				return {
 					...section,
-					courseId: db.sql`(SELECT ${'id'} FROM ${'Course'} WHERE ${'year'} = ${db.param(year)} AND ${'semester'} = ${db.param(semester)} AND ${'subject'} = ${db.param(extCourse.subject)} AND ${'crse'} = ${db.param(extCourse.crse)})`
+					courseId: db.sql`(SELECT ${'id'} FROM ${'Course'} WHERE ${'year'} = ${db.param(year)} AND ${'semester'} = ${db.param(semester)} AND ${'subject'} = ${db.param(extensionCourse.subject)} AND ${'crse'} = ${db.param(extensionCourse.crse)})`
 				};
 			}));
 

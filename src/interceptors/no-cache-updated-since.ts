@@ -1,7 +1,7 @@
-import type {CallHandler, ExecutionContext, NestInterceptor} from '@nestjs/common';
-import {Injectable} from '@nestjs/common';
+import {
+	Injectable, type CallHandler, type ExecutionContext, type NestInterceptor
+} from '@nestjs/common';
 // NestJS bug: https://stackoverflow.com/a/63984129/12638523
-
 import type {FastifyReply} from 'fastify';
 
 @Injectable()

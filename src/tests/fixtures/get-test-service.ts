@@ -1,8 +1,7 @@
 import {Test} from '@nestjs/testing';
 import type {Type} from '@nestjs/common';
 import {PrismaClient} from '@prisma/client';
-import type {GetTestDatabaseOptions} from './get-test-database';
-import {getTestDatabase} from './get-test-database';
+import {getTestDatabase, type GetTestDatabaseOptions} from './get-test-database';
 import {FakeFetcherService} from './fetcher-fake';
 import {FetcherModule} from '~/fetcher/fetcher.module';
 import {FetcherService} from '~/fetcher/fetcher.service';

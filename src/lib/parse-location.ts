@@ -1,7 +1,6 @@
-import type {Building, Section} from '@prisma/client';
-import {LocationType} from '@prisma/client';
+import {LocationType, type Building, type Section} from '@prisma/client';
 
-const numbersRegex = new RegExp(/(\d)\w+/);
+const numbersRegex = /(\d)\w+/;
 
 const getMappedBuildingName = (buildingName: string, buildings: Building[]) => {
 	const building = buildings.find(b => b.name === buildingName);
@@ -49,13 +48,13 @@ const parseLocation = (from: string, buildings: Building[]): Pick<Section, 'loca
 		};
 	}
 
-	const lastWord = fragments[fragments.length - 1];
+	const lastWord = fragments.at(-1);
 
-	if (numbersRegex.test(lastWord)) {
+	if (numbersRegex.test(lastWord!)) {
 		return {
 			locationType: LocationType.PHYSICAL,
 			buildingName: getMappedBuildingName(fragments.splice(0, fragments.length - 1).join(' '), buildings),
-			room: lastWord
+			room: lastWord!
 		};
 	}
 

@@ -3,13 +3,16 @@ import type {Semester} from 'zapatos/schema';
 
 export const fetcherSemesterToDatabaseSemester = (semester: ESemester): Semester => {
 	switch (semester) {
-		case ESemester.fall:
+		case ESemester.fall: {
 			return 'FALL';
-		case ESemester.spring:
+		}
+
+		case ESemester.spring: {
 			return 'SPRING';
-		case ESemester.summer:
+		}
+
+		case ESemester.summer: {
 			return 'SUMMER';
-		default:
-			throw new Error('Invalid semester');
+		}
 	}
 };

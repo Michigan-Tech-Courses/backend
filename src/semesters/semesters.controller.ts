@@ -1,4 +1,6 @@
-import {Controller, Get, Header, Injectable} from '@nestjs/common';
+import {
+	Controller, Get, Header, Injectable
+} from '@nestjs/common';
 import * as db from 'zapatos/db';
 import {PoolService} from '~/pool/pool.service';
 

@@ -76,7 +76,7 @@ test.serial('adds back a section that was deleted', async t => {
 		seedSections: true,
 	});
 
-	const [extSection] = fetcherFake.courses[0].extSections;
+	const [extensionSection] = fetcherFake.courses[0].extSections;
 
 	fetcherFake.courses[0].extSections = [];
 
@@ -88,7 +88,7 @@ test.serial('adds back a section that was deleted', async t => {
 
 	// Add section back
 	fetcherFake.courses[0].extSections = [
-		extSection
+		extensionSection
 	];
 
 	await service.handler({

@@ -37,7 +37,7 @@ export class ScrapeRateMyProfessorsTask {
 		})(async (instructor: schema.JSONSelectableForTable<'Instructor'>) => {
 			const nameFragments = instructor.fullName.split(' ');
 			const firstName = nameFragments[0];
-			const lastName = nameFragments[nameFragments.length - 1];
+			const lastName = nameFragments.at(-1);
 
 			const results = await this.fetcher.rateMyProfessors.searchTeacher(`${firstName} ${lastName}`, schools[0].id);
 

@@ -93,7 +93,7 @@ export class ScrapeSectionDetailsTask {
 
 		const scrapedSectionDetailsWithNulls = await Promise.all(sections.map(async section => {
 			try {
-				const extScrapedDetails = await this.throttledGetSectionDetails({
+				const extensionScrapedDetails = await this.throttledGetSectionDetails({
 					subject: section.course.subject,
 					crse: section.course.crse,
 					crn: section.crn,
@@ -101,7 +101,7 @@ export class ScrapeSectionDetailsTask {
 				});
 
 				return {
-					extScrapedDetails,
+					extScrapedDetails: extensionScrapedDetails,
 					section
 				};
 			} catch (error: unknown) {
@@ -222,7 +222,7 @@ export class ScrapeSectionDetailsTask {
 			const fragments = name.split(' ');
 			return {
 				firstName: fragments[0],
-				lastName: fragments[fragments.length - 1],
+				lastName: fragments.at(-1),
 				fullName: name
 			};
 		});

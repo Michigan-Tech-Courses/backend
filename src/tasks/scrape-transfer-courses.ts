@@ -15,9 +15,9 @@ export class ScrapeTransferCoursesTask {
 
 	@TaskHandler()
 	async handler() {
-		let extTransferCourses: ITransferCourse[] = [];
+		let extensionTransferCourses: ITransferCourse[] = [];
 		try {
-			extTransferCourses = await this.fetcher.getAllTransferCourses();
+			extensionTransferCourses = await this.fetcher.getAllTransferCourses();
 		} catch (error: unknown) {
 			if (error instanceof Error && error.message === 'Banner services are currently down.') {
 				this.logger.warn('Banner services are currently down. Skipping scraping instructors.');
@@ -27,28 +27,28 @@ export class ScrapeTransferCoursesTask {
 
 		// Filter out duplicates
 		// todo: this should be handled by the scraper
-		const extUniqueTransferCoursesMap = new Map<string, ITransferCourse>();
+		const extensionUniqueTransferCoursesMap = new Map<string, ITransferCourse>();
 
-		for (const course of extTransferCourses) {
+		for (const course of extensionTransferCourses) {
 			const key = `${course.from.college}-${course.from.crse}-${course.from.subject}-${course.to.crse}-${course.to.subject}-${course.to.credits}`;
 
-			if (!extUniqueTransferCoursesMap.has(key)) {
-				extUniqueTransferCoursesMap.set(key, course);
+			if (!extensionUniqueTransferCoursesMap.has(key)) {
+				extensionUniqueTransferCoursesMap.set(key, course);
 			}
 		}
 
-		const extUniqueTransferCourses = Array.from(extUniqueTransferCoursesMap.values());
+		const extensionUniqueTransferCourses = Array.from(extensionUniqueTransferCoursesMap.values());
 
-		this.logger.log(`Scraped ${extTransferCourses.length} transfer courses (${extUniqueTransferCourses.length} unique ones)...`);
+		this.logger.log(`Scraped ${extensionTransferCourses.length} transfer courses (${extensionUniqueTransferCourses.length} unique ones)...`);
 
 		const startedUpdatingAt = new Date();
 		await db.serializable(this.pool, async trx => {
 			// Batch updates
-			for (let i = 0; i <= extUniqueTransferCourses.length; i += 100) {
+			for (let i = 0; i <= extensionUniqueTransferCourses.length; i += 100) {
 				// eslint-disable-next-line no-await-in-loop
 				await db.upsert(
 					'TransferCourse',
-					extUniqueTransferCourses.slice(i, i + 100).map(course => ({
+					extensionUniqueTransferCourses.slice(i, i + 100).map(course => ({
 						fromCollege: course.from.college,
 						fromCollegeState: course.from.state,
 						fromCRSE: course.from.crse,

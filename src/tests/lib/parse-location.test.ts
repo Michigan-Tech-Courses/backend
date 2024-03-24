@@ -1,5 +1,4 @@
-import type {Building} from '@prisma/client';
-import {LocationType} from '@prisma/client';
+import {LocationType, type Building} from '@prisma/client';
 import test from 'ava';
 import parseLocation from '~/lib/parse-location';
 

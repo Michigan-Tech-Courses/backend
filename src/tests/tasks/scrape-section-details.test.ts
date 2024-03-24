@@ -215,14 +215,14 @@ test.serial('updates course description', async t => {
 		seedSections: true,
 	});
 
-	const [extCourse] = fetcherFake.courses;
+	const [extensionCourse] = fetcherFake.courses;
 
 	await service.handler({
 		terms: [getFirstTermFromFake()],
 	});
 
 	const course = await prisma.course.findFirstOrThrow();
-	t.is(course.description, extCourse.sectionDetails[0].extSectionDetails.description);
+	t.is(course.description, extensionCourse.sectionDetails[0].extSectionDetails.description);
 
 	// Update description
 	fetcherFake.putFirstSectionDetails({
@@ -324,14 +324,14 @@ test.serial('works with multiple sections taught by the same instructor', async 
 		seedSections: true,
 	});
 
-	const [firstExtCourse] = fetcherFake.courses;
+	const [firstExtensionCourse] = fetcherFake.courses;
 
 	const createdCourse = await prisma.course.create({
 		data: {
 			subject: 'MA',
 			crse: '1101',
-			year: firstExtCourse.year,
-			semester: firstExtCourse.semester,
+			year: firstExtensionCourse.year,
+			semester: firstExtensionCourse.semester,
 			title: 'Calculus I',
 		}
 	});
@@ -372,10 +372,10 @@ test.serial('works with multiple sections taught by the same instructor', async 
 				fee: createdSection.fee,
 				schedules: [],
 				instructors: [
-					firstExtCourse.extSections[0].instructors[0],
+					firstExtensionCourse.extSections[0].instructors[0],
 				]
 			}],
-			sectionDetails: firstExtCourse.sectionDetails,
+			sectionDetails: firstExtensionCourse.sectionDetails,
 			year: createdCourse.year,
 			semester: createdCourse.semester,
 		}

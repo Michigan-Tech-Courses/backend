@@ -1,11 +1,12 @@
-import {Body, Controller, Get, Injectable, Put, UseInterceptors, Headers, Header, Query} from '@nestjs/common';
+import {
+	Body, Controller, Get, Injectable, Put, UseInterceptors, Headers, Header, Query
+} from '@nestjs/common';
 import checkAuthHeader from 'src/lib/check-auth-header';
 import * as db from 'zapatos/db';
 import type {WhereableForTable} from 'zapatos/schema';
-import type {PutDto} from './types';
-import {GetAllParameters} from './types';
+import {CacheInterceptor} from '@nestjs/cache-manager';
+import {GetAllParameters, type PutDto} from './types';
 import {PoolService} from '~/pool/pool.service';
-import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('passfaildrop')
 @UseInterceptors(CacheInterceptor)
@@ -39,10 +40,10 @@ export class PassFailDropController {
 
 		// Todo: move this into the query
 		// eslint-disable-next-line unicorn/no-array-reduce
-		return result.reduce<Record<string, unknown[]>>((acc, row) => {
+		return result.reduce<Record<string, unknown[]>>((accumulator, row) => {
 			const key = `${row.courseSubject}${row.courseCrse}`;
-			acc[key] = [
-				...(acc[key] ?? []),
+			accumulator[key] = [
+				...(accumulator[key] ?? []),
 				{
 					semester: row.semester,
 					year: row.year,
@@ -52,7 +53,7 @@ export class PassFailDropController {
 				}
 			];
 
-			return acc;
+			return accumulator;
 		}, {});
 	}
 

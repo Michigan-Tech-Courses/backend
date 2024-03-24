@@ -7,20 +7,20 @@ test.serial('scrapes successfully', async t => {
 
 	await service.handler();
 
-	const [extTransferCourse] = fetcherFake.transferCourses;
+	const [extensionTransferCourse] = fetcherFake.transferCourses;
 
 	const transferCourse = await prisma.transferCourse.findFirstOrThrow();
 
 	t.like(transferCourse, {
-		fromCollege: extTransferCourse.from.college,
-		fromCollegeState: extTransferCourse.from.state,
-		fromCRSE: extTransferCourse.from.crse,
-		fromSubject: extTransferCourse.from.subject,
-		fromCredits: extTransferCourse.from.credits,
-		toCRSE: extTransferCourse.to.crse,
-		toSubject: extTransferCourse.to.subject,
-		toCredits: extTransferCourse.to.credits,
-		title: extTransferCourse.to.title,
+		fromCollege: extensionTransferCourse.from.college,
+		fromCollegeState: extensionTransferCourse.from.state,
+		fromCRSE: extensionTransferCourse.from.crse,
+		fromSubject: extensionTransferCourse.from.subject,
+		fromCredits: extensionTransferCourse.from.credits,
+		toCRSE: extensionTransferCourse.to.crse,
+		toSubject: extensionTransferCourse.to.subject,
+		toCredits: extensionTransferCourse.to.credits,
+		title: extensionTransferCourse.to.title,
 	});
 });
 

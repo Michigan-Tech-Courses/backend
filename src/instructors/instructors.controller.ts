@@ -1,10 +1,12 @@
-import {Controller, Get, Header, Injectable, Query, UseInterceptors} from '@nestjs/common';
+import {
+	Controller, Get, Header, Injectable, Query, UseInterceptors
+} from '@nestjs/common';
 import {Thumbor} from '@mtucourses/thumbor';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import * as db from 'zapatos/db';
+import {CacheInterceptor} from '@nestjs/cache-manager';
 import {GetInstructorsParameters} from './types';
 import {PoolService} from '~/pool/pool.service';
-import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('instructors')
 @UseInterceptors(CacheInterceptor, NoCacheUpdatedSinceInterceptor)

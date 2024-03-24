@@ -1,11 +1,13 @@
-import {Controller, Get, Injectable, Query, Res, UseInterceptors} from '@nestjs/common';
+import {
+	Controller, Get, Injectable, Query, Res, UseInterceptors
+} from '@nestjs/common';
 import {FastifyReply} from 'fastify';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
+import {CacheKey} from '@nestjs/cache-manager';
 import {CoursesService} from './courses.service';
 import {GetCoursesParameters, GetUniqueCoursesParameters, FindFirstCourseParameters} from './types';
 import {streamSqlQuery} from '~/lib/stream-sql-query';
 import {PoolService} from '~/pool/pool.service';
-import { CacheKey } from '@nestjs/cache-manager';
 
 @Controller('courses')
 @UseInterceptors(NoCacheUpdatedSinceInterceptor)

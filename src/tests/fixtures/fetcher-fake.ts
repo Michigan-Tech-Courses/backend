@@ -1,7 +1,8 @@
 import type {ISchoolFromSearch, ITeacherPage} from '@mtucourses/rate-my-professors';
-import type {ICourseOverview, IFaculty, ISection, ISectionDetails, ITransferCourse} from '@mtucourses/scraper';
-import {ESemester} from '@mtucourses/scraper';
-import type scraper from '@mtucourses/scraper';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import scraper, {
+	ESemester, ICourseOverview, IFaculty, ISection, ISectionDetails, ITransferCourse
+} from '@mtucourses/scraper';
 import {Semester} from '@prisma/client';
 import type {Except} from 'type-fest';
 import type {AbstractFetcherService, RateMyProfessorsFetcher} from '~/fetcher/fetcher.service';

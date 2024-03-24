@@ -1,18 +1,18 @@
 import type * as schema from 'zapatos/schema';
 import * as db from 'zapatos/db';
 
-export const mapWithSeparator = <TIn, TSep, TOut>(
+export const mapWithSeparator = <TIn, TSeparator, TOut>(
 	array: TIn[],
-	separator: TSep,
-	cb: (x: TIn, i: number, a: TIn[]) => TOut
-): Array<TOut | TSep> => {
-	const result: Array<TOut | TSep> = [];
+	separator: TSeparator,
+	callback: (x: TIn, i: number, a: TIn[]) => TOut
+): Array<TOut | TSeparator> => {
+	const result: Array<TOut | TSeparator> = [];
 	for (let i = 0, length = array.length; i < length; i++) {
 		if (i > 0) {
 			result.push(separator);
 		}
 
-		result.push(cb(array[i], i, array));
+		result.push(callback(array[i], i, array));
 	}
 
 	return result;

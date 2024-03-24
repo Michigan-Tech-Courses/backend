@@ -1,12 +1,11 @@
-// eslint-disable-next-line import/no-unassigned-import
+// eslint-disable-next-line import/no-unassigned-import, import/order
 import './sentry';
 import {NestFactory} from '@nestjs/core';
 import {ValidationPipe} from '@nestjs/common';
-import type {
-	NestFastifyApplication
-} from '@nestjs/platform-fastify';
 import {
-	FastifyAdapter,
+	FastifyAdapter, type
+	NestFastifyApplication
+
 } from '@nestjs/platform-fastify';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import {WorkerService} from 'nestjs-graphile-worker';
@@ -37,4 +36,5 @@ async function bootstrap() {
 	void app.get(WorkerService).run();
 }
 
+// eslint-disable-next-line unicorn/prefer-top-level-await
 void bootstrap();

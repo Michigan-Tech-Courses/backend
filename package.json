@@ -148,7 +148,8 @@
       "@typescript-eslint/comma-dangle": "off",
       "@typescript-eslint/naming-convention": "off",
       "n/prefer-global/process": "off",
-      "unicorn/no-await-expression-member": "off"
+      "unicorn/no-await-expression-member": "off",
+      "@typescript-eslint/no-unsafe-argument": "off"
     }
   },
   "prisma": {

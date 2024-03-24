@@ -1,4 +1,6 @@
-import {Controller, Get, Injectable, Query, UseInterceptors, Res} from '@nestjs/common';
+import {
+	Controller, Get, Injectable, Query, UseInterceptors, Res
+} from '@nestjs/common';
 import {FastifyReply} from 'fastify';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import {GetSectionsParameters, FindFirstSectionParamters} from './types';

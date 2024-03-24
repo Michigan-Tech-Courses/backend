@@ -1,4 +1,6 @@
-import {IsDate, IsIn, IsNumber, IsOptional} from 'class-validator';
+import {
+	IsDate, IsIn, IsNumber, IsOptional
+} from 'class-validator';
 import {Type} from 'class-transformer';
 import {ApiProperty} from '@nestjs/swagger';
 import {Semester} from '@prisma/client';
