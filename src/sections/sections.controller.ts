@@ -1,4 +1,4 @@
-import {CacheInterceptor, Controller, Get, Injectable, Query, UseInterceptors, Res} from '@nestjs/common';
+import {Controller, Get, Injectable, Query, UseInterceptors, Res} from '@nestjs/common';
 import {FastifyReply} from 'fastify';
 import {NoCacheUpdatedSinceInterceptor} from 'src/interceptors/no-cache-updated-since';
 import {GetSectionsParameters, FindFirstSectionParamters} from './types';
@@ -7,7 +7,7 @@ import {PoolService} from '~/pool/pool.service';
 import {streamSqlQuery} from '~/lib/stream-sql-query';
 
 @Controller('sections')
-@UseInterceptors(CacheInterceptor, NoCacheUpdatedSinceInterceptor)
+@UseInterceptors(NoCacheUpdatedSinceInterceptor)
 @Injectable()
 export class SectionsController {
 	constructor(private readonly pool: PoolService, private readonly service: SectionsService) {}

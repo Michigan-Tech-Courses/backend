@@ -1,10 +1,11 @@
-import {Body, CacheInterceptor, Controller, Get, Injectable, Put, UseInterceptors, Headers, Header, Query} from '@nestjs/common';
+import {Body, Controller, Get, Injectable, Put, UseInterceptors, Headers, Header, Query} from '@nestjs/common';
 import checkAuthHeader from 'src/lib/check-auth-header';
 import * as db from 'zapatos/db';
 import type {WhereableForTable} from 'zapatos/schema';
 import type {PutDto} from './types';
 import {GetAllParameters} from './types';
 import {PoolService} from '~/pool/pool.service';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('passfaildrop')
 @UseInterceptors(CacheInterceptor)

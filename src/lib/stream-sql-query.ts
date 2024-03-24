@@ -19,6 +19,10 @@ export const streamSqlQuery = async ({query, pool, reply}: Options) => {
 				reject(error);
 			}
 
+			if (!client) {
+				throw new Error('Client is undefined');
+			}
+
 			const stream = client.query(new QueryStream(query.text, query.values));
 			stream.on('end', () => {
 				done();
