@@ -30,3 +30,7 @@ app = "courses-api"
   method = "get"
   path = "/health"
   protocol = "http"
+
+[services.concurrency]
+  hard_limit = 200
+  soft_limit = 20
