@@ -347,10 +347,10 @@
     graphql-request "^3.4.0"
     isomorphic-fetch "^3.0.0"
 
-"@mtucourses/scraper@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@mtucourses/scraper/-/scraper-3.0.2.tgz#cf5444b16dbccd97050ab02c37baa4f59fd54866"
-  integrity sha512-kEoGD3T6o6Spgkq3RFGU99vzH0NalxfmCG9oW6A6GVXLGWoX39vb665jny9ZxLaCqGszmbj7TCt56FH3GjHDRQ==
+"@mtucourses/scraper@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@mtucourses/scraper/-/scraper-3.0.3.tgz#6b320f5c269a935f61274cb57ccf52b095c967f3"
+  integrity sha512-LSM/I9SngohyepzXDNPcJjD+CwRk/8p9URKqx20IyoM2bZc6tyFYO/zMNyBEVN9qD87IElxd/w+yXnfwFvbVTw==
   dependencies:
     cheerio "^1.0.0-rc.5"
     got "^11.8.1"
