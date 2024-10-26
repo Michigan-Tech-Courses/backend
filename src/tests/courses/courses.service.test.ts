@@ -97,13 +97,40 @@ test.serial('returns unique courses (by CRSE & subject)', async t => {
 	});
 
 	const allUniqueCoursesQuery = await service.getUniqueCoursesQuery(pool);
-	t.is((await pool.query(allUniqueCoursesQuery)).rowCount, 3);
+	t.is((await pool.query(allUniqueCoursesQuery)).rowCount, 2);
 
 	const fallUniqueCoursesQuery = await service.getUniqueCoursesQuery(pool, {semester: Semester.FALL} as any);
 	t.is((await pool.query(fallUniqueCoursesQuery)).rowCount, 2);
 
 	const uniqueCoursesAfter2000Query = await service.getUniqueCoursesQuery(pool, {startYear: 2000} as any);
-	t.is((await pool.query(uniqueCoursesAfter2000Query)).rowCount, 2);
+	t.is((await pool.query(uniqueCoursesAfter2000Query)).rowCount, 1);
+});
+
+test.serial('getUniqueCourses does not return duplicate courses', async t => {
+	const {service, prisma, pool} = await getTestService(CoursesService, {
+		seedCourses: true
+	});
+
+	const {id, ...courseWithoutId} = await prisma.course.findFirstOrThrow();
+	t.is(courseWithoutId.year, 2000);
+
+	await prisma.course.createMany({
+		data: [
+			// Create same course in different term...
+			{
+				...courseWithoutId,
+				semester: Semester.SUMMER,
+				year: 2001
+			},
+		]
+	});
+
+	const allUniqueCoursesQuery = await service.getUniqueCoursesQuery(pool, {startYear: 1999} as any);
+	const results = await pool.query(allUniqueCoursesQuery);
+
+	const cs1110Results = results.rows.filter(row => row.subject === 'CS' && row.crse === '1110');
+	t.is(cs1110Results.length, 1); // Should not be duplicate results
+	t.is(cs1110Results[0].year, 2001);// Contains the latest version
 });
 
 test.serial('returns unique courses with updatedSince', async t => {

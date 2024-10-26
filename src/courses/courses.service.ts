@@ -54,7 +54,7 @@ export class CoursesService {
 				)));
 		}
 
-		return db.sql`SELECT *, to_json("offered") as offered FROM ${'Course'} WHERE ${where} ORDER BY ${'id'} ASC`.compile();
+		return db.sql`SELECT DISTINCT ON (subject, crse) *, to_json("offered") as offered FROM ${'Course'} WHERE ${where} ORDER BY ${'subject'} ASC, ${'crse'} ASC, ${'year'} DESC, ${'semester'} DESC`.compile();
 	}
 
 	getFirstCourseZapatosQuery(parameters?: FindFirstCourseParameters) {
