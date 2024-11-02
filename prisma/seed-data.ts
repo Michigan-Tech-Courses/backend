@@ -144,5 +144,11 @@ export const BUILDINGS: Building[] = [
 		shortName: 'Walker',
 		lat: 47.117_628,
 		lon: -88.542_724
+	},
+	{
+		name: 'H-STEM Engineering and Health Technologies Complex',
+		shortName: 'H-STEM',
+		lat: 47.119_633_037_355_81,
+		lon: -88.548_102_491_857_65
 	}
 ];
